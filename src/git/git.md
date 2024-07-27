@@ -48,7 +48,7 @@
     - [Añadir tracking information](#añadir-tracking-information)
   - [Push](#push)
   - [Stash](#stash)
-  - [squash / squashing](#squash--squashing)
+  - [squash o squashing](#squash-o-squashing)
   - [revert](#revert)
     - [revert vs restore](#revert-vs-restore)
   - [reset](#reset)
@@ -565,7 +565,7 @@ git stash pop
 git stash pop --index <index>
 ```
 
-### squash / squashing
+### squash o squashing
 
 Permite unir varios commits en uno.
 
