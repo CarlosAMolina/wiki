@@ -10,6 +10,7 @@
 - [Streams](streams.html)
 - [TouchPad](touchpad.html)
 - [Reemplazar texto en archivos](#reemplazar-texto-en-archivos)
+- [gnome-terminal](#gnome-terminal)
 
 ## Reemplazar texto en archivos
 
@@ -17,3 +18,16 @@
 grep -rlZe "EXAMPLETEXT==0\.5" --exclude-dir=.git . | xargs -0 sed -i 's/EXAMPLETEXT==0.5/EXAMPLETEXT==0.6/g'
 ```
 
+## gnome-terminal
+
+Abrir en pantalla completa (muestra barra de menú):
+
+```bash
+gnome-terminal --window --maximize
+```
+
+Abrir en full screeen (no muestra barra de menú):
+
+```bash
+gnome-terminal --full-screen
+```
