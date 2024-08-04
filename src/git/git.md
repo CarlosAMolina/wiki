@@ -499,6 +499,12 @@ git merge origin/main
 
 En lugar de hacer `git fecth` y `git merge`, puede usarse `git pull`.
 
+Si al escribir `git branch -a` vemos ramas en local que empiezan por `remotes/origin/` pero que no existen en origin, podemos eliminarlas con el siguiente comando:
+
+```bash
+git fetch origin --prune
+```
+
 ### Pull
 
 Para hacer `git fecth` y `git merge` de una rama.
