@@ -55,7 +55,7 @@
     - [Deshacer el último commit manteniendo los archivos modificados](#deshacer-el-último-commit-manteniendo-los-archivos-modificados)
     - [Volver a un commit anterior](#volver-a-un-commit-anterior)
   - [worktree](#worktree)
-    - [comandos worktree](#comandos-worktree)
+    - [Comandos worktree](#comandos-worktree)
   - [tags](#tags)
   - [cat-file](#cat-file)
 - [Resolución casos comunes en git](#resolución-casos-comunes-en-git)
@@ -622,7 +622,7 @@ Si estamos trabajando en una rama y tenemos que cambiar a otra, lo normal es que
 
 Cambiar a un worktree es algo rápido, lo que puede llevar más tiempo es que tengamos que llevar a cabo acciones de configuración como por ejemplo crear un entorno virtual de python e instalar dependencias, instalar dependencias de npm, o compilar un proyecto de rust.
 
-#### comandos worktree
+#### Comandos worktree
 
 Añadir un worktree:
 
