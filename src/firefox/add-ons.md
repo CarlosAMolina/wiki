@@ -4,6 +4,7 @@
 - [Desarrollar add-on](#desarrollar-add-on)
   - [web-ext](#web-ext)
     - [Ejecutar extensión en navegador y recargar automáticamente con cada cambio](#ejecutar-extensión-en-navegador-y-recargar-automáticamente-con-cada-cambio)
+  - [Desarrollar extensión para Android](#desarrollar-extensión-para-android)
 - [Archivos](#archivos)
   - [manifest.json](#manifest.json)
   - [icons](#icons)
@@ -31,6 +32,11 @@ Herramientas que ayudan al desarrollo:
 # cd path donde se encuentre el archivo manifest.json
 web-ext run
 ```
+### Desarrollar extensión para Android
+
+Para poder probar la extensión en el móvil, instalamos el software indicado en este [link](https://extensionworkshop.com/documentation/develop/developing-extensions-for-firefox-for-android/).
+
+No es necesario descargar el SDK Manager, con `adb` ya es suficiente, basta con descargar los platform-tools-latest-linux y tras descomprimirlo puede ejecutarse `adb`.
 
 ## Archivos
 
