@@ -34,7 +34,7 @@ Gracias a IAM pueden crearse:
 
 ### Permisos
 
-El root account tiene control total sobre la cuenta de AWS y sus recursos.
+El root account tiene control total sobre la cuenta de AWS y sus recursos. No puede restringirse a lo que tiene acceso por lo que por seguridad es mejor utilizar esta cuenta lo menos posible.
 
 El resto de usuarios por defecto tienen denegado el acceso a los recursos, pero se les puede dar acceso.
 
