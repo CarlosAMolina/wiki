@@ -1,4 +1,4 @@
-# Costs
+# Costes
 
 ## Acceso a la información de coste
 
