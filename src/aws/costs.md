@@ -29,3 +29,7 @@ Para crear uno:
 
 Click en nuestro usuario (esquina superior derecha) > Billing and Cost Management > Budgest (menú vertical margen izquierdo) > Create budget.
 
+## Referencias
+
+- [Avoiding unexpected charges - AWS Billing and Cost Management](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/checklistforunwantedcharges.html).
+- [Billing Management Console](https://console.aws.amazon.com/billing/home?#/)
