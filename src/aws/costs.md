@@ -29,6 +29,10 @@ Para crear uno:
 
 Click en nuestro usuario (esquina superior derecha) > Billing and Cost Management > Budgest (menú vertical margen izquierdo) > Create budget.
 
+## Ver servicios utilizados
+
+- Free Tier: acceder a `Billing and Cost Management` > `Free Tier` (menú vertical margen izquierdo).
+
 ## Referencias
 
 - [Avoiding unexpected charges - AWS Billing and Cost Management](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/checklistforunwantedcharges.html).
