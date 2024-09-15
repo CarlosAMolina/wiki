@@ -1,7 +1,7 @@
 # AWS
 
-- [Coste](costs.html)
-- [Cuentas AWS](aws-accounts.html)
+- [Coste](cost.html)
+- [Cuenta AWS](aws-account.html)
 - [SDK](sdk.html)
 - [Servicios](services.html):
   - [Athena](athena.html)

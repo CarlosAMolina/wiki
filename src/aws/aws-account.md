@@ -1,4 +1,4 @@
-# Cuentas AWS
+# Cuenta AWS
 
 ## Creación de una cuenta
 
