@@ -91,3 +91,8 @@ Paquetes en Sublime
 <https://www.sublimetext.com/docs/3/packages.html>
 
 <https://packagecontrol.io/docs/customizing_packages>
+
+Configuración manual del diccionario
+
+<https://stackoverflow.com/questions/18350790/sublime-text-3-and-2-newly-installed-dictionaries-do-not-work/23936425#23936425>
+
