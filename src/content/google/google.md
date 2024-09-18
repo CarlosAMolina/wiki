@@ -8,4 +8,4 @@
 - [Aplicaciones y servicios de terceros con acceso a mi cuenta](https://myaccount.google.com/permissions).
 - [Histórico YouTube](https://www.youtube.com/feed/history/search_history).
 - [Descargar mis datos de los distintos servicios de Google](https://takeout.google.com/settings/takeout).
-- [Hilo de Twitter sobre la información que Google tiene sobre mí](https://x.com/iamdylancurran/status/977559925680467968).
+- [Hilo de Twitter sobre la información que Google tiene sobre mí](https://threadreaderapp.com/thread/977559925680467968.html).
