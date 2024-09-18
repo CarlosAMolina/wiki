@@ -16,3 +16,7 @@
 - [Grid by Example – Rachel Andrew](https://gridbyexample.com/).
 - [Projects – Rachel Andrew](https://rachelandrew.co.uk/projects/).
 - [Web Design Experiments by Jen Simmons](https://labs.jensimmons.com/).
+
+## Verificar navegadores y versiones compatibles con elementos HTML y CSS
+
+Puede revisarse en este [link](https://caniuse.com/?search=gradient).
