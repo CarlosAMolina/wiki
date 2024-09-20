@@ -26,3 +26,14 @@ Recordar que el root account no puede ser restringido.
 - No tiene coste pero posee ciertos límites.
 - No tiene control directo sobre cuentas/usuarios externos.
 - Permite utilizar identity federation (logearnos en los servicios de AWS con el Active Directory de nuestra empresa o nuestra cuenta de FaceBook, Google, etc) y MFA.
+
+## IAM Access Keys
+
+Se utilizan para acceder a los servicios de AWS mediante terminal.
+
+Cada usuario puede tener como máximo dos access keys.
+
+Están formadas por:
+
+- Access Key ID: puede entenderse como el user name cuando hacemos login en la consola de AWS.
+- Secret Access Key: puede entenderse como el password cuando hacemos login en la consola de AWS..
