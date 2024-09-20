@@ -24,6 +24,7 @@
   - [Conflictos](#conflictos)
     - [Qué se muestra como HEAD en un conflicto](#qué-se-muestra-como-head-en-un-conflicto)
     - [Resolver un conflicto](#resolver-un-conflicto)
+      - [vimdiff](#vimdiff)
     - [Obtener información tras resolver un conflicto](#obtener-información-tras-resolver-un-conflicto)
   - [Merge](#merge)
     - [Funcionamiento merge](#funcionamiento-merge)
@@ -297,6 +298,12 @@ Puede abortarse el merge con:
 ```bash
 git merge --abort
 ```
+
+##### vimdiff
+
+Es una herramienta de terminal que muestra una ventana para resolver conflictos similar a cómo lo hace por ejemplo Pycharm.
+
+Explicación de configuración y uso [en este link](https://stackoverflow.com/questions/161813/how-do-i-resolve-merge-conflicts-in-a-git-repository).
 
 #### Obtener información tras resolver un conflicto
 
@@ -795,6 +802,8 @@ Paso 2. Hacer push. Ejm:
 ```bash
 git push --set-upstream https://$DOMINIO/$USER/$REPOSITORY_NAME.git master
 ```
+
+También, puede crearse utilizando [GitHub CLI, como se explica en este enlace](https://dev.to/techturnip/github-cli-how-to-create-a-repo-from-your-terminal-1aeg).
 
 ### Cambiar nombre de un repositorio
 
