@@ -37,3 +37,5 @@ Están formadas por:
 
 - Access Key ID: puede entenderse como el user name cuando hacemos login en la consola de AWS.
 - Secret Access Key: puede entenderse como el password cuando hacemos login en la consola de AWS..
+
+En AWS, se crean desde: click esquina superior derecha en nuestro usuario > Security credentials > Access keys: Create access key.
