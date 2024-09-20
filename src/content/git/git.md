@@ -60,6 +60,7 @@
     - [Comandos worktree](#comandos-worktree)
   - [tags](#tags)
   - [cat-file](#cat-file)
+  - [gitignore](#gitignore)
 - [Resolución casos comunes en git](#resolución-casos-comunes-en-git)
   - [Crear repositorio remoto desde un repositorio local](#crear-repositorio-remoto-desde-un-repositorio-local)
   - [Cambiar nombre de un repositorio](#cambiar-nombre-de-un-repositorio)
@@ -789,6 +790,10 @@ git cat-file -p f7c5a4e5545b761005adc08da8b1efd1499de336
 ```
 
 Sobre las carpetas con el nombre de los 2 primeros caracteres del hash, he visto que en proyectos con pocos commits, en `.git/object` hay carpetas por cada hash, pero en más grandes no, tal vez se vayan eliminando con el tiempo.
+
+## gitignore
+
+Es posible omitir archivos que ya fueron añadidos en un commit antiguo, explicación [en este enlace](https://stackoverflow.com/a/11366713).
 
 ## Resolución casos comunes en git
 
