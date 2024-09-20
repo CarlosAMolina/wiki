@@ -234,7 +234,7 @@ git log --graph --oneline
 
 ### git diff
 
-Al usar `git diff` podemos trabajar con `..` o `...`. Las diferencias se explican en [este enlace](https://stackoverflow.com/questions/5817579/how-can-i-preview-a-merge-in-git).
+Al usar `git diff` podemos trabajar con `..` o `...`. Las diferencias se explican en [este enlace](https://stackoverflow.com/questions/5817579/how-can-i-preview-a-merge-in-git). También, es posible ejecutar el comando sin `..` ni `...`.
 
 ### bisect
 
