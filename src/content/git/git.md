@@ -62,6 +62,7 @@
   - [tags](#tags)
   - [cat-file](#cat-file)
   - [gitignore](#gitignore)
+  - [gitconfig](#gitconfig)
 - [Resolución casos comunes en git](#resolución-casos-comunes-en-git)
   - [Crear repositorio remoto desde un repositorio local](#crear-repositorio-remoto-desde-un-repositorio-local)
   - [Cambiar nombre de un repositorio](#cambiar-nombre-de-un-repositorio)
@@ -803,6 +804,10 @@ Sobre las carpetas con el nombre de los 2 primeros caracteres del hash, he visto
 ## gitignore
 
 Es posible omitir archivos que ya fueron añadidos en un commit antiguo, explicación [en este enlace](https://stackoverflow.com/a/11366713).
+
+## gitconfig
+
+Para poder configurar este archivo de modo que trabajemos con diferentes configuraciones de git, por ejemplo una para el trabajo y otra para nuestros proyectos personales, podemos seguir lo descrito en [este enlace](https://garrit.xyz/posts/2023-10-13-organizing-multiple-git-identities).
 
 ## Resolución casos comunes en git
 
