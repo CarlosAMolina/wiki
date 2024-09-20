@@ -17,6 +17,7 @@
   - [git log](#git-log)
     - [Argumentos útiles](#argumentos-útiles)
     - [Buscar en el histórico de git](#buscar-en-el-histórico-de-git)
+  - [git diff](#git-diff)
   - [bisect](#bisect)
   - [git reflog](#git-reflog)
   - [Branches](#branches)
@@ -220,6 +221,10 @@ Mostrar los commits que han modificado un archivo o varios archivos:
 ```bash
 git log -p <file_name_1> <file_name_2>
 ```
+
+### git diff
+
+Al usar `git diff` podemos trabajar con `..` o `...`. Las diferencias se explican en [este enlace](https://stackoverflow.com/questions/5817579/how-can-i-preview-a-merge-in-git).
 
 ### bisect
 
