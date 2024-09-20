@@ -17,6 +17,7 @@
   - [git log](#git-log)
     - [Argumentos útiles](#argumentos-útiles)
     - [Buscar en el histórico de git](#buscar-en-el-histórico-de-git)
+    - [Mostrar ramas de las que proviene cada commit](#mostrar-ramas-de-las-que-proviene-cada-commit)
   - [git diff](#git-diff)
   - [bisect](#bisect)
   - [git reflog](#git-reflog)
@@ -221,6 +222,14 @@ Mostrar los commits que han modificado un archivo o varios archivos:
 
 ```bash
 git log -p <file_name_1> <file_name_2>
+```
+
+#### Mostrar ramas de las que proviene cada commit
+
+Puede verse de qué rama viene cada archivo, con el siguiente comando se mostrará a la izquierda una representación gráfica de las ramas:
+
+```bash
+git log --graph --oneline
 ```
 
 ### git diff
