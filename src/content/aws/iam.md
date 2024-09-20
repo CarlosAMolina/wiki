@@ -39,3 +39,5 @@ Están formadas por:
 - Secret Access Key: puede entenderse como el password cuando hacemos login en la consola de AWS.
 
 En AWS, se crean desde: click esquina superior derecha en nuestro usuario > Security credentials > Access keys: Create access key.
+
+Se crean para cada usuario de IAM. Por ejemplo, podemos crearlas en el usuario de IAM administrador.
