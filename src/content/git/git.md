@@ -68,6 +68,7 @@
   - [Cambiar nombre de un repositorio](#cambiar-nombre-de-un-repositorio)
     - [GitLab](#gitlab)
   - [Recuperar un archivo de una rama eliminada](#recuperar-un-archivo-de-una-rama-eliminada)
+  - [Eliminar archivo de todo el histórico de git](#eliminar-archivo-de-todo-el-histórico-de-git)
   - [Continous integration](#continous-integration)
 - [OSINT](#osint)
   - [Email de quién realizó el commit](#email-de-quién-realizó-el-commit)
@@ -906,6 +907,10 @@ $ git cherry-pick 8ce060e
  1 file changed, 1 insertion(+)
  create mode 100644 hello.md
 ```
+
+### Eliminar archivo de todo el histórico de git
+
+Explicación en la sección `Removing Objects` de [este enlace](https://git-scm.com/book/en/v2/Git-Internals-Maintenance-and-Data-Recovery#Removing-Objects).
 
 ### Continous integration
 
