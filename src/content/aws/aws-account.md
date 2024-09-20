@@ -50,6 +50,12 @@ Si desde la página de AWS seleccionamos iniciar sesión, nos llevará a una pan
 
 Estas cajitas sirven para hacer login con un usuario que no es el root account, es decir con un usuario de IAM. Para acceder con el root account, hacemos click en `Iniciar sesión con el email del usuario raíz`, en este caso se nos pedirá una dirección de email.
 
+### Diferentes logins en el mismo navegador
+
+Normalmente, para hacer login en dos cuentas o usuarios de IAM distintos, abrimos nuestro navegador para un login y luego una navegación privada para otro.
+
+En Firefox, podemos instalar [la extensión Firefox Multi-Account Containers](https://addons.mozilla.org/en-GB/firefox/addon/multi-account-containers/) que permite hacer distintos logins en el mismo navegador.
+
 ### Obtención de los valores de login
 
 #### ID de cuenta (12 dígitos) o alias de cuenta
