@@ -69,6 +69,7 @@
     - [GitLab](#gitlab)
   - [Recuperar un archivo de una rama eliminada](#recuperar-un-archivo-de-una-rama-eliminada)
   - [Eliminar archivo de todo el histórico de git](#eliminar-archivo-de-todo-el-histórico-de-git)
+  - [Comprimir proyecto de git](#comprimir-proyecto-de-git)
   - [Continous integration](#continous-integration)
 - [OSINT](#osint)
   - [Email de quién realizó el commit](#email-de-quién-realizó-el-commit)
@@ -911,6 +912,10 @@ $ git cherry-pick 8ce060e
 ### Eliminar archivo de todo el histórico de git
 
 Explicación en la sección `Removing Objects` de [este enlace](https://git-scm.com/book/en/v2/Git-Internals-Maintenance-and-Data-Recovery#Removing-Objects).
+
+### Comprimir proyecto de git
+
+En [este enlace](https://gist.github.com/LeonardoCardoso/6c083b90a8c327d8c82f) vemos cómo comprimir el estado actual de un proyecto, omitiendo los archivos de indicados en gitignore, también se omite la carpeta `.git`.
 
 ### Continous integration
 
