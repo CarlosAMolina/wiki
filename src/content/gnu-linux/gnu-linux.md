@@ -9,14 +9,8 @@
 - [Partitions](partitions.html)
 - [Streams](streams.html)
 - [TouchPad](touchpad.html)
-- [Reemplazar texto en archivos](#reemplazar-texto-en-archivos)
 - [gnome-terminal](#gnome-terminal)
-
-## Reemplazar texto en archivos
-
-```bash
-grep -rlZe "EXAMPLETEXT==0\.5" --exclude-dir=.git . | xargs -0 sed -i 's/EXAMPLETEXT==0.5/EXAMPLETEXT==0.6/g'
-```
+- [Reemplazar texto en archivos](#reemplazar-texto-en-archivos)
 
 ## gnome-terminal
 
@@ -30,4 +24,10 @@ Abrir en full screeen (no muestra barra de menú):
 
 ```bash
 gnome-terminal --full-screen
+```
+
+## Reemplazar texto en archivos
+
+```bash
+grep -rlZe "EXAMPLETEXT==0\.5" --exclude-dir=.git . | xargs -0 sed -i 's/EXAMPLETEXT==0.5/EXAMPLETEXT==0.6/g'
 ```
