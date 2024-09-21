@@ -10,6 +10,7 @@
 - [Streams](streams.html)
 - [TouchPad](touchpad.html)
 - [gnome-terminal](#gnome-terminal)
+- [Libros](#libros)
 - [Reemplazar texto en archivos](#reemplazar-texto-en-archivos)
 
 ## gnome-terminal
@@ -25,6 +26,10 @@ Abrir en full screeen (no muestra barra de menú):
 ```bash
 gnome-terminal --full-screen
 ```
+
+## Libros
+
+- [Linux Programming Interface](https://nostarch.com/tlpi#content).
 
 ## Reemplazar texto en archivos
 
