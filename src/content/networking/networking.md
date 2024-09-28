@@ -14,4 +14,4 @@ Hay varios tipos:
 
 - Static NAT: cada dirección IP privada tiene asignada una única dirección pública (fija). Así funciona Internet Gateway (IGW) de AWS.
 - Dynamic NAT: traduce 1 dirección IP privada en la primera IP pública disponible.
-- Port Address Translation (PAT): varias direcciones IP privadas se traducen en una IP pública. Así funciona por ejemplo el router de nuestras casas, también es cómo en AWS funciona NATGW (NAT Gateway).
+- Port Address Translation (PAT): varias direcciones IP privadas se traducen en una IP pública, utiliza los puertos para diferenciar cada equipo de la red privada. Así funciona por ejemplo el router de nuestras casas, también es cómo en AWS funciona NATGW (NAT Gateway).
