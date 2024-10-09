@@ -19,3 +19,4 @@ Un array vacío `[]` técnicamente no es nulo, es un array sin valores.
 
 - [Librerías para distintos lenguajes](https://graphql.org/code/).
 - [Star Wars GraphQL API online](https://github.com/graphql/swapi-graphql/)
+- [Fake ski resort GraphQL API online](https://snowtooth.moonhighway.com/)
