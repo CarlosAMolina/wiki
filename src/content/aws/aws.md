@@ -5,6 +5,7 @@
 - [Cuenta AWS](aws-account.html)
 - [SDK](sdk.html)
 - [Servicios](services.html):
+  - [Regiones, Edge Locations y Availability Zones](regions-edge-locations-and-az.html)
   - [Athena](athena.html)
   - [IAM](iam.html)
   - [Step Function](step-function.html)
