@@ -32,12 +32,12 @@ Algunas configuraciones que tiene por defecto:
 
 - IGW: para tener comunicación in Internet.
 - SG (Security Group) y NACL: para control del tráfico de entrada y de salida.
-- Todo lo que se despliegue en esta VPC reciba una IP Pública.
+- Todo lo que se despliegue en esta VPC recibe una IP Pública.
 
 ## Custom VPC
 
 - Puedes crear varias por región.
-- Por defecto están aisladas de otras redes VPC, Internet y la zona de pública de AWS.
+- Por defecto están aisladas de otras redes VPC, Internet y la zona de pública de AWS. En la sección de servicios y zonas públicas y privadas se comenta cómo dar y tener acceso a VPCs.
 
 ## Consola de AWS
 
