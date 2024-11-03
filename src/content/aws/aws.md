@@ -8,6 +8,7 @@
 - [Servicios y zona pública y privada](zone-public-private.html)
 - [Servicios](services.html):
   - [Athena](athena.html)
+  - [EC2](ec2.html)
   - [IAM](iam.html)
   - [Step Function](step-function.html)
   - [VPC](vpc.html)
