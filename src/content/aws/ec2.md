@@ -62,3 +62,10 @@ Posee permisos que indican qué cuentas de AWS pueden usar o no la AMI:
 La AMI determina el tipo de root volume que es donde se inicia el sistema operativo.
 
 El block device mapping es la configuración que indica a la máquina EC2 qué volumen es el root, cual del almacenamiento, etc.
+
+## Eliminar una instancia
+
+En la consola de AWS debemos eliminar:
+
+- La instancia EC2: elegir la opción terminate.
+- El security group asociado a esa instancia. Está en el apartado Network & security > Security Groups.
