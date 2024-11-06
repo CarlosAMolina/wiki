@@ -4,7 +4,7 @@
 
 Para acceder a un servicio, hay que tener en cuenta que afecta el punto de vista de networking y de permisos. Pero a la hora de hablar de servicios públicos y privados, solo nos fijamos en la parte de networking.
 
-- Un servicio público es aquel que utiliza endpoints públicos, cualquier con conexión a Internet puede acceder a estos servicios. Ejemplo el servicio S3.
+- Un servicio público es aquel que utiliza endpoints públicos, cualquier con conexión a Internet podría acceder a estos servicios si está autorizado. Ejemplo el servicio S3.
 - Los servicios privados están en una VPC. Para acceder a ellos hay que tener acceso a la VPC.
 
 ### Diferentes network zones
@@ -20,6 +20,8 @@ Funciona entre la zona pública de Internet y la zona privada de AWS.
 No es parte de la zona de Internet pública, sino que tiene conexión a Internet.
 
 En esta zona se ejecutan los servicios públicos.
+
+A excepción del root account, por defecto no se puede acceder a lo que hay en la zona pública (ejemplo archivos S3).
 
 #### Zona AWS privada
 
