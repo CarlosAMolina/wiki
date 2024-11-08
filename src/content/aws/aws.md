@@ -8,6 +8,7 @@
 - [Servicios y zona pública y privada](zone-public-private.html)
 - [Servicios](services.html):
   - [Athena](athena.html)
+  - [CFN](cfn.html)
   - [EC2](ec2.html)
   - [IAM](iam.html)
   - [S3](s3.html)

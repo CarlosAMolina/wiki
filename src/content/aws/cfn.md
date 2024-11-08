@@ -1,0 +1,23 @@
+# CloudFormation
+
+## Introducción
+
+CFN = CloudFormation
+
+Es un servicio para gestionar la infraestructura utilizando plantillas.
+
+## Plantillas
+
+Utilizan formato YAML o JSON.
+
+En la plantilla tenemos distintos apartados: versión, descripción, recursos, etc.
+
+Hay algunas peculiaridades como que indicar el número de versión es opcional, pero en caso de hacerlo, entonces es obligatorio que el siguiente apartado sea el de descripción.
+
+## Stack
+
+Stack es lo que CFN crea a partir de una plantilla.
+
+El stack contiene los recuros de manera lógica. A partir del stack, AWS crea, actualiza o elimina los recursos de manera física.
+
+Puede haber una o más stacks.
