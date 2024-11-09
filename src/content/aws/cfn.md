@@ -20,7 +20,9 @@ Stack es lo que CFN crea a partir de una plantilla.
 
 El stack contiene los recuros de manera lógica. A partir del stack, AWS crea, actualiza o elimina los recursos de manera física.
 
-Puede haber una o más stacks.
+A partir de la misma plantilla se pueden crear más de un stack.
+
+Al eliminar un stack se borran los recursos lógicos y físicos que creó.
 
 ## Recursos
 
