@@ -9,6 +9,7 @@
 - [Servicios](services.html):
   - [Athena](athena.html)
   - [CFN](cfn.html)
+  - [CloudWatch](cloudwatch.html)
   - [EC2](ec2.html)
   - [IAM](iam.html)
   - [S3](s3.html)
