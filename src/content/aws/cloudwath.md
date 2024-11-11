@@ -18,23 +18,23 @@ Es un contenedor para monitorizar datos, para separar los distintos tipos de dat
 
 El nombre debe seguir unas reglas, hay algunos no válidos como los utilizados para los servicios de AWS que siguen la máscara `AWS/{service}` ejemplo `AWS/EC2`.
 
-## Métrica
+### Métrica
 
 Una métrica es un conjunto de datos que tienen relación. Ejemplo, uso de la CPU. Hay que tener en cuenta que la métrica CPU no es específica de un servicio, sino que almacena el uso de la CPU de todos los servicios.
 
-## Datapoint
+### Datapoint
 
 Cada vez que un servicio envía su uso de CPU, la medida que está enviando es un Datapoint.
 
 Está compuesto de un timestamp y de un valor.
 
-## Dimensión
+### Dimensión
 
 Sirve para que, en una métrica, saber a qué pertenece el Datapoint.
 
 Por ejemplo, una máquina EC2, envía como información de la dimensión el nombre de la instancia y el tipo de instancia.
 
-## Alarmas
+### Alarmas
 
 Se asocian a una métrica. Identifican si la métrica indica un estado correcto o no, y en este caso pueden desencadenarse acciones.
 
