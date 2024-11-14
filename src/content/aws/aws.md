@@ -13,5 +13,5 @@
   - [EC2](ec2.html)
   - [IAM](iam.html)
   - [S3](s3.html)
-  - [Step Function](step-function.html)
+  - [Step Function](sf.html)
   - [VPC](vpc.html)
