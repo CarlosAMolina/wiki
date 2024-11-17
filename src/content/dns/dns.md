@@ -1,5 +1,12 @@
 # DNS
 
+## Gestión DNS
+
+- DNS Root Zone: lo gestiona IANA.
+- DNS Root Servers: hay 13, los gestionan 12 organizaciones.
+- Registry: es el tipo de organización que mantiene las zonas de un TLD (por ejemplo .org).
+- Registrar: es el tipo de organización que tiene relación con el manager de una zona TLD (por ejemplo .org) y permite el registro de dominios.
+
 ## TTL
 
 La respuesta a una consulta DNS puede venir del servidor principal que contiene esa información, en este caso es una authoritative response. Pero otros servidores intermedios (resolvers) pueden cachear la información y su respuesta no es authoritative. El TTL es el tiempo en segundos que un resolver puede cachear los datos.
