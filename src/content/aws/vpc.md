@@ -17,7 +17,7 @@ Es el rango de IPs que se puede utilizar en la VPC.
 
 ## Subred
 
-Cada subred de una VPC está en una AZ.
+Por defecto, en un VPC hay tantas subredes como número de AZs en la región que se encuentre, cada subred está en una AZ.
 
 ## Tipos
 
