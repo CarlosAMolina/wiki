@@ -63,6 +63,18 @@ La AMI determina el tipo de root volume que es donde se inicia el sistema operat
 
 El block device mapping es la configuración que indica a la máquina EC2 qué volumen es el root, cual del almacenamiento, etc.
 
+En una AMI:
+
+- Sí se almacena:
+  - Boot volume.
+  - Data volumes.
+  - AMI permissions.
+  - Block device mapping.
+
+- No se almacena:
+  - Configuración de la instancia
+  - Configuración de red.
+
 ## Eliminar una instancia
 
 En la consola de AWS debemos eliminar:

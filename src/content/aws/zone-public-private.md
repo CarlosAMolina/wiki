@@ -23,6 +23,8 @@ En esta zona se ejecutan los servicios públicos.
 
 A excepción del root account, por defecto no se puede acceder a lo que hay en la zona pública (ejemplo archivos S3).
 
+Cualquiera puede conectarse, pero para acceder a los servicios son necesarios permisos.
+
 #### Zona AWS privada
 
 Son las VPC.

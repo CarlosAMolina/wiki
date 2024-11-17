@@ -14,6 +14,7 @@ En la plantilla tenemos distintos apartados: versión, descripción, recursos, e
 
 Hay algunas peculiaridades como que indicar el número de versión es opcional, pero en caso de hacerlo, entonces es obligatorio que el siguiente apartado sea el de descripción.
 
+
 ## Stack
 
 Stack es lo que CFN crea a partir de una plantilla.
@@ -25,5 +26,8 @@ A partir de la misma plantilla se pueden crear más de un stack.
 Al eliminar un stack se borran los recursos lógicos y físicos que creó.
 
 ## Recursos
+
+- Recurso lógico: es un recurso definido en una plantilla de CloudFormation.
+- Recurso físico: es un recurso físico creado al crear un stack de CloudFormation.
 
 - [Referencias de los recursos de CFN](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html)
