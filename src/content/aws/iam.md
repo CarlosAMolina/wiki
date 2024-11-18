@@ -1,5 +1,9 @@
 # IAM
 
+## Introducción
+
+IAM = Identity Access Management
+
 ## Qué puede crear
 
 - Usuarios: para dar acceso a una persona o una aplicación.
@@ -10,7 +14,21 @@
 
 IAM utiliza los `Policy` que es una configuración que permite o niega el acceso a servicios de AWS.
 
-Los `policy` solo tienen efecto cuando se adjunta a un usuario grupo o rol de IAM.
+Los `policy` solo tienen efecto cuando se adjunta a una entidad. Las entidades son:
+
+- Usuarios IAM.
+- Grupos IAM.
+- Roles IAM.
+
+### IAM Policy Document
+
+Tienen formato JSON.
+
+En caso de haber reglas que se solapen con otras, la que se aplica es según el siguiente orden de prioridad (de mayor a menor):
+
+- Se deniega algo de manera explícita.
+- Se permite algo de manera explícita.
+- Si no hay reglas que prohíban o permitan la acción explícitamente, entonces la acción está denegada (a excepción de la cuenta root).
 
 ## Funciones
 
