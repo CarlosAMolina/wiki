@@ -30,6 +30,25 @@ En caso de haber reglas que se solapen con otras, la que se aplica es según el 
 - Se permite algo de manera explícita.
 - Si no hay reglas que prohíban o permitan la acción explícitamente, entonces la acción está denegada (a excepción de la cuenta root).
 
+Si un usuario tiene políticas asociadas y pertenece a un grupo con políticas; al usuario se le aplican todas las políticas en conjunto.
+
+### Tipos
+
+#### Inline policy
+
+Cuando a cada identidad le aplicas un policy document; para actualizar hay que hacerlo a cada policy individualmente.
+
+Suele utilizarse para aplicar excepciones.
+
+#### Manage policy
+
+Un policy document se aplica a varias entidades.
+
+Hay dos tipos:
+
+- Creadas y gestionadas por AWS.
+- Creadas y gestionadas por nosotros.
+
 ## Funciones
 
 - ID Provider (IDP): para crear y gestionar identidades.
