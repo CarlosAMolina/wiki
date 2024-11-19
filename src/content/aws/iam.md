@@ -78,3 +78,11 @@ Están formadas por:
 En AWS, se crean desde: click esquina superior derecha en nuestro usuario > Security credentials > Access keys: Create access key.
 
 Se crean para cada usuario de IAM. Por ejemplo, podemos crearlas en el usuario de IAM administrador.
+
+## IAM Users
+
+Un usuario IAM es una identidad utilizada por cualquier cosa (personas, aplicaciones, etc.) que necesite acceso a AWS durante un periodo largo de tiempo.
+
+Permite autenticación mediante user&password o con access keys.
+
+Quien se intenta conetar a AWS se conoce como `principal`, una vez autenticado, se llama `authenticated identity`, al cual se le asignan unas policies. Este es el proceso de autorización.
