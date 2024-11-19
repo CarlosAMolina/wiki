@@ -86,3 +86,10 @@ Un usuario IAM es una identidad utilizada por cualquier cosa (personas, aplicaci
 Permite autenticación mediante user&password o con access keys.
 
 Quien se intenta conetar a AWS se conoce como `principal`, una vez autenticado, se llama `authenticated identity`, al cual se le asignan unas policies. Este es el proceso de autorización.
+
+### Limitaciones
+
+- Máximo 5000 IAM Users por cuenta.
+- Un IAM user puede ser miembro de 10 grupos.
+
+Para casos que sobrepasan estas limitaciones, se utiliza IAM Roles o Identity Federation.
