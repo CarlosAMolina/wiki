@@ -20,6 +20,12 @@ Los `policy` solo tienen efecto cuando se adjunta a una entidad. Las entidades s
 - Grupos IAM.
 - Roles IAM.
 
+### Resource policies
+
+Pueden asignarse políticas a recursos, como por ejemplo a S3 buckets.
+
+Estas políticas apuntan al ARN de una entidad (un IAM User o un IAM Role) para dar o denegar acceso al recurso. Los IAM Groups no son true identity por lo que no pueden referenciarse como un principal en una política.
+
 ### IAM Policy Document
 
 Tienen formato JSON.
@@ -40,7 +46,7 @@ Cuando a cada identidad le aplicas un policy document; para actualizar hay que h
 
 Suele utilizarse para aplicar excepciones.
 
-#### Manage policy
+#### Managed policy
 
 Un policy document se aplica a varias entidades.
 
@@ -87,9 +93,27 @@ Permite autenticación mediante user&password o con access keys.
 
 Quien se intenta conetar a AWS se conoce como `principal`, una vez autenticado, se llama `authenticated identity`, al cual se le asignan unas policies. Este es el proceso de autorización.
 
+## IAM Groups
+
+Son contenedores para IAM Users, para organizarlos; facilita su gestión.
+
+Los grupos no tienen credenciales y no podemos hacer login en un grupo.
+
+Un IAM user puede estar en varios grupos.
+
+Pueden tener asociadas políticas de tipo inline y managed; los usuarios de los grupos pueden seguir teniendo sus políticas propias. Como vimos antes, al no ser los grupos true identities, no se les puede referenciar desde una resource policy.
+
+No hay número máximo de usuarios que pueden pertenecer a un grupo.
+
+Por defecto, no existe un grupo en IAM que englobe a todos los usuarios; de querer usar grupos, hay que crearlos.
+
+No puede haber grupos dentro de grupos.
+
+Por defecto el máximo de grupos por cuenta es de 300, pero se puede solicitar ampliación.
+
 ### Limitaciones
 
-- Máximo 5000 IAM Users por cuenta.
-- Un IAM user puede ser miembro de 10 grupos.
+- Máximo 5000 IAM Users por cuenta. Es un hard limit, no puede solicitarse ampliación.
+- Un IAM user puede ser miembro de 10 grupos. Es un hard limit, no puede solicitarse ampliación.
 
 Para casos que sobrepasan estas limitaciones, se utiliza IAM Roles o Identity Federation.
