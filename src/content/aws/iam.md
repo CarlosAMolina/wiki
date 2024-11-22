@@ -8,7 +8,7 @@ IAM = Identity Access Management
 
 - Usuarios: para dar acceso a una persona o una aplicación.
 - Grupos: cuando queramos dar acceso a un grupo de usuarios con características en común, por ejemplo a los desarrolladores o al departamento de recursos humanos
-- Roles: utilizados pro servicios o para dar acceso desde el exterior a mi cuenta. Ejemplo: otorgar a todas las máquinas EC2 acceso a S3.
+- Roles: utilizados por servicios o para dar acceso desde el exterior a mi cuenta. Ejemplo: otorgar a todas las máquinas EC2 acceso a S3.
 
 ## Policy
 
