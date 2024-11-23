@@ -85,13 +85,25 @@ En AWS, se crean desde: click esquina superior derecha en nuestro usuario > Secu
 
 Se crean para cada usuario de IAM. Por ejemplo, podemos crearlas en el usuario de IAM administrador.
 
+## Principal
+
+Es una:
+
+- Persona física.
+- Dispositivo.
+- Aplicación o proceso.
+
+Que intenta autenticarse en AWS; estas personas y aplicaciones pueden encontrarse dentro o fuera de AWS.
+
+Cuando el principal se ha autenticado, se llama `authenticated identity`; al cual se le asignan unas policies, este es el proceso de autorización que da acceso a los recursos de AWS.
+
 ## IAM Users
 
 Un usuario IAM es una identidad utilizada por cualquier cosa (personas, aplicaciones, etc.) que necesite acceso a AWS durante un periodo largo de tiempo.
 
 Permite autenticación mediante user&password o con access keys.
 
-Quien se intenta conetar a AWS se conoce como `principal`, una vez autenticado, se llama `authenticated identity`, al cual se le asignan unas policies. Este es el proceso de autorización.
+Se utiliza cuando el objetivo es un solo principal.
 
 ## IAM Groups
 
@@ -117,3 +129,23 @@ Por defecto el máximo de grupos por cuenta es de 300, pero se puede solicitar a
 - Un IAM user puede ser miembro de 10 grupos. Es un hard limit, no puede solicitarse ampliación.
 
 Para casos que sobrepasan estas limitaciones, se utiliza IAM Roles o Identity Federation.
+
+## IAM Role
+
+Es un tipo de identidad IAM en una cuenta de AWS, otro tipo de entidad eran los IAM users.
+
+A diferencia de los IAM Users, un rol se utiliza en estas situaciones:
+
+- Cuando hay múltiples principals.
+- Cuando el acceso es por un breve periodo de tiempo.
+
+Un rol no representa a alguien, sino que representa el nivel de acceso.
+
+Un rol tiene 2 tipos de políticas:
+
+- Trust policy: controla las identidades que pueden asumir el rol.
+- Permissions policy.
+
+Al asumir un rol, se generan credenciales temporales mediante el servicio STS (Secure Token Service).
+
+AWS ofrece el producto AWS Organizations para gestionar múltiples cuentas de AWS. Los roles se utilizan aquí para logearse en una sola cuenta y poder acceder a otras sin necesidad de volver a hacer login.
