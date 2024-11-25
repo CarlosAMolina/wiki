@@ -164,3 +164,15 @@ Gracias a los roles tenemos las ventajas de:
 - No es necesario almacenar credenciales que pueden perderse en una fuga de información.
 - No necesitamos crear nuevos usuarios, pueden utilizarse cuentas externas ya existentes.
 - Es posible trabajar con gran número de usuarios.
+
+### Service-linked roles
+
+Son roles que están asociados a un servicio de AWS específico.
+
+Se diferencian de los roles en que no pueden ser eliminados hasta que no es utilizado por ningún servicio.
+
+#### PassRole Permission
+
+Es posible que un usuario asigne un rol ya existente a un servicio aunque el usuario no tenga los permisos que ese rol ofrece. Esto en una policy aparece con el action `iam:PassRole`.
+
+En CloudFormation, este utiliza los permisos de la entidad que lo ejecuta para interactuar con AWS, por lo que el usuario debe tener los permisos no solo para crear el stack, sino también los permisos sobre los recursos que el stack creará. Gracias a service-linked roles, un usuario que no tenga todos los permisos puede ejecutar el stack pasándole el rol que necesite.
