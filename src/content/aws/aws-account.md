@@ -75,3 +75,23 @@ Este es el valor configurado cuando desde IAM hemos creado un usuario.
 Podemos ver los usuarios creados en: IAM > Users. El nombre aparece en la columna `User name`.
 
 El nombre de usuario debe ser único pero dentro de nuestra cuenta de AWS. Es decir, puede que haya otras cuentas de AWS que tengan usuarios con el mismo nombre.
+
+## AWS organizations
+
+Es un servicio de AWS que permite gestionar distintas cuentas de AWS.
+
+Creas un organization desde una cuenta de AWS, pero esta organization no se encuentra dentro de la cuenta. La cuenta desde la que se crea se llama management account o master; solo hay una por organization.
+
+Una vez creada la organization, vamos añadiendo cuentas en ella. Las cuentas pasan de llamarse standard accounts a member accounts. También puedes crear cuentas nuevas desde la organization.
+
+Las cuentas se agrupan en contenedores, que tienen una estructura jerárquica, en el nivel superior está el contenedor llamado organization root compuesto por cuentas de aws y subcontenedores llamados organizational units, los cuales pueden tener otros organizational units.
+
+Las organization ofrecen el servicio `service controll polycies (scp)` para gestionar qué pueden hacer las cuentas de la organization.
+
+En una organizacion pueden utilizarse los roles para dar acceso a un IAM User a otras cuentas.
+
+Hay una cuenta llamada loging account donde te identificas y desde ella puedes acceder al resto; lo que se hace es asumir un rol de otra cuenta.
+
+### Consolidated billing
+
+En una organization, los member accounts dejan de tener una factura propia, todas pasan al management account.
