@@ -95,3 +95,20 @@ Hay una cuenta llamada loging account donde te identificas y desde ella puedes a
 ### Consolidated billing
 
 En una organization, los member accounts dejan de tener una factura propia, todas pasan al management account.
+
+### SCP
+
+Scp = service controll polycies
+
+Sirven para restringir lo que las cuentas de AWS pueden hacer; no es capaz de dar permisos pero indican qué permisos pueden ser otorgados.
+
+Es un archivo json que puede ser asociado al root container, a las organization units o las cuentas AWS individualmente, afecta a todo lo que haya por debajo en la jerarquía.
+
+La management account no se ve afectada por el SCP. Pero sí se aplican al root account.
+
+Pueden utilizarse de dos maneras:
+
+- Allow list: por defecto se bloquean los accesos y hay que activarlos específicamente.
+- Deny list: por defecto se permiten los accesos y se deniegan explícitamente.
+
+El comportamiento por defecto es deny list, SCP tiene por defecto la política FullAWSAccess que no restringe. De eliminar esta política, debe otorgarse permisos automáticamente.
