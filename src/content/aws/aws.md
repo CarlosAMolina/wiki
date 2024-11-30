@@ -10,6 +10,7 @@
   - [Arn](arn.html)
   - [Athena](athena.html)
   - [CFN](cfn.html)
+  - [CloudTrail](cloudtrail.html)
   - [CloudWatch](cloudwatch.html)
   - [EC2](ec2.html)
   - [IAM](iam.html)
