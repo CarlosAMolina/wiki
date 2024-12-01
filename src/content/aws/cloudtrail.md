@@ -33,6 +33,10 @@ Se utiliza para aplicar una configuración. Tipos de funcionamiento:
 
 Para los servicios globales (IAM, STS, CloudFront), es necesario que el Trail esté configurado para guardar logs de todas las regiones. Estos servicios generan Global Service Events y se guardan en la región us-east-1.
 
-Puede configurarse almacenar los logs en un bucket de S3, este almacenamiento en S3 sí se cobra. Además de en S3 puede configurarse que se almacenen en CloudWatch, lo que permite utilizar las facilidades de este servicio.
+Puede configurarse almacenar los logs en un bucket de S3, este almacenamiento en S3 sí puede que coste dinero. Además de en S3 puede configurarse que se almacenen en CloudWatch, lo que permite utilizar las facilidades de este servicio.
 
 Desde el management account de una AWS organization puedes crear un organizational trail, que incluirá todos los eventos de todas las cuentas de la organización.
+
+## Precios
+
+[URL sobre los costes](https://aws.amazon.com/es/cloudtrail/pricing/).
