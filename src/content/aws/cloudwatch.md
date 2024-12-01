@@ -68,3 +68,8 @@ Los log streams almacenan secuencias de logs del mismo origen; por ejemplo disti
 Son contenedores que almacenan distintos log streams; pero logs streams del mismo tipo, ejemplo, logs del sistema oprativo.
 
 También almacenan la configuración de los logs: permisos, retención, filtros de métricas que pueden tener alarmas configuradas, etc.
+
+## Precio
+
+[URL sobre los costes](https://aws.amazon.com/es/cloudwatch/pricing/).
+

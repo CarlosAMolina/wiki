@@ -37,6 +37,6 @@ Puede configurarse almacenar los logs en un bucket de S3, este almacenamiento en
 
 Desde el management account de una AWS organization puedes crear un organizational trail, que incluirá todos los eventos de todas las cuentas de la organización.
 
-## Precios
+## Precio
 
 [URL sobre los costes](https://aws.amazon.com/es/cloudtrail/pricing/).
