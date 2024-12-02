@@ -12,6 +12,7 @@
   - [CFN](cfn.html)
   - [CloudTrail](cloudtrail.html)
   - [CloudWatch](cloudwatch.html)
+  - [Control Tower](control-tower.html)
   - [EC2](ec2.html)
   - [IAM](iam.html)
   - [Route53](route53.html)
