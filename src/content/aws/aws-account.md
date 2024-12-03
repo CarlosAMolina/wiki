@@ -34,7 +34,9 @@ Gracias a IAM pueden crearse:
 
 ### Permisos
 
-El root account tiene control total sobre la cuenta de AWS y sus recursos. No puede restringirse a lo que tiene acceso por lo que por seguridad es mejor utilizar esta cuenta lo menos posible.
+El root account tiene control total sobre la cuenta de AWS y sus recursos.
+
+No puede restringirse a lo que tiene acceso por lo que por seguridad es mejor utilizar esta cuenta lo menos posible. Aunque no puede restringirse, en caso de que forme parte de una AWS Organization, se ve afectada por el SCP (explicado en la sección de AWS Organizations)
 
 El resto de usuarios por defecto tienen denegado el acceso a los recursos, pero se les puede dar acceso.
 
@@ -104,7 +106,7 @@ Sirven para restringir lo que las cuentas de AWS pueden hacer; no es capaz de da
 
 Es un archivo json que puede ser asociado al root container, a las organization units o las cuentas AWS individualmente, afecta a todo lo que haya por debajo en la jerarquía.
 
-La management account no se ve afectada por el SCP. Pero sí se aplican al root account.
+La management account no se ve afectada por el SCP. Pero sí se aplican al root account de la cuenta aws.
 
 Pueden utilizarse de dos maneras:
 

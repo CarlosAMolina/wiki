@@ -52,8 +52,8 @@ Un policy document se aplica a varias entidades.
 
 Hay dos tipos:
 
-- Creadas y gestionadas por AWS.
-- Creadas y gestionadas por nosotros.
+- Creadas y gestionadas por AWS (AWS Managed Policy).
+- Creadas y gestionadas por nosotros (Customer Managed Policy).
 
 ## Funciones
 
@@ -145,6 +145,8 @@ Un rol tiene 2 tipos de políticas:
 
 - Trust policy: controla las identidades que pueden asumir el rol.
 - Permissions policy.
+
+A un rol no se hace login, sino que se asume el rol.
 
 Al asumir un rol, se generan credenciales temporales mediante el servicio STS (Secure Token Service).
 
