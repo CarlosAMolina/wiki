@@ -24,7 +24,21 @@ Los `policy` solo tienen efecto cuando se adjunta a una entidad. Las entidades s
 
 Pueden asignarse políticas a recursos, como por ejemplo a S3 buckets.
 
+No puede aplicarse un resource policy a distintos servicios, por lo que si tienes muchos servicios a los que aplicarles un policy, es mejor utilizar identity policies.
+
 Estas políticas apuntan al ARN de una entidad (un IAM User o un IAM Role) para dar o denegar acceso al recurso. Los IAM Groups no son true identity por lo que no pueden referenciarse como un principal en una política.
+
+Indica quién puede interactuar con el recurso, ya sea identidades dentro de la cuenta o de otra cuenta de AWS o incluso identidades anónimas (no se han autenticado en AWS).
+
+A diferencia de las identity policy, el resource policy tiene la key `principal` para indicar quién puede interactuar.
+
+No todos los servicios permiten el uso de resource policies; en esos casos hay que utilizar identity policies.
+
+### Identity policy
+
+Configura qué puede hacer la entidad.
+
+A diferenciad e los resource policy, solo pueden asociarse a identidades dentro de la misma cuenta de AWS en la que se creó la policy. Por ejemplo, no sirve para dar acceso a S3 a otras cuentas.
 
 ### IAM Policy Document
 
