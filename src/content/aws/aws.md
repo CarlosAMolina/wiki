@@ -15,6 +15,7 @@
   - [Control Tower](control-tower.html)
   - [EC2](ec2.html)
   - [IAM](iam.html)
+  - [KMS](kms.html)
   - [Route53](route53.html)
   - [S3](s3.html)
   - [Step Function](sf.html)
