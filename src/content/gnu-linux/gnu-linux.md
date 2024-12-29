@@ -3,6 +3,7 @@
 ## Contenidos
 
 - [Arch Linux](arch-linux/arch-linux.html)
+- [Comandos](#comandos)
 - [Debian](debian.html)
 - [Directories](directories.html)
 - [Network](network.html)
@@ -12,6 +13,16 @@
 - [gnome-terminal](#gnome-terminal)
 - [Libros](#libros)
 - [Reemplazar texto en archivos](#reemplazar-texto-en-archivos)
+
+## comandos
+
+### dd
+
+Crear un archivo de 10 MiB (datos aleatorios):
+
+```bash
+dd if=/dev/urandom of=test1.file bs=1M count=10
+```
 
 ## gnome-terminal
 
