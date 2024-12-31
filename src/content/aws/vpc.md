@@ -47,3 +47,12 @@ Algunas configuraciones que tiene por defecto:
 - Crear VPC:
   - Default VPC. Seleccionar VPC > your VPCs > Actions > Create defautl VPC.
   - Custom VPC. Seleccionar VPC > your VPCs > botón Create VPC.
+
+## Limitaciones VPC
+
+- Red mínima que puede tener: /18 (16 IPs).
+- Red máxima que puede tener: /16 (65.536 IPs).
+
+## Diseño de una VPC
+
+Hay que tener en cuenta las direcciones IP que ya se utilizan para evitar pisarlas, por ejemplo no debemos evitar utilizar el rango de red empleado por el default VPC.
