@@ -6,8 +6,8 @@ VPC significa Virtual Private Cloud.
 
 Es un servicio para:
 
-- Crear redes privadas en AWS.
-- Conectar servicios de AWS con servicios externos a AWS.
+- Crear redes privadas en AWS. Nada entra o sale de la red a menos que se configure.
+- Conectar servicios de AWS con servicios externos a AWS (ejemplo, con otras nubes o servicios on premise).
 
 Una VPC es una red virtual en AWS y se crea a nivel de cuenta de AWS y de región.
 
@@ -56,3 +56,27 @@ Algunas configuraciones que tiene por defecto:
 ## Diseño de una VPC
 
 Hay que tener en cuenta las direcciones IP que ya se utilizan para evitar pisarlas, por ejemplo no debemos evitar utilizar el rango de red empleado por el default VPC.
+
+## Tenancy
+
+Hay dos opciones de configuración:
+
+- Default: los recursos comparten hardware.
+- Dedicated: no se comparte hardware en ningún recuro de la VPC. Cuesta más dinero.
+
+## IPv4 e IPv6
+
+En una VPC por defecto se usan IPs IPv4 privadas, las públicas se asignan al querer conexión fuera de la VPC.
+
+Se puede utilizar IPv6 pero hay limitaciones en algunos servicios. En IPv6 no hay partes privadas pero aun así hay que configurar explícitamente comunicación con el exterior.
+
+## DNS
+
+Se trabaja con DNS mediante el servicio Route 53.
+
+La IP del DNS es la IP base más dos. Ejemplo, si la base es 10.0.0.0, la IP del DNS es 10.0.0.2.
+
+Opciones DNS en VPC:
+
+- enableDNSHostnames: para que a instancias con IP públicas s3 les asigne DNS hostnames.
+- enableDNSSupport: para habilitar resolución DNS en la VPC.
