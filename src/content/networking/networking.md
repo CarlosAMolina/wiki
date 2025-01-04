@@ -19,6 +19,12 @@ En los firewalls de tipo stateful la configuración es más sencilla al tener qu
 
 El protocolo ARP (Address Resolution Protocol) obtiene la dirección MAC de una dirección IP.
 
+### DHCP
+
+Dynamic Host Configuration Protocol.
+
+Es para asignar automáticamente IPs a los hosts.
+
 ### NAT
 
 El protocolo NAT (Network Address Translation) permite traducir una dirección IP Pública en una Privada.
