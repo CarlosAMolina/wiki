@@ -15,10 +15,6 @@ Una VPC es una red virtual en AWS y se crea a nivel de cuenta de AWS y de regió
 
 Es el rango de IPs que se puede utilizar en la VPC.
 
-## Subred
-
-Por defecto, en un VPC hay tantas subredes como número de AZs en la región que se encuentre, cada subred está en una AZ.
-
 ## Tipos
 
 ### Default VPC
@@ -80,3 +76,27 @@ Opciones DNS en VPC:
 
 - enableDNSHostnames: para que a instancias con IP públicas s3 les asigne DNS hostnames.
 - enableDNSSupport: para habilitar resolución DNS en la VPC.
+
+## Subred
+
+Por defecto, en un VPC hay tantas subredes como número de AZs en la región que se encuentre.
+
+Tienen resilencia AZ.
+
+Una subred de una VPC se crea en una AZ y no puede cambiarse de AZ.
+
+Una subred solo puede estar en una AZ y una AZ puede tener 0 o más subredes.
+
+El rango de IPs asignados debe estar dentro del de la VPC y no puede solaparse con rangos de otras subredes.
+
+Por defecto usan IPv4 y pueden utilizar IPv6, en tal caso la VPC también debe tener IPv6. En la VPC el IPv6 tiene CIDR /56 y las subredes /64 (la VPC tiene espacio para 256 subredes).
+
+Las subredes por defecto pueden comunicarse con otras subredes de la VPC.
+
+Hay 5 IPs reservadas en una subred que no pueden utilizarse:
+
+- Network Address: es la primera IP disponible.
+- La siguiente IP disponible después del Network Address. La utiliza el VPC Router. Es un dispositivo lógico que enruta tráfico entre subredes y dentro y fuera e la VPC de estar configurada para ello.
+- La segunda IP disponible después del Network Address: reservada para DNS. La asignación de estas IPs en una VPC tienen un comportamiento un poco especial ya que se asigna para la VPC y también en cada subred.
+- La tercera IP disponible después del Network Address: reservada para usos futuros.
+- Broadcast Address: última IP de la subred.
