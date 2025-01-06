@@ -100,3 +100,31 @@ Hay 5 IPs reservadas en una subred que no pueden utilizarse:
 - La segunda IP disponible después del Network Address: reservada para DNS. La asignación de estas IPs en una VPC tienen un comportamiento un poco especial ya que se asigna para la VPC y también en cada subred.
 - La tercera IP disponible después del Network Address: reservada para usos futuros.
 - Broadcast Address: última IP de la subred.
+
+## VPC Router
+
+Cada VPC tiene uno.
+
+En cada subred tiene una interfaz que posee la siguiente IP disponible después de la network address.
+
+De no tener otra configuración, por defecto enruta tráfico entre subredes.
+
+Puede configurarse con route tables; por defecto tiene una route table llamada Main route table. Cada subred puede tener una única route table y una route table puede estar asociada a distintas subredes.
+
+En caso de que un paquete matchee distintas rutas en el Route Table, el orden de prioridad a aplicar es primero el target local (tráfico va dentro de la VPC) y luego la ruta más específica (la de mayor CDR); de no matchear ninguna, se aplica el default route.
+
+## Internet Gateway
+
+Se utiliza en una VPC para que el tráfico pueda salir y entrar del VPC al AWS Public Zone (S3, SQS, SNS, etc.) o al Internet Público.
+
+Tiene resilencia regional, esto implica que un solo IGW se aplica a todas las AZ de una región en que se use la VPC.
+
+Una VPC puede tener 0 o 1 IGW y un IGW puede tener 0 o 1 VPC.
+
+Aclaración sobre asignación de IPs. Al asignar una IPv4 pública, por ejemplo a una instancia EC2, el EC2 no recibe directamente esa IP pública, sino que en el IGW se guarda la relación entre la IP privada de la instancia y la IP pública; por eso en el sistema operativo de la instancia solo se ve la IP privada. En el caso de IPv6, se utiliza la misma IP para la parte privada y pública, por lo que el sistema operativo de la instancia conoce la IPv6 y el IGW no tiene que traducir entre IP pública y privada.
+
+## Bastion Host o Jumpbox
+
+Se trata de una instancia en una subred pública que permite acceder a recursos internos de una VPC desde fuera. Útil para VPC muy securizadas, inicialmente era el único modo de configurar instancias privadas.
+
+Puede configurarse para que acepte conexiones filtrado por IP, o autenticación SSH u otra externa.
