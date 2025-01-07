@@ -101,6 +101,8 @@ Hay 5 IPs reservadas en una subred que no pueden utilizarse:
 - La tercera IP disponible después del Network Address: reservada para usos futuros.
 - Broadcast Address: última IP de la subred.
 
+En la consola de AWS, hay que configurar la rubred para habilitar que las IPs sean públicas.
+
 ## VPC Router
 
 Cada VPC tiene uno.
@@ -109,9 +111,15 @@ En cada subred tiene una interfaz que posee la siguiente IP disponible después 
 
 De no tener otra configuración, por defecto enruta tráfico entre subredes.
 
-Puede configurarse con route tables; por defecto tiene una route table llamada Main route table. Cada subred puede tener una única route table y una route table puede estar asociada a distintas subredes.
+### Route tables
+
+El VPC router puede configurarse con route tables; por defecto tiene una route table llamada main route table.
+
+Cada subred puede tener una única route table y una route table puede estar asociada a distintas subredes. De no asociarle una route table a una subred, utiliza por defecto el main route table del VPC.
 
 En caso de que un paquete matchee distintas rutas en el Route Table, el orden de prioridad a aplicar es primero el target local (tráfico va dentro de la VPC) y luego la ruta más específica (la de mayor CDR); de no matchear ninguna, se aplica el default route.
+
+El default route hay que configurarlo en el IGW, no viene por defecto. Para IPv4 es `0.0.0.0/0` y para IPv6 `::/0`, estos rangos matchean todas las direcciones IP.
 
 ## Internet Gateway
 
@@ -119,7 +127,7 @@ Se utiliza en una VPC para que el tráfico pueda salir y entrar del VPC al AWS P
 
 Tiene resilencia regional, esto implica que un solo IGW se aplica a todas las AZ de una región en que se use la VPC.
 
-Una VPC puede tener 0 o 1 IGW y un IGW puede tener 0 o 1 VPC.
+Una VPC puede tener 0 o 1 IGW y un IGW puede tener 0 o 1 VPC. Cuando no está asociado a ningún VPC, el Gateway aparece como `Detached`.
 
 Aclaración sobre asignación de IPs. Al asignar una IPv4 pública, por ejemplo a una instancia EC2, el EC2 no recibe directamente esa IP pública, sino que en el IGW se guarda la relación entre la IP privada de la instancia y la IP pública; por eso en el sistema operativo de la instancia solo se ve la IP privada. En el caso de IPv6, se utiliza la misma IP para la parte privada y pública, por lo que el sistema operativo de la instancia conoce la IPv6 y el IGW no tiene que traducir entre IP pública y privada.
 
