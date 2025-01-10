@@ -136,3 +136,23 @@ Aclaración sobre asignación de IPs. Al asignar una IPv4 pública, por ejemplo 
 Se trata de una instancia en una subred pública que permite acceder a recursos internos de una VPC desde fuera. Útil para VPC muy securizadas, inicialmente era el único modo de configurar instancias privadas.
 
 Puede configurarse para que acepte conexiones filtrado por IP, o autenticación SSH u otra externa.
+
+## NACL
+
+NACL = Network Access Control List
+
+Es como un firewall en un VPC; de tipo stateless (tiene reglas de inbound y outbound).
+
+Se asocian a subredes, no pueden asociarse a otro recurso. No gestionan el tráfico dentro de la subred, solo el que sale o entra.
+
+Cada subred puede tener una NACL, la que viene por defecto en una VPC o una personalizada:
+
+- NACL por defecto: cuando se crea una VPC, se le asocia una NACL por defecto que permite todo el tráfico. Esto lo realiza AWS para facilitar su uso y porque prefiere que se utilicen security groups; a pesar de ello, para denegar tráfico creo que solo pueden hacerlo las NACL, por lo que se combinan con los security groups, estos para permitir tráfico y los NACL para denegarlo.
+- Al crear NACLs personalizadas, se crean para un VPC e inicialmente no están asociadas a subredes. Por defecto tienen todo el tráfico denegado.
+
+Una NACL puede esta asociada a varias subredes.
+
+Se configura con reglas:
+
+- Las reglas permiten o deniegan tráfico a una IP (o rango de IPs), puerto (o rango de puertos) y protocolo.
+- Para determinar qué regla aplicar, se miran las reglas desde la de menor número hacia la de mayor, y se aplica la la primera que matchee. En lugar de un número, la regla puede tener un asterisco, que significa que se aplica de no matchear ninguna regla.
