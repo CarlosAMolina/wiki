@@ -156,3 +156,16 @@ Se configura con reglas:
 
 - Las reglas permiten o deniegan tráfico a una IP (o rango de IPs), puerto (o rango de puertos) y protocolo.
 - Para determinar qué regla aplicar, se miran las reglas desde la de menor número hacia la de mayor, y se aplica la la primera que matchee. En lugar de un número, la regla puede tener un asterisco, que significa que se aplica de no matchear ninguna regla.
+
+## Security Groups (SG)
+
+Es como un firewall, de tipo stateful. Por lo que no hace falta configurar los puertos efímeros; al igual que los NACLs, sí que tiene reglas de inbound y outbound, pero no hay que configurar la respuesta.
+
+Tienen la limitación de no poder denegar tráfico de manera explícita. Lo que hacen es permitir tráfico y, lo que no esté permitido queda denegado de manera implícita. Por eso no sirven para bloquear actores maliciosos, para eso se utilizan las NACLs.
+
+Pueden configurarse indicado IP/CIDR y recursos lógicos de AWS, es decir, otros security groups o el mismo SG:
+
+- Ejemplo a otros SG: si en una VPC tenemos una instancia de APP y otra de Web, imaginemos que la Web tiene acceso público gracias a su SG, pero la APP solo es accedida dentro de la subred por la instancia Web, para permitir que el SG del APP permita conexiones de la instancia Web, podemos configurar el SG con la IP interna de la Web o o un rango de IPs por si cambia; pero si el rango se amplía puede que no quede configurada, la solución es que el SG de la APP apunte en su configuración al SG de la Web. Así, todas las instancias con el SG de la Web asociado, tendrán acceso a las instancias que tengan asociado el SG de la App; este modo de configuración escala muy bien.
+- Ejemplo referencia al mismo SG: para configurar la configuración dentro de la subred; ejemplo, si en una subred hay varias instancias y se les asocia el mismo SG, configurando este SG permite que, cuando aparezcan o remuevan instancias (ejemplo por auto scaling), la configuración es automática.
+
+Los SG solo se asocian a Elastic Network Interfaces (ENI's); no se asocian ni a instancias ni a subredes, aunque la consola de Amazon pueda mostrarlo como si así fuera, en realidad quedan asociadas a network interfaces.
