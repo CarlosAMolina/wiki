@@ -123,7 +123,9 @@ El default route hay que configurarlo en el IGW, no viene por defecto. Para IPv4
 
 ## Internet Gateway
 
-Se utiliza en una VPC para que el tráfico pueda salir y entrar del VPC al AWS Public Zone (S3, SQS, SNS, etc.) o al Internet Público.
+IWG = Internet Gateway
+
+Se utiliza en una VPC para que el tráfico pueda salir y entrar del VPC al AWS Public Zone (S3, SQS, SNS, etc.) o al Internet Público. Los recursos y servicios envían los paquetes al IGW antes de salir fuera de la VPC, por ejemplo el NAT Gateway envía las peticiones al IGW.
 
 Tiene resilencia regional, esto implica que un solo IGW se aplica a todas las AZ de una región en que se use la VPC.
 
@@ -169,3 +171,43 @@ Pueden configurarse indicado IP/CIDR y recursos lógicos de AWS, es decir, otros
 - Ejemplo referencia al mismo SG: para configurar la configuración dentro de la subred; ejemplo, si en una subred hay varias instancias y se les asocia el mismo SG, configurando este SG permite que, cuando aparezcan o remuevan instancias (ejemplo por auto scaling), la configuración es automática.
 
 Los SG solo se asocian a Elastic Network Interfaces (ENI's); no se asocian ni a instancias ni a subredes, aunque la consola de Amazon pueda mostrarlo como si así fuera, en realidad quedan asociadas a network interfaces.
+
+## NAT Gateway
+
+NATGW = NAT Gateway
+
+Con NAT damos a un recurso privado acceso de salida a Internet.
+
+Tienen resilencia AZ. Para tener resilencia regional como el Internet Gateway, hay que desplegar un NATGW en cada AZ.
+
+El NAT Gateway utiliza NAT de tipo estático e IP masquerading.
+
+Para realizar su función, el Nat Gateway guarda en el translation table toda la información necesaria (IPs, puertos, etc).
+
+AWS tiene dos maneras de proporcionar el servicio NAT:
+
+- Históricamente se utilizara un EC2 para esta función.
+- Con el servicio AWS Gateway configurado en una VPC.
+
+Para tener una IP pública, debe estar en una subred pública (que asigne IP públicas). Las subredes privadas en la misma VPC que necesiten NAT pueden apuntar al NATGW de la red pública.
+
+Es un servicio que, de detectar mas tráfico escala automáticamente hasta 45 Gbps.
+
+### NAT Gateway e IGW
+
+El NAT Gateway envía las peticiones al IGW para salir fuera de la VPC. El Nat Gateway modifica las direcciones IP origen privadas, y asigna la suya privada, luego el IGW recibe estos paquetes y los envía a Internet, modificando en los paquetes la IP privada del NAT Gateway por la pública del NAT Gateway.
+
+Si necesitas que una instancia tenga una IP pública usas IGW, si quieres que instancias privadas tengan acceso al AWS public zone e Internet, utilizas NAT Gateway e IGW.
+
+### Elastic IP
+
+Los NAT Gateway usan lo que se conoce como elastic IP.
+
+- Es un tipo especial de IPv4 pública.
+- Es una IP estática, no cambia.
+- Está en una región de la cuenta AWS.
+- Puede asociarse con lo que queramos.
+
+### Coste
+
+Se cobra por hora de uso y por cantidad de tráfico.
