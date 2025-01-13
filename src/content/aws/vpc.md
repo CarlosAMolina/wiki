@@ -123,7 +123,7 @@ El default route hay que configurarlo en el IGW, no viene por defecto. Para IPv4
 
 ## Internet Gateway
 
-IWG = Internet Gateway
+IGW = Internet Gateway
 
 Se utiliza en una VPC para que el tráfico pueda salir y entrar del VPC al AWS Public Zone (S3, SQS, SNS, etc.) o al Internet Público. Los recursos y servicios envían los paquetes al IGW antes de salir fuera de la VPC, por ejemplo el NAT Gateway envía las peticiones al IGW.
 
@@ -132,6 +132,16 @@ Tiene resilencia regional, esto implica que un solo IGW se aplica a todas las AZ
 Una VPC puede tener 0 o 1 IGW y un IGW puede tener 0 o 1 VPC. Cuando no está asociado a ningún VPC, el Gateway aparece como `Detached`.
 
 Aclaración sobre asignación de IPs. Al asignar una IPv4 pública, por ejemplo a una instancia EC2, el EC2 no recibe directamente esa IP pública, sino que en el IGW se guarda la relación entre la IP privada de la instancia y la IP pública; por eso en el sistema operativo de la instancia solo se ve la IP privada. En el caso de IPv6, se utiliza la misma IP para la parte privada y pública, por lo que el sistema operativo de la instancia conoce la IPv6 y el IGW no tiene que traducir entre IP pública y privada.
+
+### IGW e IPv6
+
+De asignar al IGW una IPv6, ya tiene acceso público; no hace falta otras configuraciones como IPv4.
+
+Al configurar la ruta ::/0 de IPv6 se da acceso bidireccional, de la VPC al exterior y viceversa.
+
+### Egess-Only IGW
+
+Es un tipo de gateway que funciona con IPv6 y da acceso solo al exterior de la VPC.
 
 ## Bastion Host o Jumpbox
 
@@ -182,12 +192,20 @@ Tienen resilencia AZ. Para tener resilencia regional como el Internet Gateway, h
 
 El NAT Gateway utiliza NAT de tipo estático e IP masquerading.
 
+No funcionan con IPv6.
+
 Para realizar su función, el Nat Gateway guarda en el translation table toda la información necesaria (IPs, puertos, etc).
 
 AWS tiene dos maneras de proporcionar el servicio NAT:
 
-- Históricamente se utilizara un EC2 para esta función.
+- Históricamente se utilizaba un EC2 para esta función. Para ello, hay que desactivar en el EC2 la opción de Source/Destination checks porque por defecto, una instancia EC2 desecha cualquier paquete que no tenga como origen o destino la IP de la instancia, quitando este check se desactiva esta revisión.
 - Con el servicio AWS Gateway configurado en una VPC.
+
+Entre un EC2 y un NATGW hay estas diferencias:
+
+- NATGW se recupera en caso de error.
+- Al EC2 podemos conectarnos, ejemplo usarlo como bastion host, al NATGW no podemos conectarnos.
+- En ambos podemos usar NACLs pero security groups solo se asocian al EC2; en el caso del NATGW se asocian a los recursos de la red.
 
 Para tener una IP pública, debe estar en una subred pública (que asigne IP públicas). Las subredes privadas en la misma VPC que necesiten NAT pueden apuntar al NATGW de la red pública.
 
