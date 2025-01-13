@@ -29,6 +29,8 @@ Es para asignar automáticamente IPs a los hosts.
 
 El protocolo NAT (Network Address Translation) permite traducir una dirección IP Pública en una Privada. Son unos procesos que modifican la dirección IP origen o destino de los paquetes de red.
 
+En IPv6 no se usa NAT para traducir IP privada a pública.
+
 Hay varios tipos:
 
 - Static NAT: cada dirección IP privada tiene asignada una única dirección pública (fija). Así funciona Internet Gateway (IGW) de AWS, cuando un paquete atraviesa el IGW, se cambia la IP privada por la IP pública y cuando vuelve realiza el proceso inverso.
