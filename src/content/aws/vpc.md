@@ -133,6 +133,10 @@ Una VPC puede tener 0 o 1 IGW y un IGW puede tener 0 o 1 VPC. Cuando no está as
 
 Aclaración sobre asignación de IPs. Al asignar una IPv4 pública, por ejemplo a una instancia EC2, el EC2 no recibe directamente esa IP pública, sino que en el IGW se guarda la relación entre la IP privada de la instancia y la IP pública; por eso en el sistema operativo de la instancia solo se ve la IP privada. En el caso de IPv6, se utiliza la misma IP para la parte privada y pública, por lo que el sistema operativo de la instancia conoce la IPv6 y el IGW no tiene que traducir entre IP pública y privada.
 
+### Route table
+
+Para que un recurso en una subred tenga acceso a Internet, hay que configurar la route table de la subred de modo que apunte al IGW. En caso de utilizar NATGW, ver explicación en su sección `Route table`.
+
 ### IGW e IPv6
 
 De asignar al IGW una IPv6, ya tiene acceso público; no hace falta otras configuraciones como IPv4.
@@ -206,16 +210,24 @@ Entre un EC2 y un NATGW hay estas diferencias:
 - NATGW se recupera en caso de error.
 - Al EC2 podemos conectarnos, ejemplo usarlo como bastion host, al NATGW no podemos conectarnos.
 - En ambos podemos usar NACLs pero security groups solo se asocian al EC2; en el caso del NATGW se asocian a los recursos de la red.
+- El NATGW de detectar mas tráfico escala automáticamente hasta 45 Gbps, el EC2 depende del ancho de banda del tipo de instancia.
 
 Para tener una IP pública, debe estar en una subred pública (que asigne IP públicas). Las subredes privadas en la misma VPC que necesiten NAT pueden apuntar al NATGW de la red pública.
 
-Es un servicio que, de detectar mas tráfico escala automáticamente hasta 45 Gbps.
 
 ### NAT Gateway e IGW
 
 El NAT Gateway envía las peticiones al IGW para salir fuera de la VPC. El Nat Gateway modifica las direcciones IP origen privadas, y asigna la suya privada, luego el IGW recibe estos paquetes y los envía a Internet, modificando en los paquetes la IP privada del NAT Gateway por la pública del NAT Gateway.
 
 Si necesitas que una instancia tenga una IP pública usas IGW, si quieres que instancias privadas tengan acceso al AWS public zone e Internet, utilizas NAT Gateway e IGW.
+
+### Route table
+
+Creamos un route table para la VPC, por ejemplo, creamos un route table para cada AZ.
+
+En cada route table añadimos un default route (0.0.0.0/0) que apunta al NATGW del AZ.
+
+Cada route table debemos asociarlo a cada subred; porque si una subred no se le asigna una route table, por defecto usa el main route table y no utilizará el que hemos configurado.
 
 ### Elastic IP
 
