@@ -15,6 +15,11 @@ Una VPC es una red virtual en AWS y se crea a nivel de cuenta de AWS y de regió
 
 Es el rango de IPs que se puede utilizar en la VPC.
 
+Limitaciones:
+
+- Red mínima que puede tener: /28 (16 IPs).
+- Red máxima que puede tener: /16 (65.536 IPs).
+
 ## Tipos
 
 ### Default VPC
@@ -33,7 +38,7 @@ Algunas configuraciones que tiene por defecto:
 ### Custom VPC
 
 - Puedes crear varias por región.
-- Por defecto están aisladas de otras redes VPC, Internet y la zona de pública de AWS. En la sección de servicios y zonas públicas y privadas se comenta cómo dar y tener acceso a VPCs.
+- Por defecto están aisladas de otras redes VPC, Internet y la zona pública de AWS. En la sección de servicios y zonas públicas y privadas se comenta cómo dar y tener acceso a VPCs.
 
 ## Consola de AWS
 
@@ -43,11 +48,6 @@ Algunas configuraciones que tiene por defecto:
 - Crear VPC:
   - Default VPC. Seleccionar VPC > your VPCs > Actions > Create defautl VPC.
   - Custom VPC. Seleccionar VPC > your VPCs > botón Create VPC.
-
-## Limitaciones VPC
-
-- Red mínima que puede tener: /18 (16 IPs).
-- Red máxima que puede tener: /16 (65.536 IPs).
 
 ## Diseño de una VPC
 
