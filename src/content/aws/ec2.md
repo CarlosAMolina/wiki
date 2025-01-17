@@ -4,7 +4,17 @@
 
 EC2 = Elastic Compute Cloud.
 
-Son máquinas virtuales, se les llama instancias.
+Son máquinas virtuales; es decir, un sistema operativo (OS) y recursos (cpu, ram, network, etc.).
+
+Se les llama instancias.
+
+## Cuándo usar Ec2
+
+Si la aplicación requiere un OS.
+
+Cuando la aplicación es monolítica.
+
+En procesos de larga duración.
 
 ## Características
 
@@ -12,12 +22,43 @@ Por defecto no usan redes de AWS públicas.
 
 Tipo de resilencia: AZ.
 
+## EC2 Hosts
+
+Los EC2 funcionan en EC2 Hosts, que son servidores físicos gestionados por AWS.
+
+Tipos:
+
+- Shared hosts:
+  - Son compartidos por diferentes usuarios de AWS. Las instancias de cada usuario son independientes de las de otros usuarios.
+  - Pagas por la instancia que corre en el host.
+  - Como los recursos se comparten, lo habitual es que instancias del mismo tipo se creen en el mismo host e instancias diferentes en distintos hosts.
+- Dedicated host: pagas por un host individual entero, no lo compartes con más usuarios.
+
+Al reiniciar una instancia EC2, continúa en el mismo EC2 Host. Cambia de Host si:
+
+- El host se cae o hay mantenimiento por parte de AWS.
+- La instancia se para y vuelve a iniciarse (parar es diferente a reiniciar).
+
+De cambiar a otro host por alguno de los motivos anteriores, estará en la misma AZ.
+
 ## Almacenamiento
 
 Ejemplo de algunos tipos de almacenamiento disponible:
 
-- Local on-host storage: se utiliza el propio almacenamiento de la instancia.
-- EBS (Elastic Block Store): es almacenamiento que se accede por la red.
+- Local on-host storage o instance storage: se utiliza el propio almacenamiento de la instancia. Si una instancia EC2 cambia de EC2 host, se pierde.
+- EBS (Elastic Block Store): es almacenamiento que se accede por la red. Dentro de la misma AZ, no se puede acceder al de otra AZ.
+- Volúmenes: son partes de un almacenamiento persistente. Pueden usarse en EC2 de la misma AZ.
+
+## Networking
+
+Tipos:
+
+- Storage networking.
+- Data networking.
+
+Cuando las instancias se provisionan en una subred, un `elastic netowrk interface` se crea en la subred y la usa el EC2 Host.
+
+Las instancias EC2 pueden tener varias network interfaces y en distintas subredes, dentro de la misma AZ.
 
 ## Estados
 
