@@ -122,3 +122,25 @@ En la consola de AWS debemos eliminar:
 
 - La instancia EC2: elegir la opción terminate.
 - El security group asociado a esa instancia. Está en el apartado Network & security > Security Groups.
+
+## Tipos de instancias EC2
+
+Elegir un tipo de instancia depende de las necesidades respecto recursos (cpu, memoria, etc.), ancho de banda necesaria en la red, arquitectura (x86), vendor (amd, intel), etc.
+
+Categorías:
+
+- General purpose: es la elección por defecto, elegimos otro tipo de necesitar características específicas.
+- Compute optimized: ofrecen más cpu que memoria, se usa por ejemplo en procesamiento multimedia, gaming, machine learning, etc.
+- Memory optimized: parar procesos que necesitan mucha memoria.
+- Accelerated computing: al necesitar características específicas de hardware, por ejemplo uso de GPU.
+- Storage optimized: ofrecen gran cantidad de storage y muy rápida, permite un gran número de operaciones I/O. Uso por ejemplo en datawarehousing, analytics workloads, etc.
+
+Significado de las partes del tipo de instancia. Ejemplo R5dn.8xlarge:
+
+- La primera letra es la familia de la instancia. En el ejemplo, tiene el valor `R`.
+- La segunda es la generación. A cada generación las instancias son más eficientes y de menor coste. Valor `5` en el ejemplo.
+- Después de la generación y hasta el punto puede que haya o no valor, muestra características adicionales. En el ejemplo es `dn`. Ejemplo:
+  - d: storage.
+  - e: extra capacity de ram o almacenamiento.
+  - n: network.
+- Tras el punto tenemos el tamaño de la instancia, indica la cantidad de cpu y memoria; cada familia y generación tiene diferentes tamaños disponibles, ejemplo: nano, micro, small, medium, large, xlarge (extra large), 2xlarge, 4xlarge 8xlarge, etc.
