@@ -125,6 +125,10 @@ En la consola de AWS debemos eliminar:
 
 ## Tipos de instancias EC2
 
+Links:
+- [Página oficial](https://aws.amazon.com/es/ec2/instance-types/).
+- [Página no oficial](https://instances.vantage.sh/).
+
 Elegir un tipo de instancia depende de las necesidades respecto recursos (cpu, memoria, etc.), ancho de banda necesaria en la red, arquitectura (x86), vendor (amd, intel), etc.
 
 Categorías:
@@ -137,7 +141,13 @@ Categorías:
 
 Significado de las partes del tipo de instancia. Ejemplo R5dn.8xlarge:
 
-- La primera letra es la familia de la instancia. En el ejemplo, tiene el valor `R`.
+- La primera letra es la familia de la instancia. En el ejemplo, tiene el valor `R`. Ejemplo de algunos valores:
+  - C: compute optimized.
+  - A: memory (ram) optimized.
+  - I: I/O.
+  - D: dense storage.
+  - G: gpu.
+  - P: parallel processing.
 - La segunda es la generación. A cada generación las instancias son más eficientes y de menor coste. Valor `5` en el ejemplo.
 - Después de la generación y hasta el punto puede que haya o no valor, muestra características adicionales. En el ejemplo es `dn`. Ejemplo:
   - d: storage.
