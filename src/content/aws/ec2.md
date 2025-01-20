@@ -154,3 +154,9 @@ Significado de las partes del tipo de instancia. Ejemplo R5dn.8xlarge:
   - e: extra capacity de ram o almacenamiento.
   - n: network.
 - Tras el punto tenemos el tamaño de la instancia, indica la cantidad de cpu y memoria; cada familia y generación tiene diferentes tamaños disponibles, ejemplo: nano, micro, small, medium, large, xlarge (extra large), 2xlarge, 4xlarge 8xlarge, etc.
+
+## Conectarnos a una instancia EC2
+
+Podemos conectarnos desde nuestro ordenador utilizando las claves SSH (creadas en la consola de AWS en EC2 > Key pairs > Create key pair) o desde la consola de AWS con la opción `EC2 Instance Connect`.
+
+De filtrar las direcciones IP que pueden conectarse, hay que tener en cuenta que, para permitir la conexión desde la consola de AWS, hay que habilitar la IP descrita como `EC2_INSTANCE_CONNECT` para la región deseada en [este enlace](https://ip-ranges.amazonaws.com/ip-ranges.json).
