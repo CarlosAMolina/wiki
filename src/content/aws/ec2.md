@@ -43,11 +43,31 @@ De cambiar a otro host por alguno de los motivos anteriores, estará en la misma
 
 ## Almacenamiento
 
-Ejemplo de algunos tipos de almacenamiento disponible:
+### Términos
 
-- Local on-host storage o instance storage: se utiliza el propio almacenamiento de la instancia. Si una instancia EC2 cambia de EC2 host, se pierde.
-- EBS (Elastic Block Store): es almacenamiento que se accede por la red. Dentro de la misma AZ, no se puede acceder al de otra AZ.
+- Local on-host storage o instance storage: es un almacenamiento conectado de manera directa, está conectado físicamente al Host EC2. Se utiliza el propio almacenamiento de la instancia. Se pierde si una instancia EC2 cambia de EC2 host, o en caso de error en el dispositivo de almacenamiento.
+- Almacenamiento conectado por red: un volumen de almacenamiento se asocia a la instancia mediante el producto EBS (Elastic Block Store). Al ser independiente del EC2 Host, no se ve afectado por problemas de hardware en este. Dentro de la misma AZ, no se puede acceder al de otra AZ.
+- Almacenamiento efímero: es almacenamiento temporal. Ejemplo, el conectado de manera directa.
+- Almacenamiento persistente: es un almacenamiento permanente que dura más que el tiempo de vida de la instancia. Ejemplo, el almacenamiento conectado por red.
 - Volúmenes: son partes de un almacenamiento persistente. Pueden usarse en EC2 de la misma AZ.
+
+### Categorías
+
+Indican cómo el almacenamiento se presenta y cómo puede utilizarse.
+
+- Block storage: el volumen se presenta al sistema operativo como un conjunto de bloques sin estructura; el OS es el encargado de crear un file system sobre el block storage y montarlo. Suele usarse en las instancias EC2 como boot volume o cuando queremos un alto performance.
+- File storage: presenta una estructura (un file system) a la que solicitar un archivo, puede montarse pero no utilizarse como boot volume. Suele emplearse para compartir un file sytem entre servidores.
+- Object storage: no tiene estructura, es una colección de objetos y sus metadatos; puede ser cualquier cosa como binarios, imágenes, etc. No tiene estructura, es como un contenedor de objetos como S3. Es muy escalable (pueden utilizarlo muchas instancias y almacenar gran cantidad de objetos) pero no puede montarse ni usarse como boot volume.
+
+### Performance
+
+Se define con tres términos:
+
+- IO o block size: tamaño del bloque de datos que se escribe en el disco.
+- IOPs (input/output operations per second): número de lecturas o escrituras por segundo.
+- Throughput: cantidad de datos que pueden transmitirse por segundo. Se muestra en MB per second. Se calcula multiplicando IO x IOPs.
+
+Estos valores no pueden incrementarse como queramos, hay limitaciones o incluso a veces al aumentar el IO disminuyen los IOPs.
 
 ## Networking
 
