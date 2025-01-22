@@ -46,16 +46,38 @@ De cambiar a otro host por alguno de los motivos anteriores, estará en la misma
 ### Términos
 
 - Local on-host storage o instance storage: es un almacenamiento conectado de manera directa, está conectado físicamente al Host EC2. Se utiliza el propio almacenamiento de la instancia. Se pierde si una instancia EC2 cambia de EC2 host, o en caso de error en el dispositivo de almacenamiento.
-- Almacenamiento conectado por red: un volumen de almacenamiento se asocia a la instancia mediante el producto EBS (Elastic Block Store). Al ser independiente del EC2 Host, no se ve afectado por problemas de hardware en este. Dentro de la misma AZ, no se puede acceder al de otra AZ.
+- Almacenamiento conectado por red: un volumen de almacenamiento se asocia a la instancia mediante el producto EBS.
 - Almacenamiento efímero: es almacenamiento temporal. Ejemplo, el conectado de manera directa.
 - Almacenamiento persistente: es un almacenamiento permanente que dura más que el tiempo de vida de la instancia. Ejemplo, el almacenamiento conectado por red.
 - Volúmenes: son partes de un almacenamiento persistente. Pueden usarse en EC2 de la misma AZ.
+
+#### EBS
+
+EBS = Elastic Block Store
+
+Está dentro de la categoría block storage.
+
+El almacenamiento que ofrece se llama volúmenes. Estos volúmenes pueden tener distintas características de tamaño, performance, etc.
+
+Puede cifrarse con KMS.
+
+Tiene resilencia AZ y no puede utilizarse en otras AZ. La información de un volumen se replica en distintos dispositivos físicos dentro de la misma AZ.
+
+Al ser independiente del servicio al que se conecta, por ejemplo del EC2 Host, no se ve afectado por problemas de hardware en este.
+
+Un servicio puede tener asociados varios EBS. También, puede asociarse el mismo EBS a más de un servicio, pero es mejor no hacerlo para evitar problemas por múltiples escrituras simultáneas.
+
+Puede estar attach a un servicio, dejar de estarlo y asociarlo con otro servicio. El almacenamiento es persistente y no se ve afectado por estos cambios; los datos se mantienen hasta que los borramos.
+
+Puede guardarse un snapshot (backup) en S3, como S3 tiene resilencia regional, se copia en otras AZ y es una manera de poder migrar el EBS a otra AZ.
+
+Se cobra por GB usado en un mes, también puede haber cobros por rendimiento.
 
 ### Categorías
 
 Indican cómo el almacenamiento se presenta y cómo puede utilizarse.
 
-- Block storage: el volumen se presenta al sistema operativo como un conjunto de bloques sin estructura; el OS es el encargado de crear un file system sobre el block storage y montarlo. Suele usarse en las instancias EC2 como boot volume o cuando queremos un alto performance.
+- Block storage: el volumen se presenta al sistema operativo como un conjunto de bloques sin estructura, la información se solicita apuntando al ID del bloque; el OS es el encargado de crear un file system sobre el block storage y montarlo. Suele usarse en las instancias EC2 como boot volume o cuando queremos un alto performance.
 - File storage: presenta una estructura (un file system) a la que solicitar un archivo, puede montarse pero no utilizarse como boot volume. Suele emplearse para compartir un file sytem entre servidores.
 - Object storage: no tiene estructura, es una colección de objetos y sus metadatos; puede ser cualquier cosa como binarios, imágenes, etc. No tiene estructura, es como un contenedor de objetos como S3. Es muy escalable (pueden utilizarlo muchas instancias y almacenar gran cantidad de objetos) pero no puede montarse ni usarse como boot volume.
 
