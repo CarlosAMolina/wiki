@@ -73,6 +73,28 @@ Puede guardarse un snapshot (backup) en S3, como S3 tiene resilencia regional, s
 
 Se cobra por GB usado en un mes, también puede haber cobros por rendimiento.
 
+##### Tipos de volúmenes EBS
+
+##### General Purpose SSD
+
+###### GP2
+
+Los volúmenes van de 1GB a 16TB.
+
+Utilizado para boot volumes, interacciones de baja latencia o dev & test.
+
+Utiliza un sistema de créditos según su uso. Escala según su uso.
+
+###### GP3
+
+Los volúmenes van de 1GB a 16TB.
+
+Más barato que GP2 y también ofrece mayor throughput.
+
+Mismos usos que GP2.
+
+A diferencia de GP2, no utiliza un sistema de créditos por uso ni escala según uso.
+
 ### Categorías
 
 Indican cómo el almacenamiento se presenta y cómo puede utilizarse.
