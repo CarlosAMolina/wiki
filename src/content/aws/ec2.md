@@ -95,6 +95,20 @@ Mismos usos que GP2.
 
 A diferencia de GP2, no utiliza un sistema de créditos por uso ni escala según uso.
 
+##### Provisioned IOPS SSD
+
+Hay 3 tipos: io1, io2, io2 Block Express, se diferencian en el performance (io1 e io2 Block Express tienen el mismo e io2 menos) y el precio.
+
+En comparación con GP, io1 e io2 Block Express tienen más performance, io2 menos.
+
+Utilizados al necesitar alto performance y baja latencia o continua. Ejemplo, uso en base de datos.
+
+Son configurables independiente del tamaño del volumen. Esto por ejemplo permite alto performance en volúmenes pequeños, lo cual no puede conseguirse con el resto de volúmenes.
+
+En estos volúmenes se paga por el tamaño y la cantidad de IOPS.
+
+Hay un máximo de performance por instancia, para evitar esto hay que usar varios volúmenes en la misma instancia.
+
 ### Categorías
 
 Indican cómo el almacenamiento se presenta y cómo puede utilizarse.
