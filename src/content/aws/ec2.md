@@ -109,6 +109,19 @@ En estos volúmenes se paga por el tamaño y la cantidad de IOPS.
 
 Hay un máximo de performance por instancia, para evitar esto hay que usar varios volúmenes en la misma instancia.
 
+##### HDD-based
+
+HDD = Hard Disk Drive.
+
+Debido a su funcionamiento (brazo robótico lee un disco) tiene una menor velocidad.
+
+Tipos:
+
+- st1: más barato que los SSD. Utilizado para accesos frecuentes e intenso throughtput. Ejemplo: big data, data warehosues y log processing.
+- sc1: la opción HDD más económica. Para accesos infrecuentes, ejemplo pocas lecturas por día.
+
+El almacenamiento de st1 y sc1 va de 125GB a 16TB.
+
 ### Categorías
 
 Indican cómo el almacenamiento se presenta y cómo puede utilizarse.
