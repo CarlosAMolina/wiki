@@ -143,6 +143,24 @@ Tipos:
 
 El almacenamiento de st1 y sc1 va de 125GB a 16TB.
 
+##### Instance Store Volumes
+
+Son block sotrage devices.
+
+Están conectados físicamente al EC2 Host, solo conectados a uno y asilados del resto. Una instancia EC2 puede usar varios volúmenes de este tipo.
+
+Ofrece el mayor performance; da más IOPS y throughput.
+
+Está incluido en el coste de la instancia. Puedes utilizarlo o no.
+
+Se conectan a las instancias durante el arranque, después no se puede.
+
+El almacenamiento es temporal y son instance storage (ver en otro apartado lo que esto implica).
+
+El acceso a los datos se pierde al cambiar de EC2 Host; es decir, tras iniciar una instancia o cambiar su tamaño o tipo, o cuando falla el volumen.
+
+Algunas instancias no pueden usar este tipo de volúmenes y diferentes tipos de instancias tienen distintos tipos de estos volúmenes.
+
 ## Networking
 
 Tipos:
