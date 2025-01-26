@@ -38,6 +38,7 @@ Al reiniciar una instancia EC2, continúa en el mismo EC2 Host. Cambia de Host s
 
 - El host se cae o hay mantenimiento por parte de AWS.
 - La instancia se para y vuelve a iniciarse (parar es diferente a reiniciar).
+- Cambiar el tipo de instancia.
 
 De cambiar a otro host por alguno de los motivos anteriores, estará en la misma AZ.
 
@@ -50,6 +51,26 @@ De cambiar a otro host por alguno de los motivos anteriores, estará en la misma
 - Almacenamiento efímero: es almacenamiento temporal. Ejemplo, el conectado de manera directa.
 - Almacenamiento persistente: es un almacenamiento permanente que dura más que el tiempo de vida de la instancia. Ejemplo, el almacenamiento conectado por red.
 - Volúmenes: son partes de un almacenamiento persistente. Pueden usarse en EC2 de la misma AZ.
+
+### Categorías
+
+Indican cómo el almacenamiento se presenta y cómo puede utilizarse.
+
+- Block storage: el volumen se presenta al sistema operativo como un conjunto de bloques sin estructura, la información se solicita apuntando al ID del bloque; el OS es el encargado de crear un file system sobre el block storage y montarlo. Suele usarse en las instancias EC2 como boot volume o cuando queremos un alto performance.
+- File storage: presenta una estructura (un file system) a la que solicitar un archivo, puede montarse pero no utilizarse como boot volume. Suele emplearse para compartir un file sytem entre servidores.
+- Object storage: no tiene estructura, es una colección de objetos y sus metadatos; puede ser cualquier cosa como binarios, imágenes, etc. No tiene estructura, es como un contenedor de objetos como S3. Es muy escalable (pueden utilizarlo muchas instancias y almacenar gran cantidad de objetos) pero no puede montarse ni usarse como boot volume.
+
+### Performance
+
+Se define con tres términos:
+
+- IO o block size: tamaño del bloque de datos que se escribe en el disco.
+- IOPs (input/output operations per second): número de lecturas o escrituras por segundo.
+- Throughput: cantidad de datos que pueden transmitirse por segundo. Se muestra en MB per second. Se calcula multiplicando IO x IOPs.
+
+Estos valores no pueden incrementarse como queramos, hay limitaciones o incluso a veces al aumentar el IO disminuyen los IOPs.
+
+### Tipos de almacenamiento
 
 #### EBS
 
@@ -121,24 +142,6 @@ Tipos:
 - sc1: la opción HDD más económica. Para accesos infrecuentes, ejemplo pocas lecturas por día.
 
 El almacenamiento de st1 y sc1 va de 125GB a 16TB.
-
-### Categorías
-
-Indican cómo el almacenamiento se presenta y cómo puede utilizarse.
-
-- Block storage: el volumen se presenta al sistema operativo como un conjunto de bloques sin estructura, la información se solicita apuntando al ID del bloque; el OS es el encargado de crear un file system sobre el block storage y montarlo. Suele usarse en las instancias EC2 como boot volume o cuando queremos un alto performance.
-- File storage: presenta una estructura (un file system) a la que solicitar un archivo, puede montarse pero no utilizarse como boot volume. Suele emplearse para compartir un file sytem entre servidores.
-- Object storage: no tiene estructura, es una colección de objetos y sus metadatos; puede ser cualquier cosa como binarios, imágenes, etc. No tiene estructura, es como un contenedor de objetos como S3. Es muy escalable (pueden utilizarlo muchas instancias y almacenar gran cantidad de objetos) pero no puede montarse ni usarse como boot volume.
-
-### Performance
-
-Se define con tres términos:
-
-- IO o block size: tamaño del bloque de datos que se escribe en el disco.
-- IOPs (input/output operations per second): número de lecturas o escrituras por segundo.
-- Throughput: cantidad de datos que pueden transmitirse por segundo. Se muestra en MB per second. Se calcula multiplicando IO x IOPs.
-
-Estos valores no pueden incrementarse como queramos, hay limitaciones o incluso a veces al aumentar el IO disminuyen los IOPs.
 
 ## Networking
 
