@@ -90,9 +90,27 @@ Un servicio puede tener asociados varios EBS. También, puede asociarse el mismo
 
 Puede estar attach a un servicio, dejar de estarlo y asociarlo con otro servicio. El almacenamiento es persistente y no se ve afectado por estos cambios; los datos se mantienen hasta que los borramos.
 
-Puede guardarse un snapshot (backup) en S3, como S3 tiene resilencia regional, se copia en otras AZ y es una manera de poder migrar el EBS a otra AZ.
+Puede guardarse un snapshot (backup) en S3 (ver sección sobre ello).
 
 Se cobra por GB usado en un mes, también puede haber cobros por rendimiento.
+
+##### EBS Snapshots
+
+Son backups que se guardan en S3.
+
+Como S3 tiene resilencia regional, se copia en el resto de AZ y es una manera de poder migrar el EBS a otra AZ. También permite realizar migración entre regiones llevando el snapshot a otra región.
+
+En S3 se realiza una copia incremental, lo que significa que la primera copia es de todo el volumen, pero las siguientes solo de los cambios. En AWS, aunque se borre una copia intermedia, los siguientes backups siguen sirviendo para recuperar los datos (hay sistemas incrementales que no lo permiten).
+
+El snapshot no tiene tamaño igual al del volumen, sino el tamaño de los datos almacenados en el volumen.
+
+Sobre el performance:
+
+- Al crear un volumen desde un snapshot, el performance del volumen es máximo.
+- Si restauramos un volumen de un snapshot, hasta que no se restaure de manera completa las peticiones no tendrán un performance óptimo.
+- Para obtener un performance máximo podemos leer todo el volumen, de manera manual con comandos como `dd` de Linux o activando la opción FSR (Fast Snapshot Restore). FSR realiza la restauración de manera inmediata, hay que indicar las AZ además de la región donde activarlo, puede haber 5 por región (cada combinación de 1 región y 1 AZ cuenta como 1 de estas 50 máximas); tiene coste.
+
+El coste se calcula con los gigas almacenados por mes (10GB durante un mes cuesta igual que 20GB en medio mes). Al ser incremental solo se cobran por los datos que han cambiado; si por ejemplo el 1º snapshot es de 10GB y el 2º de 4GB porque se han añadido nuevos, el cobro del segundo es solo por los nuevos 4GB.
 
 ##### Tipos de volúmenes EBS
 
