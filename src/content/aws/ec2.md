@@ -37,20 +37,22 @@ Tipos:
 Al reiniciar una instancia EC2, continúa en el mismo EC2 Host. Cambia de Host si:
 
 - El host se cae o hay mantenimiento por parte de AWS.
-- La instancia se para y vuelve a iniciarse (parar es diferente a reiniciar).
+- La instancia se para y vuelve a iniciarse (parar, `stop instance`, es diferente a reiniciar, `reboot`).
 - Cambiar el tipo de instancia.
 
 De cambiar a otro host por alguno de los motivos anteriores, estará en la misma AZ.
+
+Una manera de saber que una instancia EC2 cambia de EC2 Host es viendo si su dirección IP pública ha cambiado.
 
 ## Almacenamiento
 
 ### Términos
 
-- Local on-host storage o instance storage: es un almacenamiento conectado de manera directa, está conectado físicamente al Host EC2. Se utiliza el propio almacenamiento de la instancia. Se pierde si una instancia EC2 cambia de EC2 host, o en caso de error en el dispositivo de almacenamiento.
+- Local on-host storage o instance storage: es un almacenamiento conectado de manera directa, conectado físicamente, al Host EC2. Se utiliza el propio almacenamiento de la instancia. Se pierde si una instancia EC2 cambia de EC2 host, o en caso de error en el dispositivo de almacenamiento.
 - Almacenamiento conectado por red: un volumen de almacenamiento se asocia a la instancia mediante el producto EBS.
 - Almacenamiento efímero: es almacenamiento temporal. Ejemplo, el conectado de manera directa.
 - Almacenamiento persistente: es un almacenamiento permanente que dura más que el tiempo de vida de la instancia. Ejemplo, el almacenamiento conectado por red.
-- Volúmenes: son partes de un almacenamiento persistente. Pueden usarse en EC2 de la misma AZ.
+- Volúmenes: son partes de un almacenamiento persistente. Pueden usarse en EC2 de la misma AZ. Como veremos, también hay un tipo llamado instance storage volume.
 
 ### Categorías
 
@@ -156,14 +158,14 @@ Debido a su funcionamiento (brazo robótico lee un disco) tiene una menor veloci
 
 Tipos:
 
-- st1: más barato que los SSD. Utilizado para accesos frecuentes e intenso throughtput. Ejemplo: big data, data warehosues y log processing.
-- sc1: la opción HDD más económica. Para accesos infrecuentes, ejemplo pocas lecturas por día.
+- st1 (Throughput Optimized HDD): más barato que los SSD. Utilizado para accesos frecuentes e intenso throughtput. Ejemplo: big data, data warehosues y log processing.
+- sc1 (Cold HDD): la opción HDD más económica. Para accesos infrecuentes, ejemplo pocas lecturas por día.
 
 El almacenamiento de st1 y sc1 va de 125GB a 16TB.
 
 ##### Instance Store Volumes
 
-Son block sotrage devices.
+Son block storage devices.
 
 Están conectados físicamente al EC2 Host, solo conectados a uno y asilados del resto. Una instancia EC2 puede usar varios volúmenes de este tipo.
 
@@ -171,11 +173,11 @@ Ofrece el mayor performance; da más IOPS y throughput.
 
 Está incluido en el coste de la instancia. Puedes utilizarlo o no.
 
-Se conectan a las instancias durante el arranque, después no se puede.
+Se conectan a las instancias durante el arranque, después no se puede. Lo que sí hacemos una vez arrancada la instancia es montar el volumen; por defecto no se montan automáticamente.
 
 El almacenamiento es temporal y son instance storage (ver en otro apartado lo que esto implica).
 
-El acceso a los datos se pierde al cambiar de EC2 Host; es decir, tras iniciar una instancia o cambiar su tamaño o tipo, o cuando falla el volumen.
+El acceso a los datos se pierde al cambiar de EC2 Host; es decir, tras parar e iniciar una instancia o cambiar su tamaño o tipo, o cuando falla el volumen. También el file system se pierde ya que al cambiar de EC2 Host se usa otro volumen. Esto no ocurre de reiniciar la instancia.
 
 Algunas instancias no pueden usar este tipo de volúmenes y diferentes tipos de instancias tienen distintos tipos de estos volúmenes.
 
