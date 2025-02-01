@@ -80,6 +80,8 @@ EBS = Elastic Block Store
 
 Está dentro de la categoría block storage.
 
+Es almacenamiento que se accede por la red.
+
 El almacenamiento que ofrece se llama volúmenes. Estos volúmenes pueden tener distintas características de tamaño, performance, etc.
 
 Puede cifrarse con KMS.
@@ -113,6 +115,24 @@ Sobre el performance:
 - Para obtener un performance máximo podemos leer todo el volumen, de manera manual con comandos como `dd` de Linux o activando la opción FSR (Fast Snapshot Restore). FSR realiza la restauración de manera inmediata, hay que indicar las AZ además de la región donde activarlo, puede haber 5 por región (cada combinación de 1 región y 1 AZ cuenta como 1 de estas 50 máximas); tiene coste.
 
 El coste se calcula con los gigas almacenados por mes (10GB durante un mes cuesta igual que 20GB en medio mes). Al ser incremental solo se cobran por los datos que han cambiado; si por ejemplo el 1º snapshot es de 10GB y el 2º de 4GB porque se han añadido nuevos, el cobro del segundo es solo por los nuevos 4GB.
+
+##### Cifrado en EBS
+
+Por defecto los datos en EBS no están cifrados.
+
+KMS y DEK:
+
+- Se utiliza KMS para generar el DEK y con el DEK se cifran los datos.
+- El DEK se almacena en el volumen y queda cargado en la memoria del EC2 Host. Cuando la instancia cambia de EC2 Host, se pierde la key, debe volver a obtenrla del volumen.
+- El DEK es única por cada volumen, pero si se genera un snapshot y a partir de este otros volúmenes, el snapshot y los volúmenes futuros sí que tienen el mismo DEK que el volumen original.
+
+Una vez activado el cifrado de un volumen, no puede desactivarse, los snapshots y otros volúmenes creados a partir de él también están cifrados.
+
+Los datos están cifrados en el volumen, en el sistema operativo de la instancia no. El cifrado se realiza entre el EC2 host y el volumen.
+
+Puede configurarse una cuenta AWS para que cifre por defecto, utilizando siempre el mismo key KMS o uno distinto cada vez.
+
+No supone coste económico extra. Conviene activarlo.
 
 ##### Tipos de volúmenes EBS
 
