@@ -208,9 +208,28 @@ Tipos:
 - Storage networking.
 - Data networking.
 
-Cuando las instancias se provisionan en una subred, un `elastic netowrk interface` se crea en la subred y la usa el EC2 Host.
+### ENI
+
+ENI = Elastic Network Interface.
+
+Cuando las instancias se provisionan en una subred, un ENI se crea en la subred y la usa el EC2 Host.
 
 Las instancias EC2 pueden tener varias network interfaces y en distintas subredes, dentro de la misma AZ.
+
+Además de la ENI principal, los EC2 pueden tener secundarias; las secundarias pueden desasociarse de la instancia e ir a otra. Es una manera de dar de alta una licencia y llevarla a otra instancia.
+
+Las ENI tienen atributos como los Security Groups (SG) que desde la consola de AWS parecen estar asociados a la instancia EC2 pero en realidad lo están al ENI. Por lo que puede que no se vea desde el sistema operativo de la instancia; por ejemplo, el OS no ve la IPv4 pública asociada.
+
+Atributos:
+
+- Dirección MAC.
+- Primary private IPv4. Es estática, no cambia durante el tiempo de vida de la instancia EC2. Se asocia un nombre DNS que solo puede resolverse dentro de la VPC.
+- 0 o más secondary IPv4 privadas.
+- 0 o 1 IPv4 públicas. Es dinámica, cambia cuando se cambia de EC2 Host o se para e inicia la instancia (no cuando se reinicia). Se le asocia un nombre DNS público; dentro de la VPC, este nombre DNS resuelve a la dirección IPv4 primaria y fuera de la VPC a la IPv4 pública. La dirección IPv4 pública no está asociada ni a la instancia EC2 ni a la ENI, sino al Interface Gateway, que tiene los registros para hacer la relación; así distintas instancias de la VPC pueden usar el mismo nombre DNS.
+- 1 elastic IP por cada IPv4 privada. De usarla, sustituye a la IPv4 pública; de quitar la elastic IP, se asignaría una IPv4 pública distinta a la que tenía antes.
+- 0 o más IPv6.
+- Security groups. Aplican a todas las direcciones de la interfaz; por lo que si queremos distintos SG, hace falta distintas interfaces.
+- Source/Destination check: el tráfico se descarta si no viene o va a una IP de la interfaz. Es necesario desactivarlo para que la instancia EC2 funcione como una instancia NAT.
 
 ## Estados
 
