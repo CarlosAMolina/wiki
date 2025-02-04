@@ -261,19 +261,26 @@ Según el estado, puede que haya cobro o no:
 
 AMI = Amazon Machine Image.
 
-Es una imagen de una instancia EC2.
+Es una plantilla de la configuración de una instancia EC2.
 
-La AMI Puede crearse desde una instancia EC2 y una instancia EC2 puede crearse a partir de una AMI.
+Ciclo de vida:
+
+- Launch: lanzar una instancia dese una AMI.
+- Configuration: se aplican configuraciones a la instancia.
+- Crear AMI. A partir de una instancia que hemos configurado. Cuando creamos una AMI, entre otras cosas se crea:
+  - Un snapshot de los volúmenes asociados.
+  - Un `Block Device Mapping`: es un archivo que asocia cada volumen con el device que lo utiliza; es la configuración que indica a la máquina EC2 qué volumen es el root, cual del almacenamiento, etc.
+- Launch: lanzar una instancia con lo creado anteriormente. También se crean nuevos volúmenes a partir de los snapshots.
+
+Son regionales; en cada región hay distintas AMIS de lo mismo; en cada región tienen un ID único. Las AMIS pueden desplegarse en la AZ que queramos de la región; también pueden copiarse entre regiones (las AMIS y los snapshots de los volúmenes).
 
 Posee permisos que indican qué cuentas de AWS pueden usar o no la AMI:
 
 - Publica: todo el mundo puede usarla.
-- Privada: solo el owner de la AMI puede trabajar con ella.
+- Privada: solo el owner de la AMI puede trabajar con ella. Es el permiso por defecto.
 - El owner puede dar permisos a otras cuentas.
 
 La AMI determina el tipo de root volume que es donde se inicia el sistema operativo.
-
-El block device mapping es la configuración que indica a la máquina EC2 qué volumen es el root, cual del almacenamiento, etc.
 
 En una AMI:
 
@@ -286,6 +293,13 @@ En una AMI:
 - No se almacena:
   - Configuración de la instancia
   - Configuración de red.
+  - No se almacenan datos, sino la configuración y relación con los volúmenes.
+
+Las AMIS son creadas por AWS, terceros o podemos crear AMIS propias.
+
+Significado del término `AMI Banking`: crear una AMI a partir de una instancia configurada con aplicaciones instaladas.
+
+Una AMI no puede ser modificada. Hay que lanzar la instancia, modificarla y crear una nueva AMI.
 
 ## Eliminar una instancia
 
