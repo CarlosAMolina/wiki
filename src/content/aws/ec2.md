@@ -272,7 +272,7 @@ Ciclo de vida:
   - Un `Block Device Mapping`: es un archivo que asocia cada volumen con el device que lo utiliza; es la configuración que indica a la máquina EC2 qué volumen es el root, cual del almacenamiento, etc.
 - Launch: lanzar una instancia con lo creado anteriormente. También se crean nuevos volúmenes a partir de los snapshots.
 
-Son regionales; en cada región hay distintas AMIS de lo mismo; en cada región tienen un ID único. Las AMIS pueden desplegarse en la AZ que queramos de la región; también pueden copiarse entre regiones (las AMIS y los snapshots de los volúmenes).
+Son regionales; en cada región hay distintas AMIS de lo mismo; en cada región tienen un ID único. Las AMIS pueden desplegarse en la AZ que queramos de la región; también pueden copiarse entre regiones (las AMIS y los snapshots de los volúmenes), al copiarse a otras regiones se les asigna otro ID.
 
 Posee permisos que indican qué cuentas de AWS pueden usar o no la AMI:
 
