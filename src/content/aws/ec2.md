@@ -345,3 +345,31 @@ Significado de las partes del tipo de instancia. Ejemplo R5dn.8xlarge:
 Podemos conectarnos desde nuestro ordenador utilizando las claves SSH (creadas en la consola de AWS en EC2 > Key pairs > Create key pair) o desde la consola de AWS con la opción `EC2 Instance Connect`.
 
 De filtrar las direcciones IP que pueden conectarse, hay que tener en cuenta que, para permitir la conexión desde la consola de AWS, hay que habilitar la IP descrita como `EC2_INSTANCE_CONNECT` para la región deseada en [este enlace](https://ip-ranges.amazonaws.com/ip-ranges.json).
+
+## EC2 Purchase Options
+
+También se les llama Launch Types.
+
+### Tipos
+
+#### On Demand
+
+Es el tipo por defecto.
+
+Recomendado para aplicaciones que no pueden tener interrupciones. Aunque para aplicaciones críticas, son mejores otras opciones que den preferencia de acceso a los recursos en caso de problemas en el EC2 host.
+
+Pese a que las instancias están aisladas unas de otras, el hardware es compartido entre las instancias de distintos clientes.
+
+Se cobra por los segundos que la instancia funciona (el cobro de los volúmenes, etc. es aparte).
+
+#### Spot
+
+Es la opción más económica.
+
+Consiste en utilizar los recursos que quedan libres en las instancias EC2.
+
+Tiene un precio que varía según los recursos disponibles en cada momento. Indicas el precio máximo que estas dispuesto a pagar, vas pagando por el precio en cada momento y cuando el spot price en ese momento es mayor al que has establecido, la instancia pasa a estado terminated.
+
+De manera independiente al spot price máximo que podamos pagar, habrá momentos en que las instancias pasen a estado terminated.
+
+Es precio es como máximo 90% menos al precio habitual.
