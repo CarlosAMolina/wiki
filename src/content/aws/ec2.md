@@ -8,7 +8,7 @@ Son máquinas virtuales; es decir, un sistema operativo (OS) y recursos (cpu, ra
 
 Se les llama instancias.
 
-## Cuándo usar Ec2
+## Cuándo usar EC2
 
 Si la aplicación requiere un OS.
 
@@ -356,7 +356,11 @@ También se les llama Launch Types.
 
 Es el tipo por defecto.
 
-Recomendado para aplicaciones que no pueden tener interrupciones. Aunque para aplicaciones críticas, son mejores otras opciones que den preferencia de acceso a los recursos en caso de problemas en el EC2 host.
+Recomendado para:
+
+-Aplicaciones que no pueden tener interrupciones. Aunque para aplicaciones críticas, son mejores otras opciones que den preferencia de acceso a los recursos en caso de problemas en el EC2 host.
+- Aplicaciones para las que se desconoce la carga.
+- Aplicaciones de corta duración.
 
 Pese a que las instancias están aisladas unas de otras, el hardware es compartido entre las instancias de distintos clientes.
 
@@ -368,8 +372,55 @@ Es la opción más económica.
 
 Consiste en utilizar los recursos que quedan libres en las instancias EC2.
 
-Tiene un precio que varía según los recursos disponibles en cada momento. Indicas el precio máximo que estas dispuesto a pagar, vas pagando por el precio en cada momento y cuando el spot price en ese momento es mayor al que has establecido, la instancia pasa a estado terminated.
+Recomendado para:
+
+- Aplicaciones que pueden interrumpirse
+
+Tiene un precio que varía según los recursos disponibles en cada momento (los que deja libre las instancias On Demand). Indicas el precio máximo que estas dispuesto a pagar, vas pagando por el precio en cada momento y cuando el spot price en ese momento es mayor al que has establecido, la instancia pasa a estado terminated.
 
 De manera independiente al spot price máximo que podamos pagar, habrá momentos en que las instancias pasen a estado terminated.
 
 Es precio es como máximo 90% menos al precio habitual.
+
+#### Reserva
+
+Recomendado para:
+
+- Aplicaciones de larga duración.
+- Aplicaciones para las que se conoce la carga.
+- Aplicaciones que no pueden tolerar interrupciones.
+
+Cuando una instancia On Demand es de larga duración, podemos hacer una reserva y si esta coincide con la instancia On Demand, el coste se verá reducido o incluso ser nulo.
+
+La idea es que reservamos recursos que sepamos vamos a utilizar. Por los recursos reservados siempre hay coste, se usen o no.
+
+La reserva puede aplicar a:
+
+- Una AZ: los recursos quedan reservados solo para nosotros, se aplica a las instancias de la AZ.
+- Una región: no se reservan recursos pero puede veneficiar a las instancias de la región.
+
+Si tenemos configurada una reserva pero utilizamos una instancia EC2 mayor, los beneficios aplicarán parcialmente.
+
+La reserva puede ser de 1 o 3 años, si es 3 años tenemos descuentos y también hay descuento según el modo de pago, por ejemplo el descuento es mayor si se realiza un pago inicial completo.
+
+#### Dedicated Host
+
+Se reserva un EC2 para nosotros, no se comparte con otros usuarios.
+
+Este host está diseñado para una familia específica de instancias EC2.
+
+Nosotros gestionamos el host.
+
+Se paga por el host, las instancias no tienen coste por segundo.
+
+Ejemplo de uso, al tener licencias de software basadas en sockets o cores.
+
+Tienen la característica llamada host affinity por la que una instancia EC2 al parar e iniciarse se mantiene en el mismo EC2 Host.
+
+#### Dedicated Instances
+
+Es un punto intermedio entre dedicated host y cuando compartimos un host (por ejemplo en On Demand).
+
+El hardware no se comparte con otros usuarios, pero no gestionamos el EC2 Host nosotros.
+
+No pagamos por el host EC2 pero las instancias tienen un coste extra, también hay un coste extra por cada hora que tenemos este tipo de purchase.
