@@ -382,27 +382,6 @@ De manera independiente al spot price máximo que podamos pagar, habrá momentos
 
 Es precio es como máximo 90% menos al precio habitual.
 
-#### Reserva
-
-Recomendado para:
-
-- Aplicaciones de larga duración.
-- Aplicaciones para las que se conoce la carga.
-- Aplicaciones que no pueden tolerar interrupciones.
-
-Cuando una instancia On Demand es de larga duración, podemos hacer una reserva y si esta coincide con la instancia On Demand, el coste se verá reducido o incluso ser nulo.
-
-La idea es que reservamos recursos que sepamos vamos a utilizar. Por los recursos reservados siempre hay coste, se usen o no.
-
-La reserva puede aplicar a:
-
-- Una AZ: los recursos quedan reservados solo para nosotros, se aplica a las instancias de la AZ.
-- Una región: no se reservan recursos pero puede veneficiar a las instancias de la región.
-
-Si tenemos configurada una reserva pero utilizamos una instancia EC2 mayor, los beneficios aplicarán parcialmente.
-
-La reserva puede ser de 1 o 3 años, si es 3 años tenemos descuentos y también hay descuento según el modo de pago, por ejemplo el descuento es mayor si se realiza un pago inicial completo.
-
 #### Dedicated Host
 
 Se reserva un EC2 para nosotros, no se comparte con otros usuarios.
@@ -424,3 +403,56 @@ Es un punto intermedio entre dedicated host y cuando compartimos un host (por ej
 El hardware no se comparte con otros usuarios, pero no gestionamos el EC2 Host nosotros.
 
 No pagamos por el host EC2 pero las instancias tienen un coste extra, también hay un coste extra por cada hora que tenemos este tipo de purchase.
+
+#### Reserva
+
+Recomendado para:
+
+- Aplicaciones de larga duración.
+- Aplicaciones para las que se conoce la carga.
+- Aplicaciones que no pueden tolerar interrupciones.
+
+Cuando una instancia On Demand es de larga duración, podemos hacer una reserva y si esta coincide con la instancia On Demand, el coste se verá reducido o incluso ser nulo.
+
+La idea es que reservamos recursos que sepamos vamos a utilizar. Por los recursos reservados siempre hay coste, se usen o no.
+
+La reserva puede aplicar a:
+
+- Una AZ: los recursos quedan reservados solo para nosotros, se aplica a las instancias de la AZ.
+- Una región: no se reservan recursos pero puede veneficiar a las instancias de la región.
+
+Si tenemos configurada una reserva pero utilizamos una instancia EC2 mayor, los beneficios aplicarán parcialmente.
+
+La reserva puede ser de 1 o 3 años, si es 3 años tenemos descuentos y también hay descuento según el modo de pago, por ejemplo el descuento es mayor si se realiza un pago inicial completo.
+
+##### Tipos de reserved instances
+
+###### Scheduled Reserved Instances
+
+Utilizado cuando el funcionamiento va a ser durante un largo periodo de tiempo pero no es continuo. Ejemplo, funciona diariamente pero solo 5 horas.
+
+Reservas los recursos, especificando la frecuencia, la duración y cuándo se utilizará.
+
+Tiene limitaciones:
+
+- No soporta todos los tipos de instancias o regiones.
+- Mínimo debe usarse 1.200 horas / año.
+- Mínimo periodo contratado es de 1 año.
+
+##### Reservar recursos
+
+AWS los recursos los da con esta prioridad: primer a los que hayan contratado reserva, luego a los on demand y luego a los spot.
+
+Reservar recursos es diferente a reserva de instancias.
+
+Tipos:
+
+- Reservar recursos en una región y utilizar cualquier AZ. Los recursos no quedan reservados hasta el momento de usarlos por lo que de haber pocos disponibles puede dar lugar a problemas. Debe hacerse para periodos de 1 a 3 años. Ofrece un descuento.
+- Reservar recursos en una AZ. La capacidad queda reservada para nosotros. Debe hacerse para periodos de 1 a 3 años. Ofrece un descuento.
+- On demand capacity reservation: no es necesario indicar el periodo. Los recursos quedan reservados y pagas por ellos los uses o no.
+
+#### EC2 Savings Plan
+
+No te enfocas en un tipo de instancia en una AZ o región, sino que contratas para un periodo de 1 o 3 años indicando lo que pagarás por hora; y se va aplicando el descuento hasta que lleguemos a la cantidad indicada.
+
+Actualmente está disponible para los servicios EC2, Fargate y Lambda. Puede reservar de manera general para todos estos tipos o solo para uno de ellos.
