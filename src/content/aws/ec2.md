@@ -456,3 +456,22 @@ Tipos:
 No te enfocas en un tipo de instancia en una AZ o región, sino que contratas para un periodo de 1 o 3 años indicando lo que pagarás por hora; y se va aplicando el descuento hasta que lleguemos a la cantidad indicada.
 
 Actualmente está disponible para los servicios EC2, Fargate y Lambda. Puede reservar de manera general para todos estos tipos o solo para uno de ellos.
+
+## Instance Status Checks y Auto Recovery
+
+Al ver los detalles de la instancia, en la columna `Status check` tenemos las revisiones que se han llevado a cabo, una relativa al system (power, network, host software y host hardware) y otra sobre la instancia (file system, instance network, kernel).
+
+Pueden activarse opciones de recuperación al detectar fallo:
+
+- Reiniciar la instancia.
+- Recover: la llevará a otro EC2 host (en la misma AZ) y tendrá la misma configuración, software, etc. No funciona con instancias con Instance Store Volumes, debe usar EBS volume.
+- Stop: sirve para luego revisar qué ha ocurrido.
+- Terminate: útil porque puede configurarse que tras terminar la instancia se provisione otra.
+
+Esto se activa en la pestaña `Status checks`, botón `Actions` > `Create status check alarm`.
+
+La opción auto recovery no reiniciará todos los problemas, solo los más sencillos, y en caso de ser el error en toda la AZ, no funcionará (EC2 es un servicio en una AZ).
+
+## Terminate protection
+
+Puede activarse esta opción para que no se pueda terminar una instancia.
