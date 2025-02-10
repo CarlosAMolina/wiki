@@ -475,3 +475,39 @@ La opción auto recovery no reiniciará todos los problemas, solo los más senci
 ## Terminate protection
 
 Puede activarse esta opción para que no se pueda terminar una instancia.
+
+## Horizontal y Vertical Scaling
+
+Son técnicas para gestionar la carga cuando esta aumenta o disminuye; para ello se asignan más o reducen recursos de un sistema.
+
+### Vertical scaling
+
+Se consigue por ejemplo, al reemplazar la instancia actual por una con mayores recursos.
+
+ Inconvenientes:
+
+ - Se para el servicio porque es necesario un reinicio de la instancia. Puede evitarse haciendo el cambio a determinadas horas que no afecte a los usuarios, pero puede que para entonces el cambio ya no sea necesario.
+- Las instancias más grandes suelen tener un coste extra.
+- Hay un máximo en la capacidad que puede conseguirse porque las instancias EC2 tienen un límite.
+
+Ventajas:
+
+- No requiere cambios en la aplicación.
+- Funciona para todo tipo de aplicaciones, incluso las monolíticas.
+
+### Horizontal scaling
+
+En lugar de incrementar o reducir los recursos de la instancia, se incrementa o reduce el número de instancias.
+
+Esto implica que habrá múltiples copias de la aplicación y hay que distribuir las peticiones con un load balancer.
+
+En este tipo de scaling las sesiones son fundamentales para no perder el estado de lo que está haciendo el usuario cuando las peticiones vayan a otra instancia.
+
+Para ello los servidores deben ser stateless; es decir, la sesión se almacena en un lugar externo (a esto se llama `off-host sessions`) y la aplicación en los servidores funciona sin tener que preocuparse por ella.
+
+Ventajas:
+
+- No hay interrupción al escalar.
+- No hay límites en el escalado.
+- Más barato que el escalado vertical (se evita el sobre coste de las instancias grandes).
+
