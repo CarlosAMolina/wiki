@@ -511,3 +511,24 @@ Ventajas:
 - No hay límites en el escalado.
 - Más barato que el escalado vertical (se evita el sobre coste de las instancias grandes).
 
+## Instance Metadata
+
+Es un servicio distinto a las instancias EC2; guarda información a la que pueden acceder todas las instancias.
+
+Se acceder mediante la dirección `http://169.254.169.254/latest/meta-data/`.
+
+La información que guarda se divide en categorías:
+
+- Host name, eventos, security groups, etc
+- Environment de la instancia.
+- Network. Por ejemplo, el sistema operativo de una instancia no conoce su IPv4 pública, pero se pueden usar el metadata para guardar esta información.
+- Para autenticación; se guardan credenciales temporales utilizadas por la instancia para asumir un rol. También se utiliza para credenciales SSH, por ejemplo las empleadas en EC2 Instance Connect.
+- Datos de usuario, por ejemplo scripts que se ejecutan al iniciar la instancia.
+
+No tiene ni autenticación ni cifrado; habría que hacer una configuración extra para impedir acceder a la IP en caso de que queramos evitar el acceso a ella.
+
+Ejemplos:
+
+- Solicitar IP pública: `curl http://169.254.169.254/latest/meta-data/public-ipv4`.
+- Solicitar public hostname: `curl http://169.254.169.254/latest/meta-data/public-hostname`.
+- Puede descargarse un ejecutable que tiene estas y otras opciones: `wget http://s3.amazonaws.com/ec2metadata/ec2-metadata`
