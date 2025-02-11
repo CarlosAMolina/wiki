@@ -13,6 +13,8 @@
       - [No encuentra archivo](#no-encuentra-archivo)
 - [Plugins](#plugins)
 - [Comandos útiles](#comandos-útiles)
+- [Regex](#regex)
+  - [Reemplazar](#reemplazar)
 - [Referencias](#referencias)
 
 ## Introducción Neovim
@@ -104,6 +106,18 @@ Ver [plugins](plugins.html).
 - `%`: ejecutado sobre un elemento de apertura o cierre (ejemplo, `{`, tags html como `div`, etc) lleva a su correspondiente cierre o apertura, respectivamente.
 - `c`: como `d` pero tras cortar accedes a modo `insert` respectando la indentación.
 - `dap`: eliminar párrafo.
+
+## Regex
+
+### Reemplazar
+
+Eliminar letras y números entre `0x` y `>`:
+
+```bash
+# Input: <sqlalchemy.sql.elements.BooleanClauseList object at 0x78c624cfccc0>
+# Output: <sqlalchemy.sql.elements.BooleanClauseList object at >
+:%s/0x[0-9a-zA-Z]\+>//g
+```
 
 ## Referencias
 
