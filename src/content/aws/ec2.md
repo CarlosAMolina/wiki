@@ -532,3 +532,30 @@ Ejemplos:
 - Solicitar IP pública: `curl http://169.254.169.254/latest/meta-data/public-ipv4`.
 - Solicitar public hostname: `curl http://169.254.169.254/latest/meta-data/public-hostname`.
 - Puede descargarse un ejecutable que tiene estas y otras opciones: `wget http://s3.amazonaws.com/ec2metadata/ec2-metadata`
+
+## ECS
+
+ECS = Elastic Container Service
+
+Servicio de AWS que permite usar contenedores pero con la infraestructura gestionada por ellos.
+
+ECS es a los contenedores lo que EC2 es a las máquinas virtuales.
+
+Utiliza clusters que pueden funcionar de 2 maneras:
+
+- Modo EC2: los EC2 son hosts para el contenedor. Son instancias EC2 que ejecutan software ECS.
+- Modo fargate: ejecuta los contenedores de manera serverless; AWS gestiona los contenedores, nosotros solo los definimos.
+
+ECR = Elastic Container Registry. Es un lugar donde almacenar las imágenes, como Docker Hub.
+
+Términos:
+
+- Container Definition: define dónde se encuentra la imagen a emplear y los puertos a utilizar.
+- Task Definition: representa la aplicación, puede tener uno o más contenedores, por ejemplo uno para el servidor web y otro para la db. Guarda:
+  - Los recursos a utilizar: cpu y memoria.
+  - Modo de red empleado.
+  - Si funciona en modo EC2 o fargate.
+  - El task role. Es el rol que la task puede asumir para que el contenedor acceda a los servicios de AWS.
+  - Por defecto no es escalable ni tiene alta disponibilidad; para ello se utiliza el service definition.
+- Service definition: sirve para configurar cómo el task escala y tenga alta disponibilidad. Para escalar genera copias de la task y puede desplegar un load balancer para distribuir la carga sobre los tasks. La alta disponibilidad la consigue reemplazando las tasks que fallen.
+- ECS cluster: donde se despliegan las tasks, a las tasks también se las conoce como servicios.
