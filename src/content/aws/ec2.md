@@ -541,15 +541,10 @@ Servicio de AWS que permite usar contenedores pero con la infraestructura gestio
 
 ECS es a los contenedores lo que EC2 es a las máquinas virtuales.
 
-Utiliza clusters que pueden funcionar de 2 maneras:
-
-- Modo EC2: los EC2 son hosts para el contenedor. Son instancias EC2 que ejecutan software ECS.
-- Modo fargate: ejecuta los contenedores de manera serverless; AWS gestiona los contenedores, nosotros solo los definimos.
-
-ECR = Elastic Container Registry. Es un lugar donde almacenar las imágenes, como Docker Hub.
 
 Términos:
 
+- ECR = Elastic Container Registry. Es un lugar donde almacenar las imágenes, como Docker Hub.
 - Container Definition: define dónde se encuentra la imagen a emplear y los puertos a utilizar.
 - Task Definition: representa la aplicación, puede tener uno o más contenedores, por ejemplo uno para el servidor web y otro para la db. Guarda:
   - Los recursos a utilizar: cpu y memoria.
@@ -557,5 +552,43 @@ Términos:
   - Si funciona en modo EC2 o fargate.
   - El task role. Es el rol que la task puede asumir para que el contenedor acceda a los servicios de AWS.
   - Por defecto no es escalable ni tiene alta disponibilidad; para ello se utiliza el service definition.
+  - Creo que a las tasks también se las conoce como servicios.
 - Service definition: sirve para configurar cómo el task escala y tenga alta disponibilidad. Para escalar genera copias de la task y puede desplegar un load balancer para distribuir la carga sobre los tasks. La alta disponibilidad la consigue reemplazando las tasks que fallen.
-- ECS cluster: donde se despliegan las tasks, a las tasks también se las conoce como servicios.
+- ECS cluster: donde se despliegan las tasks.
+
+### Modos de funcionamiento
+
+ECS utiliza clusters que pueden funcionar de 2 maneras:
+
+- Modo EC2:
+  - Los EC2 son los hosts para desplegar el contenedor, son instancias EC2 que ejecutan software ECS.
+  - Se crea un ECS Cluster en una VPC, por lo que se beneficia de las AZs.
+  - Se define el ASG (auto scaling group) que controla el escalado horizontal.
+  - No es una solución serverless, el usuario gestiona la capacidad y disponibilidad del cluster.
+  - Se paga por la instancia EC aunque no se esté utilizando la aplicación.
+
+- Modo fargate:
+  - Ejecuta los contenedores de manera serverless; AWS gestiona los contenedores, nosotros solo los definimos. No nos preocupamos de las instancias EC2 necesarias.
+  - Se utiliza un Fargate Shared Infrasturcture, el hardware se comparte por todos los usuarios pero sin tener visibilidad de los otros clientes.
+  - Como en el modo EC2, Fargate continúa usando cluster que se despiega en una VPC y emplea sus AZs. Se usa el hardware del Fargate Shared Infastrucutere pero se conecta a la VPC con una Elastic Network Interface y le asigna una IP dentro de la VPC.
+  - Pagamos por los recursos utilizados en los contenedores empleados. No hay coste por el host.
+
+Por tanto, la mayor diferencia entre estos modos es si la gestión la hace el usuario o AWS.
+
+Ambos modos utilizan el ECS management component encargado de:
+
+- Scheluding.
+- En qué container host ejecutar los contenedores.
+- Gestión del cluster.
+
+### Cuándo usar EC2 o ECS
+
+EC2 cuando:
+
+- Necesitamos controlar mucho el precio, para poder seleccionar las opciones más económicas. Ejemplo: spot.
+
+ECS si:
+
+- Empleamos contenedores.
+- El objetivo es minimizar la gestión. Ya que con ECS, no tenemos que preocuparnos del contenedor host.
+- La carga no es constante. Ya que pagamos solo por los recursos consumidos.
