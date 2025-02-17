@@ -552,9 +552,9 @@ Términos:
   - Si funciona en modo EC2 o fargate.
   - El task role. Es el rol que la task puede asumir para que el contenedor acceda a los servicios de AWS.
   - Por defecto no es escalable ni tiene alta disponibilidad; para ello se utiliza el service definition.
-  - Creo que a las tasks también se las conoce como servicios.
+  - Creo que a un conjunto de tasks se le conoce como servicio.
 - Service definition: sirve para configurar cómo el task escala y tenga alta disponibilidad. Para escalar genera copias de la task y puede desplegar un load balancer para distribuir la carga sobre los tasks. La alta disponibilidad la consigue reemplazando las tasks que fallen.
-- ECS cluster: donde se despliegan las tasks.
+- ECS cluster: donde se despliegan las tasks. Hay que crearlo en la consola de AWS.
 
 ### Modos de funcionamiento
 
@@ -570,7 +570,7 @@ ECS utiliza clusters que pueden funcionar de 2 maneras:
 - Modo fargate:
   - Ejecuta los contenedores de manera serverless; AWS gestiona los contenedores, nosotros solo los definimos. No nos preocupamos de las instancias EC2 necesarias.
   - Se utiliza un Fargate Shared Infrasturcture, el hardware se comparte por todos los usuarios pero sin tener visibilidad de los otros clientes.
-  - Como en el modo EC2, Fargate continúa usando cluster que se despiega en una VPC y emplea sus AZs. Se usa el hardware del Fargate Shared Infastrucutere pero se conecta a la VPC con una Elastic Network Interface y le asigna una IP dentro de la VPC.
+  - Como en el modo EC2, Fargate continúa usando cluster que se despliega en una VPC y emplea sus AZs. Se usa el hardware del Fargate Shared Infastrucutere pero se conecta a la VPC con una Elastic Network Interface y le asigna una IP dentro de la VPC. También tiene un security group que debe de estar configurado con los puertos a usar por el contenedor.
   - Pagamos por los recursos utilizados en los contenedores empleados. No hay coste por el host.
 
 Por tanto, la mayor diferencia entre estos modos es si la gestión la hace el usuario o AWS.
