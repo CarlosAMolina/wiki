@@ -544,7 +544,6 @@ ECS es a los contenedores lo que EC2 es a las máquinas virtuales.
 
 Términos:
 
-- ECR = Elastic Container Registry. Es un lugar donde almacenar las imágenes, como Docker Hub.
 - Container Definition: define dónde se encuentra la imagen a emplear y los puertos a utilizar.
 - Task Definition: representa la aplicación, puede tener uno o más contenedores, por ejemplo uno para el servidor web y otro para la db. Guarda:
   - Los recursos a utilizar: cpu y memoria.
@@ -555,6 +554,26 @@ Términos:
   - Creo que a un conjunto de tasks se le conoce como servicio.
 - Service definition: sirve para configurar cómo el task escala y tenga alta disponibilidad. Para escalar genera copias de la task y puede desplegar un load balancer para distribuir la carga sobre los tasks. La alta disponibilidad la consigue reemplazando las tasks que fallen.
 - ECS cluster: donde se despliegan las tasks. Hay que crearlo en la consola de AWS.
+
+### ECR
+
+ECR = Elastic Container Registry.
+
+Es un servicio de AWS para almacenar las imágenes de los contenedores. Como Docker Hub.
+
+Cada cuenta de AWS tiene un registro público y privado:
+
+- Público: todo el mundo tiene permisos de lectura pero para escribir hace falta solicitarlos.
+- Privado: es necesario tener permisos para lectura y escritura.
+
+Cada registro puede almacenar varios repositorios (son como repositorios de GitHub) y en cada repositorio se pueden tener varias imágenes de contenedores. Cada imagen puede tener varias tags; cada tag debe ser única en el repositorio.
+
+Características:
+
+- Utiliza el servicio IAM para los permisos.
+- Escaneo de imágenes para buscar vulnerabilidades.
+- Tiene métricas sobre autenticación, push, pull, etc.
+- Replicación de las imágenes, cross region y cross account.
 
 ### Modos de funcionamiento
 
