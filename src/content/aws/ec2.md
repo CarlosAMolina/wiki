@@ -576,19 +576,19 @@ Características:
 
 ### Modos de funcionamiento
 
-ECS utiliza clusters que pueden funcionar de 2 maneras:
+Los ECS clusters que pueden funcionar de 2 maneras:
 
 - Modo EC2:
   - Los EC2 son los hosts para desplegar el contenedor, son instancias EC2 que ejecutan software ECS.
   - Se crea un ECS Cluster en una VPC, por lo que se beneficia de las AZs.
   - Se define el ASG (auto scaling group) que controla el escalado horizontal.
   - No es una solución serverless, el usuario gestiona la capacidad y disponibilidad del cluster.
-  - Se paga por la instancia EC aunque no se esté utilizando la aplicación.
+  - Se paga por la instancia EC2 aunque no se esté utilizando la aplicación.
 
 - Modo fargate:
   - Ejecuta los contenedores de manera serverless; AWS gestiona los contenedores, nosotros solo los definimos. No nos preocupamos de las instancias EC2 necesarias.
   - Se utiliza un Fargate Shared Infrasturcture, el hardware se comparte por todos los usuarios pero sin tener visibilidad de los otros clientes.
-  - Como en el modo EC2, Fargate continúa usando cluster que se despliega en una VPC y emplea sus AZs. Se usa el hardware del Fargate Shared Infastrucutere pero se conecta a la VPC con una Elastic Network Interface y le asigna una IP dentro de la VPC. También tiene un security group que debe de estar configurado con los puertos a usar por el contenedor.
+  - Como en el modo EC2, Fargate continúa usando cluster que se despliega en una VPC y emplea sus AZs. Se usa el hardware del Fargate Shared Infraestructure pero se conecta a la VPC con una Elastic Network Interface y le asigna una IP dentro de la VPC. También tiene un security group que debe de estar configurado con los puertos a usar por el contenedor.
   - Pagamos por los recursos utilizados en los contenedores empleados. No hay coste por el host.
 
 Por tanto, la mayor diferencia entre estos modos es si la gestión la hace el usuario o AWS.
