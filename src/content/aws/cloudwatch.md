@@ -65,7 +65,7 @@ Los log streams almacenan secuencias de logs del mismo origen; por ejemplo disti
 
 ### Log group
 
-Son contenedores que almacenan distintos log streams; pero logs streams del mismo tipo, ejemplo, logs del sistema oprativo.
+Son contenedores que almacenan distintos log streams; pero logs streams del mismo tipo, ejemplo, logs del sistema operativo o de una lambda.
 
 También almacenan la configuración de los logs: permisos, retención, filtros de métricas que pueden tener alarmas configuradas, etc.
 
