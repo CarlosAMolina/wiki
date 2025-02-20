@@ -541,7 +541,6 @@ Servicio de AWS que permite usar contenedores pero con la infraestructura gestio
 
 ECS es a los contenedores lo que EC2 es a las máquinas virtuales.
 
-
 Términos:
 
 - Container Definition: define dónde se encuentra la imagen a emplear y los puertos a utilizar.
@@ -611,3 +610,17 @@ ECS si:
 - Empleamos contenedores.
 - El objetivo es minimizar la gestión. Ya que con ECS, no tenemos que preocuparnos del contenedor host.
 - La carga no es constante. Ya que pagamos solo por los recursos consumidos.
+
+## EKS
+
+EKS = Elastic Kubernetes Service 101.
+
+Es Kubernetes pero ofrecido como servicio de AWS. Interactúa con los otros servicios de AWS (IAM, VPC, load balancers, etc).
+
+Funciona en múltiple AZs. El etcd de Kubernetes (utilizado para configuración, almacena clave valor); está distribuido en múltiples AZ.
+
+Un cluster EKS está compuesto por un EKS control plane y nodos EKS (son instancias EC2); pueden estar en distintas VPC.
+
+Las instancias EC2 donde están los nodos pueden ser gestionadas por nosotros o por AWS automáticamente utilizando Fargate. Pueden gestionarse individualmente o en grupos.
+
+Kubernetes por defecto tiene almacenamiento efímero; con KES pueden usarse diferentes tipos de almacenamiento (EBS, EFS, ...).
