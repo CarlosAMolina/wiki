@@ -624,3 +624,28 @@ Un cluster EKS está compuesto por un EKS control plane y nodos EKS (son instanc
 Las instancias EC2 donde están los nodos pueden ser gestionadas por nosotros o por AWS automáticamente utilizando Fargate. Pueden gestionarse individualmente o en grupos.
 
 Kubernetes por defecto tiene almacenamiento efímero; con KES pueden usarse diferentes tipos de almacenamiento (EBS, EFS, ...).
+
+## Bootstrapping
+
+Permite que el sistema operativo de la instancia ejecute scripts cuando la instancia se inicia por primera vez. Puede ser modificado si la instancia se para, podrá acceder al nuevo contenido pero no se ejecutará, solo es ejecutado la primera vez que la instancia se inició.
+
+Sobre este script:
+
+- Llega por la parte `User Data` del servicio Meta-data. URL petición: <http://169.254.169.254/latest/user-data>.
+- Lo pasa la instancia EC2 al sistema operativo; el contenido del script es opaco para la instancia EC2.
+- si provoca algún error, la instancia funcionará pero sin haber ejecutado el script correctamente.
+- No debe contener información confidencial porque puede consultarlo cualquier usuario con acceso a la instancia.
+- Tamaño máximo de 16 KB.
+
+## Boot-Time-To-Service-Time
+
+Esta métrica indica el tiempo que la instancia tarda en ofrecer servicio desde que se lanza.
+
+Tiene en cuenta el tiempo que se tarda en:
+
+- Que AWS provisione la instancia.
+- Se instale/actualice/configure el software en el OS.
+
+Instalaciones realizadas después de que la instancia esté activa se considera `Post Launch Time`, se incluye lo realizado en Bootstrapping.
+
+Para evitar el `Post Launch Time` puede usarse AMI Bake, que consiste en tener la AMI ya preparada. Puede combinarse AMI Bake y Bootstrapping.
