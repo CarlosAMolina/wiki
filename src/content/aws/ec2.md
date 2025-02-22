@@ -523,15 +523,23 @@ La información que guarda se divide en categorías:
 - Environment de la instancia.
 - Network. Por ejemplo, el sistema operativo de una instancia no conoce su IPv4 pública, pero se pueden usar el metadata para guardar esta información.
 - Para autenticación; se guardan credenciales temporales utilizadas por la instancia para asumir un rol. También se utiliza para credenciales SSH, por ejemplo las empleadas en EC2 Instance Connect.
-- Datos de usuario, por ejemplo scripts que se ejecutan al iniciar la instancia.
+- Datos de usuario, por ejemplo un script a ejecutar al provisionar la instancia (ver apartado bootstrapping).
 
-No tiene ni autenticación ni cifrado; habría que hacer una configuración extra para impedir acceder a la IP en caso de que queramos evitar el acceso a ella.
+No tiene ni autenticación ni cifrado; habría que hacer una configuración extra para impedir acceder a la IP en caso de que queramos evitar el acceso a ella. Pese a esto, según la versión que utilicemos del servicio metadata, puede que haya que pedir un token que añadir en las peticiones; este token se solicita al servicio metadata haciendo peticiones a su URL.
 
 Ejemplos:
 
 - Solicitar IP pública: `curl http://169.254.169.254/latest/meta-data/public-ipv4`.
 - Solicitar public hostname: `curl http://169.254.169.254/latest/meta-data/public-hostname`.
 - Puede descargarse un ejecutable que tiene estas y otras opciones: `wget http://s3.amazonaws.com/ec2metadata/ec2-metadata`
+- Solicitar user data (en este ejemplo se utiliza la versión del servicio metadata que requiere un token):
+
+    ```bash
+    TOKEN=`curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600"`
+    curl -H "X-aws-ec2-metadata-token: $TOKEN" -v http://169.254.169.254/latest/meta-data/
+    # Puede pedirse específicamente el user data:
+    curl -H "X-aws-ec2-metadata-token: $TOKEN" -v http://169.254.169.254/latest/user-data/
+    ```
 
 ## ECS
 
@@ -627,15 +635,21 @@ Kubernetes por defecto tiene almacenamiento efímero; con KES pueden usarse dife
 
 ## Bootstrapping
 
-Permite que el sistema operativo de la instancia ejecute scripts cuando la instancia se inicia por primera vez. Puede ser modificado si la instancia se para, podrá acceder al nuevo contenido pero no se ejecutará, solo es ejecutado la primera vez que la instancia se inició.
+Permite que el sistema operativo de la instancia ejecute scripts cuando la instancia se inicia por primera vez (cuando se provisiona).
 
 Sobre este script:
 
+- Puede ser modificado si la instancia se para, podrá acceder al nuevo contenido pero no se ejecutará, solo es ejecutado la primera vez que la instancia se provisionó.
 - Llega por la parte `User Data` del servicio Meta-data. URL petición: <http://169.254.169.254/latest/user-data>.
 - Lo pasa la instancia EC2 al sistema operativo; el contenido del script es opaco para la instancia EC2.
 - si provoca algún error, la instancia funcionará pero sin haber ejecutado el script correctamente.
 - No debe contener información confidencial porque puede consultarlo cualquier usuario con acceso a la instancia.
 - Tamaño máximo de 16 KB.
+
+En la instancia EC2, pueden verse los logs de este proceso en estos archivos:
+
+- /var/log/cloud-init-output.log
+- /var/log/cloud-init.log
 
 ## Boot-Time-To-Service-Time
 
