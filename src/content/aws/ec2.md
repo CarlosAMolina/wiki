@@ -640,7 +640,7 @@ Permite que el sistema operativo de la instancia ejecute scripts cuando la insta
 Sobre este script:
 
 - Puede ser modificado si la instancia se para, podrá acceder al nuevo contenido pero no se ejecutará, solo es ejecutado la primera vez que la instancia se provisionó.
-- Llega por la parte `User Data` del servicio Meta-data. URL petición: <http://169.254.169.254/latest/user-data>.
+- Llega por la parte `User Data` del servicio Meta-data. URL petición: <http://169.254.169.254/latest/user-data>. El user data debe ser proporcionado en Base64, por ejemplo en la plantilla CloudFormation podemos utilizar la función `Fn::Base64: !Sub`, aunque la consola de AWS permite darlo en texto plano.
 - Lo pasa la instancia EC2 al sistema operativo; el contenido del script es opaco para la instancia EC2.
 - si provoca algún error, la instancia funcionará pero sin haber ejecutado el script correctamente.
 - No debe contener información confidencial porque puede consultarlo cualquier usuario con acceso a la instancia.
