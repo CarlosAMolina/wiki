@@ -651,6 +651,23 @@ En la instancia EC2, pueden verse los logs de este proceso en estos archivos:
 - /var/log/cloud-init-output.log
 - /var/log/cloud-init.log
 
+### CloudFormation Init
+
+Permite pasar a una instancia EC2 instrucciones de bootstrapping más complejas que con User Data.
+
+Se trata de un script instalado en el sistema operativo de la instancia.
+
+Además de ejecutar comandos, permite:
+
+- Indicar el estado deseado; por ejemplo, de querer una versión determinada de Apache, la instalará de no estar Apache instalado o lo actualizará de ya estar instalado.
+- Gestionar grupos, usuarios, servicios, paquetes, ejecutar comandos y comprobar que el resultado es el esperado, etc.
+
+En la plantilla de CloudFormation se especifica en la sección `Metadata` > `AWS::CloudFormation::Init`.
+
+A diferencia de User Data que solo se ejecuta una vez, con CloudFormation Init pueden aplicarse acciones al detectar cambios en la instancia, por ejemplo aplicar actualizaciones.
+
+También ofrece las Creation Policies, que permiten verificar que los procesos configurados de Bootstrapping se ejecutaron correctamente; para ello envía información mediante los signals que indicarán si puede marcarse la instancia como creada correctamente.
+
 ## Boot-Time-To-Service-Time
 
 Esta métrica indica el tiempo que la instancia tarda en ofrecer servicio desde que se lanza.
