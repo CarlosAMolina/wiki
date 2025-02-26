@@ -168,7 +168,7 @@ AWS ofrece el producto AWS Organizations para gestionar múltiples cuentas de AW
 
 Ejemplo dónde usar IAM Role:
 
-- En funciones lambda. Como una lambda no sabes cuantas ejecuciones va a atener (no sabes el número de principals), es una buena manera de darle acceso a cloudwath, s3, etc.
+- En funciones lambda. Como una lambda no sabes cuantas ejecuciones va a tener (no sabes el número de principals), es una buena manera de darle acceso a cloudwath, s3, etc.
 - Si hay un usuario con permisos limitados y en situaciones excepcionales requiere más privilegios para realizar una acción puntual.
 - Permitir a cuentas externas acceso a recursos de AWS asumiendo un rol. Por ejemplo:
   - ID Federation, donde los usuarios del active directory de una empresa puede asumir el rol. Por ejemplo, en una organización con más de 5.000 usuarios porque IAM tiene de límite 5.000 usuarios.
