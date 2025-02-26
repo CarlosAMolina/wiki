@@ -192,3 +192,13 @@ Se diferencian de los roles en que no pueden ser eliminados hasta que no es util
 Es posible que un usuario asigne un rol ya existente a un servicio aunque el usuario no tenga los permisos que ese rol ofrece. Esto en una policy aparece con el action `iam:PassRole`.
 
 En CloudFormation, este utiliza los permisos de la entidad que lo ejecuta para interactuar con AWS, por lo que el usuario debe tener los permisos no solo para crear el stack, sino también los permisos sobre los recursos que el stack creará. Gracias a service-linked roles, un usuario que no tenga todos los permisos puede ejecutar el stack pasándole el rol que necesite.
+
+### EC2 Instance Role
+
+Es un rol de una instancia EC2.
+
+Se crea lo que se llama `InstanceProfile`, gracias a esto todo lo que se ejecuta en la instancia tiene los permisos del rol de la instancia; por ejemplo, utilizar una terminal desde la instancia tendrá los permisos. Las credenciales creadas al asumir el rol se transmiten por los metadatos de la instancia y se renuevan automáticamente.
+
+De crear el Instance Role en la consola, el InstanceProfile es generado automáticamente, pero de usar la línea de comandos o CloudFormation hay que crearlo aparte. El InstanceProfile tiene el mismo nombre que el Instance Role. A la instancia se le asocia el InstanceProfile, no el Instance Role.
+
+Debe usarse esta opción en lugar de almacenar credenciales en la instancia.
