@@ -201,4 +201,9 @@ Se crea lo que se llama `InstanceProfile`, gracias a esto todo lo que se ejecuta
 
 De crear el Instance Role en la consola, el InstanceProfile es generado automáticamente, pero de usar la línea de comandos o CloudFormation hay que crearlo aparte. El InstanceProfile tiene el mismo nombre que el Instance Role. A la instancia se le asocia el InstanceProfile, no el Instance Role.
 
-Debe usarse esta opción en lugar de almacenar credenciales en la instancia.
+Debe usarse esta opción en lugar de almacenar credenciales en la instancia u obtener credenciales desde la instancia con el aws-cli.
+
+Para ver información del InstanceProfile pueden hacerse peticiones a:
+
+- curl http://169.254.169.254/latest/meta-data/iam/security-credentials/
+- curl http://169.254.169.254/latest/meta-data/iam/security-credentials/<nombre_del_InstanceProfile>
