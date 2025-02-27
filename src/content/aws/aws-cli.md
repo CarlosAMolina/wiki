@@ -34,3 +34,5 @@ A continuación, se muestra un ejemplo de configuración y uso con un nombre de 
 aws configure --profile nombre_perfil
 aws s3 ls --profile nombre_perfil
 ```
+
+Explicación del orden de preferencia donde se busca la configuración y credenciales: [link](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html#cli-configure-quickstart-precedence).
