@@ -6,14 +6,23 @@ Es un servicio público y regional, puede funcionar con software ajeno a AWS.
 
 CloudWatch permite:
 
-- Almacenar y acceder a logs.
+- Almacenar y acceder a logs. Dentro de CloudWatch tenemos disponible para ello a `CloudWatch Logs`.
 - Obtener métricas de otros servicios y software que use AWS. Ejemplo: uso CPU, peticiones REST, etc. Algunas métricas se generan por defecto (ejemplo, uso CPU en instancias EC2) pero otras requieren instalar el CloudWatch agent.
 - CloudWatch Logs: permite monitorizar logs y realizar acciones en base a ellos. Hay situaciones en las que hay que instalar el CloudWatch agent.
 - CloudWatch Events: pueden ejecutarse acciones cuando ocurran sucesos, por ejemplo que un EC2 se inicie, y también pueden lanzarse eventos programados para que se realicen otras acciones.
 
-## CloudWatch agent
+## CloudWatch Agent
 
 Necesario para aplicaciones externas a AWS o para trabajar con logs propios de aplicaciones o de sistemas operativos.
+
+Por ejemplo, para tratar con los logs dentro de una instancia EC2; el CloudWatch Agent es un programa que funciona en el sistema operativo y envía los logs a CloudWatch.
+
+El CloudWatch Agent debe tener permisos para tratar con CloudWatch y CloudWatch Logs. También hay que darle la configuración, por ejemplo mediante SSM Parameter Store.
+
+Se utiliza:
+
+- Log groups: un log group por cada archivo de la instancia que queramos guardar (ejemplo: `/var/log/https/error_log`, `/var/log/https/access_log`).
+- Log stream: dentro del log group, hay un log stream por cada instancia que genera logs.
 
 Otra opción en lugar del CloudWatch agent es utilizar los kits de desarrollo de AWS.
 
@@ -61,11 +70,15 @@ Su formato es timestamp más el mensaje. El mensaje puede tener cualquier format
 
 Es donde se almacenan los logs events.
 
-Los log streams almacenan secuencias de logs del mismo origen; por ejemplo distintas instancias de EC2.
+Los log streams almacenan secuencias de logs del mismo origen; por ejemplo un log stream por cada instancia de EC2.
 
 ### Log group
 
-Son contenedores que almacenan distintos log streams; pero logs streams del mismo tipo, ejemplo, logs del sistema operativo o de una lambda.
+Son contenedores que almacenan distintos log streams; pero logs streams del mismo tipo, ejemplo:
+
+- Logs del sistema operativo.
+- Logs de una lambda.
+- Log de cada archivo de de las instancias EC2 que queramos guardar, ejemplo: `/var/log/https/error_log`, `/var/log/https/access_log`.
 
 También almacenan la configuración de los logs: permisos, retención, filtros de métricas que pueden tener alarmas configuradas, etc.
 
@@ -73,3 +86,6 @@ También almacenan la configuración de los logs: permisos, retención, filtros 
 
 [URL sobre los costes](https://aws.amazon.com/es/cloudwatch/pricing/).
 
+## Logs de una instancia EC2
+
+Por defecto CloudWatch no puede acceder a los logs internos de una instancia EC2; es necesario el CloudWatch Agent.
