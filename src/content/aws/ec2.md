@@ -685,3 +685,47 @@ Tiene en cuenta el tiempo que se tarda en:
 Instalaciones realizadas después de que la instancia esté activa se considera `Post Launch Time`, se incluye lo realizado en Bootstrapping.
 
 Para evitar el `Post Launch Time` puede usarse AMI Bake, que consiste en tener la AMI ya preparada. Puede combinarse AMI Bake y Bootstrapping.
+
+## EC2 Placement Groups
+
+Permite controlar qué instancias EC2 se ejecuten o no físicamente cerca.
+
+Hay 3 tipos: cluster, spread y partition.
+
+### Cluster
+
+Las instancias están cerca. Utilizan el mismo rack y a veces el mismo EC2 host.
+
+Las instancias tienen conexión directa entre ellas. Ofrece la menor latencia y máximo número de paquetes por segundo (PPS).
+
+Cuando inicias una instancia del grupo, se ejecuta en una AZ y todas las demás instancias del grupo utilizarán esa AZ. No puede expandirse la AZ. Por lo que no tiene gran resilencia ya que las instancias fallarán de haber problemas con la AZ.
+
+Es recomendable que el grupo lo formen instancias iguales y lanzarlas al mismo tiempo para que AWS asegure que habrá los recursos necesarios.
+
+De emplear diferentes VPC puede penalizar el rendimiento.
+
+Solo pueden utilizarlo determinados tipos de instancias.
+
+## Spread
+
+Ofrece la máxima disponibilidad para una aplicación.
+
+Las instancias tienen infraestructura independiente; están en racks diferentes, lo que implica distintas fuentes de alimentación y red. Si un rack falla no afecta al resto.
+
+Los racks pueden estar en la misma o diferentes AZ, habiendo el límite de 7 instancias por AZ.
+
+No es compatible con instancias dedicadas o hosts.
+
+Se utiliza cuando hay un pequeño número de instancias críticas que deben estar separadas unas de otras.
+
+## Partition
+
+Las instancias están en grupos, los grupos están separados unos de otros.
+
+Utilizado cuando necesitamos la separación ofrecida por spread pero también más de 7 instancias por AZ.
+
+Tiene una estructura similiar al tipo spread. Puede utilizar distintas AZ en una región, cada una dividida en particiones, con un máximo de 7 particiones por AZ. Cada partición tiene su fuente de alimentación y de red individual.
+
+Se diferencia con el tipo spread en que puede iniciar todas las instancias que quieras. La partición a utilizar puedes elegirla tu o AWS.
+
+Utilizado en procesos donde es necesario controlar la topología, permite controlar la arquitectura de resilencia. Por ejemplo, estando las instancias en particiones diferentes sabes que al replicar datos van a estar más protegidos al no estar todos en el mismo hardware.
