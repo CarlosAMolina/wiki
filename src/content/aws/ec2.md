@@ -384,17 +384,29 @@ Es precio es como máximo 90% menos al precio habitual.
 
 #### Dedicated Host
 
-Se reserva un EC2 para nosotros, no se comparte con otros usuarios.
+Se reserva un EC2 host para nosotros, no se comparte con otros usuarios.
 
-Este host está diseñado para una familia específica de instancias EC2.
+Este host está diseñado para una familia específica de instancias EC2. Hay diferentes tipos de dedicated Hosts. Para utilizar en él distintos tipos de instancias, creo que hay que emplear el sistema Nitro.
+
+El dedicated host no soporta:
+
+- Algunas AMI. Ejemplo Suse o Windows.
+- AWS RDS.
+- Placement groups.
+
+Es host tiene un número de sockets y cores, lo que limita el número de instancias que pueden utilizarse.
 
 Nosotros gestionamos el host.
 
-Se paga por el host, las instancias no tienen coste por segundo.
+Se paga por el host, las instancias no tienen coste por segundo. Puedes pagar por uso bajo demanda o hay opciones de reserva.
 
 Ejemplo de uso, al tener licencias de software basadas en sockets o cores.
 
 Tienen la característica llamada host affinity por la que una instancia EC2 al parar e iniciarse se mantiene en el mismo EC2 Host.
+
+Puede compartirse con otras cuentas de la organización, gracias al servicio de AWS RAM (Resource Assest Management). Las otras cuentas solo podrán ver las instancias que inician ellos, y yo como administrador del host puedo verlas todas.
+
+[Enlace configuración y precio](https://aws.amazon.com/ec2/dedicated-hosts/pricing/).
 
 #### Dedicated Instances
 
