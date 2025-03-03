@@ -741,3 +741,19 @@ Tiene una estructura similiar al tipo spread. Puede utilizar distintas AZ en una
 Se diferencia con el tipo spread en que puede iniciar todas las instancias que quieras. La partición a utilizar puedes elegirla tu o AWS.
 
 Utilizado en procesos donde es necesario controlar la topología, permite controlar la arquitectura de resilencia. Por ejemplo, estando las instancias en particiones diferentes sabes que al replicar datos van a estar más protegidos al no estar todos en el mismo hardware.
+
+## Enhanced Networking
+
+Es una técnica para mejora el rendimiento de la red.
+
+Utiliza la técnica SR-IOV (Single Route IO Virtualization).
+
+De no utilizar esta técnica, las instancias usan la tarjeta de red del EC2 Host y este decide cómo enviar el tráfico, lo que consume CPU. Al utilizar enhanced networking, la tarjeta de red tiene tarjetas lógicas y cada una es utilizada por una instancia, lo que conlleva mayor I/O, ancho de banda y paquetes por segundo (PPS) y menor uso de CPU y latencia.
+
+Esta opción está activada por defecto o puede activarse sin coste en la mayoría de instancias.
+
+## EBS Optimized
+
+El almacenamiento EBS utiliza tráfico de red y la red es compartida con la red de datos. Gracias a EBS Optimized tenemos una capacidad dedicada para EBS lo que da mayor velocidad.
+
+La mayoría de instancias son compatibles con esto, por defecto está activado. No tiene coste excepto para algunas instancias antiguas.
