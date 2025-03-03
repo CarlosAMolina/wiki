@@ -197,13 +197,13 @@ En CloudFormation, este utiliza los permisos de la entidad que lo ejecuta para i
 
 Es un rol de una instancia EC2.
 
-Se crea lo que se llama `InstanceProfile`, gracias a esto todo lo que se ejecuta en la instancia tiene los permisos del rol de la instancia; por ejemplo, utilizar una terminal desde la instancia tendrá los permisos. Las credenciales creadas al asumir el rol se transmiten por los metadatos de la instancia y se renuevan automáticamente.
+Se crea lo que se llama Instance Profile, gracias a esto todo lo que se ejecuta en la instancia tiene los permisos del rol de la instancia; por ejemplo, utilizar una terminal desde la instancia tendrá los permisos. Las credenciales creadas al asumir el rol se transmiten por los metadatos de la instancia y se renuevan automáticamente.
 
-De crear el Instance Role en la consola, el InstanceProfile es generado automáticamente, pero de usar la línea de comandos o CloudFormation hay que crearlo aparte. El InstanceProfile tiene el mismo nombre que el Instance Role. A la instancia se le asocia el InstanceProfile, no el Instance Role.
+De crear el Instance Role en la consola, el Instance Profile es generado automáticamente, pero de usar la línea de comandos o CloudFormation hay que crearlo aparte. El Instance Profile tiene el mismo nombre que el Instance Role. A la instancia se le asocia el Instance Profile, no el Instance Role.
 
 Debe usarse esta opción en lugar de almacenar credenciales en la instancia u obtener credenciales desde la instancia con el aws-cli.
 
-Para ver información del InstanceProfile pueden hacerse peticiones a:
+Para ver información del Instance Profile pueden hacerse peticiones a:
 
 - curl http://169.254.169.254/latest/meta-data/iam/security-credentials/
 - curl http://169.254.169.254/latest/meta-data/iam/security-credentials/<nombre_del_InstanceProfile>
