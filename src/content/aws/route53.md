@@ -33,3 +33,17 @@ Accesible desde:
 Pueden utilizarlo dominios registrados fuera de AWS.
 
 Se cobra el hosting del zone y un pequeño coste por las queries que recibe.
+
+### Private Hosted Zones
+
+Funciona como el público pero solo es accedido por las VPC con las que esté asociado.
+
+Pueden asociarse VPC por la consola de AWS, con la CLI y por API. También puede asociarse con otras cuentas de AWS pero solo mediante CLI y API.
+
+### Split-view o split-horizon DNS
+
+Con la técnica split-view pueden solaparse el public y private hosted zone.
+
+Con esto se consigue dar acceso público a los registros que queramos o poder tener una versión distinta para uso interno y externo; por ejemplo una página web diferente si se accede desde fuera de nuestra compañía.
+
+Para ello los hosted zones tienen el mismo nombre y registros; no es necesario que todos los registros sean iguales, solo aquellos que queramos que sean accesibles públicamente.
