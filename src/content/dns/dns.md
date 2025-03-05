@@ -39,6 +39,8 @@ Es una manera de crear alias. Por ejemplo, tenemos un registro A, y creamos los 
 
 Los CNAMEs no pueden apuntar directamente a una IP, deben hacerlo a otro nombre.
 
+No puede crearse un CNAME para un naked/apex domain (es el nombre del dominio mas el TLD, ejemplo cmoli.es).
+
 ### MX
 
 Utilizado en el envío de emails, guarda cuál es el servidor de emails de un dominio.

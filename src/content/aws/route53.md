@@ -47,3 +47,17 @@ Con la técnica split-view pueden solaparse el public y private hosted zone.
 Con esto se consigue dar acceso público a los registros que queramos o poder tener una versión distinta para uso interno y externo; por ejemplo una página web diferente si se accede desde fuera de nuestra compañía.
 
 Para ello los hosted zones tienen el mismo nombre y registros; no es necesario que todos los registros sean iguales, solo aquellos que queramos que sean accesibles públicamente.
+
+### CNAME vs alias
+
+Un CNAME no puede trabajar con un naked/apex domain; esto en AWS es un problema porque hay servicios que usan un nombre DNS naked, por ejemplo los ELBs.
+
+Los alias pueden trabajar con naked/apex domains (ejemplo cmoli.es) y con dominios normales (ejemplo www.cmoli.es).
+
+El alias es un servicio de AWS; para poder utilizarlo es necesario Route53.
+
+En AWS si un alias apunta a un registro de AWS, las peticiones al alias no tienen coste.
+
+El alias es un subtipo, puedes tener un alias de un registro A y de un CNAME y para poder usarlo tiene que apuntar a algo del mismo tipo:
+
+- IP alias para: API Gateway, CloudFront, ELB, S3, etc.
