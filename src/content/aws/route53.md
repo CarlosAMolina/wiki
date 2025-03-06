@@ -72,7 +72,7 @@ Simple routing no es compatible con healthcheck (healthcheck chequea si el objet
 
 ### Health Checks
 
-Servicio para revisar el correcto funcionamiento de algo.
+Servicio para revisar el correcto funcionamiento y rendimiento de algo.
 
 Puede hacer revisiones utilizando:
 
