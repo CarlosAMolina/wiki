@@ -90,3 +90,13 @@ Tipos de revisiones:
 Pueden revisar el estado de servicios dentro y fuera de AWS.
 
 Los chequeos son cada 30 segundos. Puede ser cada 10 pero tiene coste adicional.
+
+## Failover Routing
+
+Permite redirigir el tráfico que va a recurso a otro cuando el primero falla.
+
+El fallo se detecta con health check.
+
+Con él creamos registros con el mismo nombre. Por ejemplo, creamos otro registro www, de esta manera redirigimos el tráfico a una página estática de S3 cuando el servicio no funcione.
+
+Por tanto, se utiliza para tener un failover activo pasivo.
