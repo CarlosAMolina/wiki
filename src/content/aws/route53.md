@@ -69,3 +69,24 @@ Con simple routing puedes configurar únicamente un registro para un nombre de h
 Ejemplo, para el hosted zone cmoli.es, creamos con simple routing el registro www, que tendrá las IPs 1.1.1.1, 2.2.2.2 y 3.3.3.3. Cuando un cliente solicita www.cmoli.es, recibe todos estos valores y utiliza uno.
 
 Simple routing no es compatible con healthcheck (healthcheck chequea si el objetivo está disponible).
+
+### Health Checks
+
+Servicio para revisar el correcto funcionamiento de algo.
+
+Puede hacer revisiones utilizando:
+
+- TCP: revisa si hay conexión.
+- HTTP y HTTPS: puede revisar el tiempo y código de respuesta y también la información recibida.
+
+El resultado de la revisión es `healthy` o `unhealthy`. Para que una revisión sea healthy, el el 18% de los checkers deben devolver estado healthy.
+
+Tipos de revisiones:
+
+- Endpoint: revisamos un endpoint.
+- CloudWatch Alarm: el servicio reacciona a alarmas de CloudWatch.
+- Calculated checks: se trata de revisar logs realizados por otras revisiones.
+
+Pueden revisar el estado de servicios dentro y fuera de AWS.
+
+Los chequeos son cada 30 segundos. Puede ser cada 10 pero tiene coste adicional.
