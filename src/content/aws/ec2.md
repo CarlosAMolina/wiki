@@ -226,7 +226,7 @@ Atributos:
 - Primary private IPv4. Es estática, no cambia durante el tiempo de vida de la instancia EC2. Se asocia un nombre DNS que solo puede resolverse dentro de la VPC.
 - 0 o más secondary IPv4 privadas.
 - 0 o 1 IPv4 públicas. Es dinámica, cambia cuando se cambia de EC2 Host o se para e inicia la instancia (no cuando se reinicia). Se le asocia un nombre DNS público; dentro de la VPC, este nombre DNS resuelve a la dirección IPv4 primaria y fuera de la VPC a la IPv4 pública. La dirección IPv4 pública no está asociada ni a la instancia EC2 ni a la ENI, sino al Interface Gateway, que tiene los registros para hacer la relación; así distintas instancias de la VPC pueden usar el mismo nombre DNS.
-- 1 elastic IP por cada IPv4 privada. De usarla, sustituye a la IPv4 pública; de quitar la elastic IP, se asignaría una IPv4 pública distinta a la que tenía antes.
+- 1 elastic IP por cada IPv4 privada. De usarla, sustituye a la IPv4 pública; de quitar la elastic IP, se asignaría una IPv4 pública distinta a la que tenía antes. Las elastic IP son estáticas, puede asignarse desde la consola de AWS.
 - 0 o más IPv6.
 - Security groups. Aplican a todas las direcciones de la interfaz; por lo que si queremos distintos SG, hace falta distintas interfaces.
 - Source/Destination check: el tráfico se descarta si no viene o va a una IP de la interfaz. Es necesario desactivarlo para que la instancia EC2 funcione como una instancia NAT.
