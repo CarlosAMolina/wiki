@@ -127,6 +127,25 @@ Esto permite probar software porque podemos asignar un peso pequeño a una nueva
 
 Permite aumentar el rendimiento y experiencia de usuario ya que Route53 devolverá los records con mejor performance.
 
-Con el record guardamos la región en la que se encuentra y así AWS selecciona la que presenta menor latencia para el usuario. Para saberlo, guarda una base de datos con información de la latencia por región y lo compara con la localización de la IP de la solicitud.
+Con el record guardamos una tag con la región de AWS en la que se encuentra y así AWS selecciona la que presenta menor latencia para el usuario. Para saberlo, guarda una base de datos con información de la latencia por región y lo compara con la localización de la IP de la solicitud.
 
 De usar health checks, devolverá el caso con menor latencia y que esté healthy.
+
+#### Geolocation routing
+
+Route53 devolverá el registro en base a la relevancia de la localización configurada en los registros y la localización del usuario (no en base a la cercanía ni a la latencia como vimos en latency-based policy).
+
+Con el record guardamos una tag con su localización. La tag puede indicar (de mayor a menor relevancia):
+
+- El estado dentro del país.
+- El país.
+- Continente.
+- Usar la tag `default` utilizada si los registros en los grupos anteriores no matchean con la localización del usuario.
+
+Se compara la localización del usuario con la de los registros en orden de preferencia anterior. Importante, no se devuelve el registro más cercano, sino la más relevante; también puede devolver la respuesta `NO ANSWER` en caso de que ningún registro esté configurado para tener relevancia, aunque esté cerca.
+
+Puede utilizarse para:
+
+- Restringir contenido por zonas.
+- Devolver contenido en base al idioma.
+- Load balancing según localización.
