@@ -100,3 +100,13 @@ El fallo se detecta con health check.
 Con él creamos registros con el mismo nombre. Por ejemplo, creamos otro registro www, de esta manera redirigimos el tráfico a una página estática de S3 cuando el servicio no funcione.
 
 Por tanto, se utiliza para tener un failover activo pasivo.
+
+## Multi value routing
+
+Es una mezcla entre simple y failover routing.
+
+Permite aumentar la disponibilidad ya que podemos crear varios registros con el mismo nombre. Por ejemplo 3 registros www cada uno con su dirección IP
+
+Cada record puede tener su health check, pero si hay más de 8 checks, recibiremos 8 checks de manera aleatoria.
+
+El DNS responde con los registros que están healthy y el usuario elije cuál utilizar. No es un reemplazo para el load balancing.
