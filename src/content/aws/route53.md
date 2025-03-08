@@ -83,7 +83,9 @@ Pueden revisar el estado de servicios dentro y fuera de AWS.
 
 Los chequeos son cada 30 segundos. Puede ser cada 10 pero tiene coste adicional.
 
-### Simple routing
+### Route policies
+
+#### Simple routing
 
 Con simple routing puedes configurar únicamente un registro para un nombre de hosted zone; cada registro puede tener varios valores.
 
@@ -91,7 +93,7 @@ Ejemplo, para el hosted zone cmoli.es, creamos con simple routing el registro ww
 
 Simple routing no es compatible con healthcheck (healthcheck chequea si el objetivo está disponible).
 
-## Failover Routing
+#### Failover Routing
 
 Permite redirigir el tráfico que va a recurso a otro cuando el primero falla.
 
@@ -101,7 +103,7 @@ Con él creamos registros con el mismo nombre. Por ejemplo, creamos otro registr
 
 Por tanto, se utiliza para tener un failover activo pasivo.
 
-## Multi value routing
+#### Multi value routing
 
 Es una mezcla entre simple y failover routing.
 
