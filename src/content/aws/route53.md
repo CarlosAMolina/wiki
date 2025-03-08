@@ -117,9 +117,16 @@ El DNS responde con los registros que están healthy y el usuario elije cuál ut
 
 Se utiliza para implementar una load balancer simple o probar software.
 
-Si tienes por ejemplo 3 registros www DNS, a cada uno le asocias un peso. Se calcula la suma de los pesos con el mismo nombre (www en este ejemplo) y cada registro se devolverá en un porcentaje igual a su peso dividido entre la suma de los pesos con su nombre (tanto healthy como unhealthy); en caso de está unhealthy, se pasa al siguiente con mayor resultado en la división anterior.
+Si tienes por ejemplo 3 registros www DNS, a cada uno le asocias un peso. Se calcula la suma de los pesos con el mismo nombre (www en este ejemplo) y cada registro se devolverá en un porcentaje igual a su peso dividido entre la suma de los pesos con su nombre (tanto healthy como unhealthy); de usar health checks, en caso de está unhealthy, se pasa al siguiente con mayor resultado en la división anterior.
 
 Para no devolver un registro, se le asocia un peso de 0. Si todos los registros pesan 0, entonces se tienen todos en cuenta.
 
 Esto permite probar software porque podemos asignar un peso pequeño a una nueva versión de un servicio para que no lo usen todos los usuarios.
 
+#### Latency-based routing
+
+Permite aumentar el rendimiento y experiencia de usuario ya que Route53 devolverá los records con mejor performance.
+
+Con el record guardamos la región en la que se encuentra y así AWS selecciona la que presenta menor latencia para el usuario. Para saberlo, guarda una base de datos con información de la latencia por región y lo compara con la localización de la IP de la solicitud.
+
+De usar health checks, devolverá el caso con menor latencia y que esté healthy.
