@@ -62,14 +62,6 @@ El alias es un subtipo, puedes tener un alias de un registro A y de un CNAME y p
 
 - IP alias para: API Gateway, CloudFront, ELB, S3, etc.
 
-### Simple routing
-
-Con simple routing puedes configurar únicamente un registro para un nombre de hosted zone; cada registro puede tener varios valores.
-
-Ejemplo, para el hosted zone cmoli.es, creamos con simple routing el registro www, que tendrá las IPs 1.1.1.1, 2.2.2.2 y 3.3.3.3. Cuando un cliente solicita www.cmoli.es, recibe todos estos valores y utiliza uno.
-
-Simple routing no es compatible con healthcheck (healthcheck chequea si el objetivo está disponible).
-
 ### Health Checks
 
 Servicio para revisar el correcto funcionamiento y rendimiento de algo.
@@ -90,6 +82,14 @@ Tipos de revisiones:
 Pueden revisar el estado de servicios dentro y fuera de AWS.
 
 Los chequeos son cada 30 segundos. Puede ser cada 10 pero tiene coste adicional.
+
+### Simple routing
+
+Con simple routing puedes configurar únicamente un registro para un nombre de hosted zone; cada registro puede tener varios valores.
+
+Ejemplo, para el hosted zone cmoli.es, creamos con simple routing el registro www, que tendrá las IPs 1.1.1.1, 2.2.2.2 y 3.3.3.3. Cuando un cliente solicita www.cmoli.es, recibe todos estos valores y utiliza uno.
+
+Simple routing no es compatible con healthcheck (healthcheck chequea si el objetivo está disponible).
 
 ## Failover Routing
 
