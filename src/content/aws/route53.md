@@ -149,3 +149,15 @@ Puede utilizarse para:
 - Restringir contenido por zonas.
 - Devolver contenido en base al idioma.
 - Load balancing según localización.
+
+#### Geoproximity routing
+
+Ofrece a los usuarios los registros que se encuentren a menor distancia, para calcularla se tiene en cuenta el `bias`, lo vemos a continuación.
+
+Indicas dónde se encuentra los recursos añadiendo una tag a los registros:
+
+- Si es un servicio de AWS: indicas la región en que se encuentra.
+- De no ser un servicio de AWS: indicas la latitud y la longitud.
+
+Al calcular la distancia también se tiene en cuenta el `bias`, es un valor que añadimos a la configuración para modificar el cálculo de la distancia, puede ser positivo o negativo. Por ejemplo, si un usuario está mas cerca de un recurso situado en una zona A pero queremos que utilice un recurso que se encuentra en B; podemos aplicar un bias positivo a B para aumentar la zona a la que da servicio.
+
