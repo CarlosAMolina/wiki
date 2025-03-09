@@ -48,7 +48,7 @@ Con esto se consigue dar acceso público a los registros que queramos o poder te
 
 Para ello los hosted zones tienen el mismo nombre y registros; no es necesario que todos los registros sean iguales, solo aquellos que queramos que sean accesibles públicamente.
 
-### CNAME vs alias
+## CNAME vs alias
 
 Un CNAME no puede trabajar con un naked/apex domain; esto en AWS es un problema porque hay servicios que usan un nombre DNS naked, por ejemplo los ELBs.
 
@@ -62,7 +62,7 @@ El alias es un subtipo, puedes tener un alias de un registro A y de un CNAME y p
 
 - IP alias para: API Gateway, CloudFront, ELB, S3, etc.
 
-### Health Checks
+## Health Checks
 
 Servicio para revisar el correcto funcionamiento y rendimiento de algo.
 
@@ -83,9 +83,9 @@ Pueden revisar el estado de servicios dentro y fuera de AWS.
 
 Los chequeos son cada 30 segundos. Puede ser cada 10 pero tiene coste adicional.
 
-### Route policies
+## Route policies
 
-#### Simple routing
+### Simple routing
 
 Con simple routing puedes configurar únicamente un registro para un nombre de hosted zone; cada registro puede tener varios valores.
 
@@ -93,7 +93,7 @@ Ejemplo, para el hosted zone cmoli.es, creamos con simple routing el registro ww
 
 Simple routing no es compatible con healthcheck (healthcheck chequea si el objetivo está disponible).
 
-#### Failover Routing
+### Failover Routing
 
 Permite redirigir el tráfico que va a recurso a otro cuando el primero falla.
 
@@ -103,7 +103,7 @@ Con él creamos registros con el mismo nombre. Por ejemplo, creamos otro registr
 
 Por tanto, se utiliza para tener un failover activo pasivo.
 
-#### Multi value routing
+### Multi value routing
 
 Es una mezcla entre simple y failover routing.
 
@@ -113,7 +113,7 @@ Cada record puede tener su health check, pero si hay más de 8 checks, recibirem
 
 El DNS responde con los registros que están healthy y el usuario elije cuál utilizar. No es un reemplazo para el load balancing.
 
-#### Weighted routing
+### Weighted routing
 
 Se utiliza para implementar una load balancer simple o probar software.
 
@@ -123,7 +123,7 @@ Para no devolver un registro, se le asocia un peso de 0. Si todos los registros 
 
 Esto permite probar software porque podemos asignar un peso pequeño a una nueva versión de un servicio para que no lo usen todos los usuarios.
 
-#### Latency-based routing
+### Latency-based routing
 
 Permite aumentar el rendimiento y experiencia de usuario ya que Route53 devolverá los records con mejor performance.
 
@@ -131,7 +131,7 @@ Con el record guardamos una tag con la región de AWS en la que se encuentra y a
 
 De usar health checks, devolverá el caso con menor latencia y que esté healthy.
 
-#### Geolocation routing
+### Geolocation routing
 
 Route53 devolverá el registro en base a la relevancia de la localización configurada en los registros y la localización del usuario (no en base a la cercanía ni a la latencia como vimos en latency-based policy).
 
@@ -150,7 +150,7 @@ Puede utilizarse para:
 - Devolver contenido en base al idioma.
 - Load balancing según localización.
 
-#### Geoproximity routing
+### Geoproximity routing
 
 Ofrece a los usuarios los registros que se encuentren a menor distancia, para calcularla se tiene en cuenta el `bias`, lo vemos a continuación.
 
@@ -160,4 +160,3 @@ Indicas dónde se encuentra los recursos añadiendo una tag a los registros:
 - De no ser un servicio de AWS: indicas la latitud y la longitud.
 
 Al calcular la distancia también se tiene en cuenta el `bias`, es un valor que añadimos a la configuración para modificar el cálculo de la distancia, puede ser positivo o negativo. Por ejemplo, si un usuario está mas cerca de un recurso situado en una zona A pero queremos que utilice un recurso que se encuentra en B; podemos aplicar un bias positivo a B para aumentar la zona a la que da servicio.
-
