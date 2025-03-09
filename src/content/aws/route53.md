@@ -11,6 +11,8 @@ Un zonefile o DNS zone es una base de datos con los DNS records del dominio. Alm
 
 Es un servicio global, tiene resilencia global.
 
+Ejemplo del proceso de registrar un dominio, ver en esta wiki la parte route53 de AWS.
+
 ## Hosted Zones
 
 Los zone files en AWS se llaman hosted zones porque están hosteadas en name servers gestionados por AWS.

@@ -4,8 +4,8 @@
 
 - DNS Root Zone: lo gestiona IANA.
 - DNS Root Servers: hay 13, los gestionan 12 organizaciones.
-- Registry: es el tipo de organización (pro ejemplo una compañía) responsable (que mantiene) las zonas de un TLD (por ejemplo .org).
-- Registrar: es el tipo de organización que tiene relación con el manager de una zona TLD (por ejemplo .org) y permite el registro de dominios.
+- Registry: es el tipo de organización (por ejemplo una compañía) responsable (es el manager, que mantiene) las zonas de un TLD (por ejemplo .org).
+- Registrar: es el tipo de organización que tiene relación con el registry de una zona TLD (por ejemplo .org) y permite el registro de dominios.
 
 ## TTL
 
