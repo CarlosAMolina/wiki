@@ -2,7 +2,7 @@
 
 ## Introducción
 
-Este servicio es para la gestión de DNS, permite:
+Este servicio es para la gestión de DNS, permite (ver sección `Interoperability` para más detalle):
 
 - Registrar o transferir un dominio.
 - Hosting de zone files en name servers gestionados por AWS.
@@ -160,3 +160,36 @@ Indicas dónde se encuentra los recursos añadiendo una tag a los registros:
 - De no ser un servicio de AWS: indicas la latitud y la longitud.
 
 Al calcular la distancia también se tiene en cuenta el `bias`, es un valor que añadimos a la configuración para modificar el cálculo de la distancia, puede ser positivo o negativo. Por ejemplo, si un usuario está mas cerca de un recurso situado en una zona A pero queremos que utilice un recurso que se encuentra en B; podemos aplicar un bias positivo a B para aumentar la zona a la que da servicio.
+
+### Interoperability
+
+Es cuando en Route53 no hacemos los siguientes puntos (parar entender el funcionamiento, ayuda ver estos puntos como funcionalidades diferentes dentro de Route53):
+
+- Registrar el dominio.
+- Hosting del dominio, a continuación indicamos qué acciones se realizan aquí.
+
+Sino que uno de estos se realiza en Route53 y lo otro en un servicio externo a AWS.
+
+#### Route53 como registrar y domain hosting
+
+Al registrar un dominio en Route53:
+
+- Actúa como el registrar aplicándonos un coste por el registro, se paga cada año o cada tres años. De estar el dominio disponible, se continúa con los siguientes pasos.
+- Para el domain hosting (se realiza en la zona pública de AWS):
+  - Se provisionan 4 name servers (NS).
+  - Se crea un zone file, hosteado en los NS anteriores. Esto tiene un coste mensual (se le paga a Route53).
+- Actúa como el domain registrar comunicando los cambios al registry del TLD que utilicemos para que añada una entrada para el dominio. En esta entrada dada al registry añade los NS que se utilicen.
+
+#### Route53 solo como registrar
+
+En caso de que Route53 solo realice la función de registrar, hay que aplicar otras configuraciones manuales. El dominio lo gestiona Route53 pero la provisión de los NS y el cobro mensual se hace con el proveedor externo que realice la función de hosting del dominio.
+
+Esta arquitectura no se utiliza mucho porque dejaríamos de utiliza el hosting con Route53, y esta función ofrece más valor que la de registrar.
+
+#### Route53 solo para domain hosting
+
+Esta arquitectura es empleada más que la de utilzar Route53 solo como el registrar.
+
+El tercero que haga de registrar realizará las funciones antes descritas que Route53 hace para ello.
+
+Puede utilizarse esta arquitectura por ejemplo con un dominio ya registrado pero queremos usar el hosting de AWS.
