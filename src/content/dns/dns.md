@@ -13,6 +13,30 @@ La respuesta a una consulta DNS puede venir del servidor principal que contiene 
 
 Es un valor importante porque si en el servidor principal se actualizan los valores, es el tiempo que los servidores resolvers tardarán en tomar el nuevo valor.
 
+## DNSSEC
+
+Con DNSSEC se mejora la autenticación utilizando firmas digitales basas en criptografía de clave pública.
+
+No se firman las peticiones y respuestas DNS, sino que es la información DNS la que ha sido firmada por el propietario.
+
+Hacer petición al DNS solicitando registros con DNSSEC:
+
+```bash
+dig cmoli.es dnskey +dnssec
+# otra opción
+dig cmoli.es DS @AUTHORITATIVE_NS
+# para ver el valor DNSSEC de un registro por ejemplo test.cmoli.es
+dig test.cmoli.es A +dnssec
+```
+
+## Authoritative name servers
+
+Para mostrar los del TLD .org:
+
+```bash
+dig org NS + short
+```
+
 ## DNS records
 
 ### NS

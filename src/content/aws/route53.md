@@ -40,6 +40,8 @@ Se cobra el hosting del zone y un pequeño coste por las queries que recibe.
 
 Funciona como el público pero solo es accedido por las VPC con las que esté asociado.
 
+Se asocia a 1 o más VPCs.
+
 Pueden asociarse VPC por la consola de AWS, con la CLI y por API. También puede asociarse con otras cuentas de AWS pero solo mediante CLI y API.
 
 ### Split-view o split-horizon DNS
@@ -195,3 +197,19 @@ Esta arquitectura es empleada más que la de utilzar Route53 solo como el regist
 El tercero que haga de registrar realizará las funciones antes descritas que Route53 hace para ello.
 
 Puede utilizarse esta arquitectura por ejemplo con un dominio ya registrado pero queremos usar el hosting de AWS.
+
+## DNSSEC
+
+Se activa el DNSSEC para un hosted zone desde la consola de AWS o la cli.
+
+Proceso:
+
+- Una clave pública y privada llamadas Key Signing Key (KSK) se crean con KMS y deben estar en la región US-EAST-1.
+- Después Route53 crea las Zone Signing Keys (ZSK), su creación y gestión las realiza Route53 internamente, sin usar KMS. Las ZSK se utilizarán para firmar criptográficamente.
+- Route 53 añade las partes públicas de las claves KSK y ZSK en registros DNSKEY dentro del hosted zone. Con esto los DNSSEC resolvers saben qué claves públicas utilizar para verificar los otros registros de esta zona.
+- Con la KSK privada se cifran los registros DNSKEY para crear el registro RRSIG DNSKEY, así cualquier DNS resolver verifica que los registros DNSKEY son válidos.
+- Route53 establece el chain of trusth con el parent zone, para ello en el parent se crea el registro DS (Delegation Signer) que es el hash de la parte pública de KSK. Si el dominio está registrado con Route53, el proceso puede hacerse desde la consola de AWS (en Rotue53, en el menú de la izquierda, elegir `Registered domains`) o con la CLI, en caso de no hacer el registro con Route53 y usar Route53 solo para el hosting de la zona, hay que hacer el proceso manualmente.
+- El TLD ahora confiará en este dominio gracias al registro DS y el domain zone firmará todos los registros con el KSK o el ZSK.
+- Debemos configurar alarmas de CloudWatch para detectar fallos de DNSSEC o acciones que haya que realizar con las keys. También podemos activar validaciones DNSSEC en los VPC para que no se devuelvan registros no válidos.
+
+Creo que solo afecta el DNSSEC a los nuevos registros que se creen después de haber realizado este proceso; los registros que ya existen creo que no se ven afectados.
