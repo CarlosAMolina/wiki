@@ -1,25 +1,25 @@
 ## Contents
 
-- [Show table definition](#show-table-definition)
-  - [Show table definition in PostgreSQL](#show-table-definition-in-postgresql)
+- [Mostrar el table definition](#mostrar-el-table-definition)
+  - [Mostrar table definition en PostgreSQL](#mostrar-table-definition-en-postgresql)
 
-## Show table definition
+## Mostrar el table definition
 
 ### Show table definition in PostgreSQL
 
-The following command is independent of `psql`:
+El siguiente comando es independiente de `psql`:
 
 ```bash
 pg_dump -U {USER} {DATABASE} -t {TABLE} -s;
 ```
 
-Example:
+Ejemplo:
 
 ```bash
 pg_dump -U postgres rustwebdev -t accounts --schema-only;
 ```
 
-Resources:
+Recursos:
 
 <https://stackoverflow.com/questions/2593803/how-to-generate-the-create-table-sql-statement-for-an-existing-table-in-postgr>
 
