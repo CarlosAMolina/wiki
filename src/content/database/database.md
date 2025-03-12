@@ -32,6 +32,16 @@ Muy utilizado en bases de datos relacionales. Limita la escalabilidad.
 
 Está enfocado en availability.
 
+El nombre está formado por:
+
+- BA: basically available. Las operaciones de escritura y lectura no tienen garantía de ejecutarse correctamente, se hace un best-effort. Consigen la disponibilidad de los datos replicándolos por todos los nodos.
+- S: soft state. No se asegura la consistencia, la aplicación o el usuario debe velar de obtener los datos más actualizados (por lo menos indicar a la base de datos que así sea), puede que en un nodo esté actualizado y en otro no.
+- E: eventually consistent. Si esperamos lo suficiente, los datos tendrán la última escritura realizada.
+
+Las bases de datos de este tipo ofrecen can escalabilidad y performance.
+
+Ejemplo: DynamoDB de AWS, normalmente trabaja en modo BASE, aunque tiene opciones para asegurar consistencia con transacciones en modo ACID.
+
 ## Mostrar el table definition
 
 ### Show table definition in PostgreSQL
