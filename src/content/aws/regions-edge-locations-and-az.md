@@ -46,6 +46,8 @@ Se caracterizan porque:
 - La infraestructura está aislada entre AZs. En caso de fallo el resto no se ve afectado.
 - Pueden desplegarse los servicios en distintas AZs para tener resilencia para que si una falla no afecte a los otros servicios; también pueden conectarse unas AZs con otras con VPC.
 
+Transmitir datos entre diferentes AZ (por ejemplo entre instancias EC2) tiene un pequeño coste; si las instancias están en la misma AZ y usan IP privadas, no tiene coste.
+
 ## Resilencia
 
 En AWS hay distintos niveles de resilencia:
