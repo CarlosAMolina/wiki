@@ -22,6 +22,8 @@ RDS = Relational Database Service
 
 No se trata de DBaaS (Database as a Service) porque en DBaaS pagas por una base de datos; en el caso de RDS pagamos por un servidor de base de datos, por lo que podemos tener varias bases de datos en una instancia RDS, es decir, en un servidor DB.
 
+Por defecto, al crear una instancia de RDS, no se crea una base de datos en ella, pero puede elegirse que sí.
+
 RDS gestiona el hardware, sistema operativo, instalación y mantenimiento.
 
 DB engines disponibles: MySQL, MariaDb, PostgreSQL, Oracle, Microsoft SQL Server. Como se ve, algunos casos requieren de licencia.
@@ -29,6 +31,16 @@ DB engines disponibles: MySQL, MariaDb, PostgreSQL, Oracle, Microsoft SQL Server
 Accedemos a las instancias por VPN o con AWS Direct Connect. No tenemos acceso al sistema operativo o acceso con SSH; aunque hay casos en que se puede tener cierto nivel de acceso.
 
 Es un servicio que funciona en una VPC, por lo que no es público como S3 a menos que lo configuremos para ello asignándole una IP pública.
+
+Pueden activarse algunas opciones de autoscaling, por ejemplo:
+
+- Almacenamiento.
+
+### VPC securit group
+
+Es cómo controlamos el acceso a las instancias RDS.
+
+Configura las conexiones permitidas en las network interfaces.
 
 ### Instancias RDS
 
@@ -66,7 +78,15 @@ De utilizar modo multi AZ, el backup se realiza desde la instancia standby, por 
 
 ### RDS subnet group
 
-La creamos nosotros e indica qué subredes pueden utilizar las instancias RDS.
+La creamos nosotros e indica en qué subredes de la VPC utilizar las instancias RDS.
+
+Al crearla, se configura:
+
+- VPC a la que pertenecerá.
+- AZ donde están las subredes que deseamos utilizar.
+- Subredes de la VPC en las AZ que utilizar.
+
+Al crear la instancia RDS podemos elegir que utilice una AZ específica o que AWS la sitúe en la más óptima; esto se selecciona al configura el VPC security group.
 
 ### Coste
 
@@ -83,4 +103,6 @@ Cobran por:
 
 No está dentro de RDS, se trata de un producto diferente y hay diferencias entre ellos.
 
-Es un engine creado por AWS; tiene compatibilidad con otros engines.
+Es un engine creado por AWS; tiene compatibilidad con los engines MySQL y PostgreSQL.
+
+Al configurarlo no es necesario indicar cuánto almacenamiento provisionar.
