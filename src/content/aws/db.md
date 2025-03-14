@@ -36,6 +36,13 @@ Pueden activarse algunas opciones de autoscaling, por ejemplo:
 
 - Almacenamiento.
 
+### Endpoint and port
+
+Al crear una instancia RDS, AWS le asinga:
+
+- Edpointl Ejemplo: mywordpress.asdf.us-east-1.rds.amazonaws.com. Se utiliza este valor y el del puerto para conectar con la instancia RDS; por ejemplo, es lo que especificar en el archivo `wp-config.php` de configuración de WordPress para DB_HOST.
+- Port. Ejemplo: 3306.
+
 ### VPC securit group
 
 Es cómo controlamos el acceso a las instancias RDS.
