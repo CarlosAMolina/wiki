@@ -22,41 +22,49 @@ RDS = Relational Database Service
 
 No se trata de DBaaS (Database as a Service) porque en DBaaS pagas por una base de datos; en el caso de RDS pagamos por un servidor de base de datos, por lo que podemos tener varias bases de datos en una instancia RDS, es decir, en un servidor DB.
 
-Cada instancia RDS tiene su almacenamiento dedicado, utiliza EBS.
-
 RDS gestiona el hardware, sistema operativo, instalación y mantenimiento.
 
 DB engines disponibles: MySQL, MariaDb, PostgreSQL, Oracle, Microsoft SQL Server. Como se ve, algunos casos requieren de licencia.
 
-No tenemos acceso al sistema operativo o acceso con SSH; aunque hay casos en que se puede tener cierto nivel de acceso.
+Accedemos a las instancias por VPN o con AWS Direct Connect. No tenemos acceso al sistema operativo o acceso con SSH; aunque hay casos en que se puede tener cierto nivel de acceso.
 
-### Instancia standby
+Es un servicio que funciona en una VPC, por lo que no es público como S3 a menos que lo configuremos para ello asignándole una IP pública.
 
-De utilizar high availability, se crea además de la instancia principal, una de standby en otra RDS subnet group (explicado qué es más adelante) y cada instancia tiene su almacenamiento dedicado.
+### Instancias RDS
+
+Cada instancia RDS tiene su almacenamiento dedicado, el almacenamiento utiliza EBS. Es decir, cada tipo de instancias que veremos a continuación tiene un almacenamiento separado al resto.
+
+Las instancias pueden estar en distintas AZ, y como veremos, algunas en otra región. No estoy seguro de si puede haber más de una instancia en una AZ.
+
+Ejemplo de cuántas instancias RDS crear, una por cada RDS deployment, por ejemplo una por AZ.
+
+#### Instancia primaria
+
+Es la principal, la que utilizamos de manera habitual.
+
+El database CNAME apunta a las instancias Primary y Standy en caso de haberla.
+
+#### Instancia standby
+
+De utilizar high availability, se crea además de la instancia principal, una de standby en otra RDS subnet group (explicado qué es más adelante).
+
+El database CNAME apunta a las instancias Primary y Standy en caso de haberla.
 
 Se realiza una replicación síncrona de la instancia primaria a la standby, es decir, se replica la información tan pronto llega a la primaria.
 
-### Read replica
+#### Instancia read replica
 
 Utiliza replicación asíncrona.
 
 La instancia read replica puede estar en otra región.
 
-### Backups
+#### Backups
 
 Se almacenan en S3.
 
-De utilizar modo multi AZ, el backup se realiza desde la instancia standby, por lo que no hay un impacto en el rendimiento.
+De utilizar modo multi AZ, el backup se realiza desde la instancia standby, por lo que no hay un impacto en el rendimiento de la primaria.
 
-### Arquitectura
-
-Es un servicio que funciona en una VPC, por lo que no es público como S3 a menos que lo configuremos para ello asignándole una IP pública.
-
-Ejemplo de cuántas crear, una por cada RDS deployment.
-
-Accedemos a las instancias por VPN o con AWS Direct Connect.
-
-#### RDS subnet group
+### RDS subnet group
 
 La creamos nosotros e indica qué subredes pueden utilizar las instancias RDS.
 
