@@ -61,15 +61,14 @@ Ejemplo de cuántas instancias RDS crear, una por cada RDS deployment, por ejemp
 
 Es la principal, la que utilizamos de manera habitual.
 
-El database CNAME apunta a las instancias Primary y Standy en caso de haberla.
+El database CNAME apunta a las instancias Primary y Standby en caso de haberla.
 
 #### Instancia standby
 
-De utilizar high availability, se crea además de la instancia principal, una de standby en otra RDS subnet group (explicado qué es más adelante).
+Ver sección high availability.
 
-El database CNAME apunta a las instancias Primary y Standy en caso de haberla.
+El database CNAME apunta a las instancias Primary y Standby en caso de haberla.
 
-Se realiza una replicación síncrona de la instancia primaria a la standby, es decir, se replica la información tan pronto llega a la primaria.
 
 #### Instancia read replica
 
@@ -81,7 +80,7 @@ La instancia read replica puede estar en otra región.
 
 Se almacenan en S3.
 
-De utilizar modo multi AZ, el backup se realiza desde la instancia standby, por lo que no hay un impacto en el rendimiento de la primaria.
+En la sección multi AZ se explica cómo se comporta en este caso.
 
 ### RDS subnet group
 
@@ -106,10 +105,53 @@ Cobran por:
 - Backups y snapshots. El snaphsot es gratis hasta que ocupa más del tamaño del almacenamiento de la instancia; por ejemplo si el almacenamiento es 1 TB, tenemos 1 TB gratis de snapshot. Cobra por giga al mes, por ejemplo, 1 TB almacenado un mes cuesta lo mismo que 0.5 TB dos meses.
 - Costes por posibles licencias.
 
+### High availability
+
+#### Multi AZ Instance Deployment
+
+Históricamente, era el único modo de tener high availability en RDS.
+
+De activarlo, se crea una instancia standby en otra AZ (en otro RDS subnet group). Solo hay una instancia standby.
+
+La replicación es a nivel de storage, lo que es menos eficiente que la opción de multi AZ en modo cluster.
+
+Al acceder a la db, se usa el CNAME de la instancia primaria, la instancia standby solo en caso de error en la primaria; por lo que este modo no permite escalar el rendimiento, solo se enfoca en la disponibilidad. Cuando la primaria deja de estar disponible (fallo en la AZ o en la instancia, o porque se actualiza software o cambiamos el tipo de instancia), RDS modifica el CNAME para apuntar a la instancia standby que pasa a ser la nueva instancia primaria. Este cambio puede tardar entre 1 y 2 minutos, para reducir el tiempo, la aplicación debería eliminar la caché DNS.
+
+Se realiza una replicación síncrona de la instancia primaria a la standby, es decir, se replica la información tan pronto llega a la primaria.
+
+Solo puede utilizarse en la misma región.
+
+El backup se realiza desde la instancia standby, por lo que no hay un impacto en el rendimiento de la primaria. Se guardan los datos en S3 y se replican en las otras AZ de la región.
+
+#### Multi AZ Cluster
+
+En esta arquitectura:
+
+- La instancia primaria se utiliza para escribir, es el writer. Se utiliza tanto para escritura como lectura.
+- En otras AZ se crean dos instancias utilizadas solo para lectura (solo puede haber 2), cada una en una AZ. Los datos se copian del writer a los readers con replicación síncrona. Permite un poco de scaling en la lectura.
+
+En el Writer se considera que los datos están committed no solo cuando se guardan en el writer, también por lo menos un reader debe confirmar que se ha escrito el dato en él.
+
+Cada instancia tiene su propio local storage. Los datos primero se escriben en un local storage y luego van a EBS.
+
+Se accede al cluster utilizando unos endpoints:
+
+- Cluster endpoint: similar al CNAME en la arquitectura Multi AZ. Apunta a la instancia writer y se utiliza para lecturas, escrituras y administración.
+- Reader endpoint: apunta a cualquier instancia reader disponible, a veces esto incluye al writer.
+- Instance endpoint: cada instancia en el cluster tiene uno de estos. Utilizados para testing y encontrar indisponibilidades.
+
+Otras diferencias con respecto a Multi AZ modo instance:
+
+- El hardware empleado es más rápido que en Multi AZ instance deployment.
+- En caso de error, el tiempo de recuperar la disponibilidad es de 35 segundos porque utiliza transaction log que es mas rápido.
+
 ## Amazon Aurora
 
 No está dentro de RDS, se trata de un producto diferente y hay diferencias entre ellos.
 
 Es un engine creado por AWS; tiene compatibilidad con los engines MySQL y PostgreSQL.
 
-Al configurarlo no es necesario indicar cuánto almacenamiento provisionar.
+Diferencias con RDS:
+
+- Al configurarlo no es necesario indicar cuánto almacenamiento provisionar, como sí es necesario en algunos casos de RDS.
+- Al contrario que high availability con Multi AZ Cluster, con Aurora se puede tener más de 2 instancias Reader.
