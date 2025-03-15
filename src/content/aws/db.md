@@ -78,9 +78,37 @@ La instancia read replica puede estar en otra región.
 
 #### Backups
 
-Se almacenan en S3.
+Se almacenan en S3, por lo que se replica en las AZ de la región.
 
-En la sección multi AZ se explica cómo se comporta en este caso.
+Pueden replicarse en otra región; no es la opción por defecto y tiene coste adicional.
+
+Utiliza AWS Managed S3 Buckets lo que implica que desde la consola de AWS no pueden verse en S3, aunque sí pueden verse desde la opción RDS de la consola de AWS.
+
+Puede impactar el rendimiento, en la sección multi AZ se explica que no se ve el rendimiento afectado al realizarse el backup sobre la instancia standby.
+
+El primer snaphsot almacena todos los datos y los posteriores solo los cambios. Por lo que cuantos menos cambios haya, más rápido se creará.
+
+Al restaurar una base de datos, se crea una nueva instancia RDS, por lo que las aplicaciones deben apuntar a su nueva dirección. Es una acción no inmediata, lleva tiempo.
+
+Hay 2 tipos de backups: snapshots y automated backups.
+
+##### Snapshots
+
+Podemos ejecutarlos o que sean automáticos.
+
+Guardan los datos de toda la instancia, no solo de una base de datos, de todas las db que haya en la instancia.
+
+Al eliminar la instancia RDS, los snapshots se mantienen, hay que eliminarlos explícitamente.
+
+##### Automated backups
+
+Se ejecutan una vez al día.
+
+Cada 5 minutos los transaction logs se guardan en S3. Estos guardan las operaciones que modifican los datos.
+
+Por tanto con los backups y los transaction logs almacenados, puede recuperarse el estado de una base de datos con un margen de 5 minutos.
+
+Podemos configurar retention period con valor de 0 a 35 días. El 0 deshabilita los backups automáticos y el resto de valores son los días de antigüedad que tiene que tener un backup para eliminarse. Al eliminar la base de datos, el retention period sigue aplicando por lo que hay que crear un snaphsot para que no se acabe eliminando el backup.
 
 ### RDS subnet group
 
