@@ -69,12 +69,21 @@ Ver sección high availability.
 
 El database CNAME apunta a las instancias Primary y Standby en caso de haberla.
 
-
 #### Instancia read replica
 
-Utiliza replicación asíncrona.
+Utilizadas solo para lectura. A menos que se modifiquen para reemplazar a la instancia primaria, tendrán las mismas funcionalidades que la antigua primaria.
 
-La instancia read replica puede estar en otra región.
+Utiliza replicación asíncrona, primero se escriben los datos en la instancia primaria y tras esto se replica en las read replica, por lo que puede que no sea una operación inmediata, puede haber un poco de lag.
+
+La instancia read replica puede estar en otra región; es decir, permite cross region failover. De utilizar multi región, AWS gestiona automáticamente el cifrado en las comunicaciones.
+
+Tienen su propio endpoint address por lo que las aplicaciones deben cambiar cuál utilizan.
+
+Características:
+
+- Mejora el rendimiento y escalado en la lectura.
+- Máximo 5 read replicas asociadas de manera directa a cada instancia. A su vez pueden asociarse read replicas a las read replicas pero debido a la sincronización asíncrona, el lag puede acabar siendo un problema.
+- Da tiempos de recuperación ante errores muy rápidos porque su provisión requiree poco tiempo. Es decir, son una buena opción cuando hubo un error en la instancia primaria, podemos crear una réplica para que la utilice la aplicación; en caso de que el error no sea por datos corruptos.
 
 #### Backups
 
@@ -145,7 +154,7 @@ La replicación es a nivel de storage, lo que es menos eficiente que la opción 
 
 Al acceder a la db, se usa el CNAME de la instancia primaria, la instancia standby solo en caso de error en la primaria; por lo que este modo no permite escalar el rendimiento, solo se enfoca en la disponibilidad. Cuando la primaria deja de estar disponible (fallo en la AZ o en la instancia, o porque se actualiza software o cambiamos el tipo de instancia), RDS modifica el CNAME para apuntar a la instancia standby que pasa a ser la nueva instancia primaria. Este cambio puede tardar entre 1 y 2 minutos, para reducir el tiempo, la aplicación debería eliminar la caché DNS.
 
-Se realiza una replicación síncrona de la instancia primaria a la standby, es decir, se replica la información tan pronto llega a la primaria.
+Se realiza una replicación síncrona de la instancia primaria a la standby, es decir, se replica la información tan pronto llega a la primaria; puede entenderse como si solo hubiera una operación de escritura, tanto en la instancia primaria como en la standby.
 
 Solo puede utilizarse en la misma región.
 
