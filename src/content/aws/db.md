@@ -103,7 +103,7 @@ Hay 2 tipos de backups: snapshots y automated backups.
 
 ##### Snapshots
 
-Podemos ejecutarlos o que sean automáticos.
+Podemos ejecutarlos manualmente o automatizarlos con un script ya que RDS no los realiza automáticamente.
 
 Guardan los datos de toda la instancia, no solo de una base de datos, de todas las db que haya en la instancia.
 
@@ -148,7 +148,9 @@ Cobran por:
 
 Históricamente, era el único modo de tener high availability en RDS.
 
-De activarlo, se crea una instancia standby en otra AZ (en otro RDS subnet group). Solo hay una instancia standby.
+De activarlo, se crea una instancia standby en otra AZ, mas específicamente, utiliza otra subnet de las disponibles en el RDS subnet group.
+
+Solo hay una instancia standby.
 
 La replicación es a nivel de storage, lo que es menos eficiente que la opción de multi AZ en modo cluster.
 
