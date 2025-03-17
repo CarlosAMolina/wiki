@@ -194,3 +194,46 @@ Diferencias con RDS:
 
 - Al configurarlo no es necesario indicar cuánto almacenamiento provisionar, como sí es necesario en algunos casos de RDS.
 - Al contrario que high availability con Multi AZ Cluster, con Aurora se puede tener más de 2 instancias Reader.
+
+## Seguridad
+
+### Cifrado
+
+Una vez activado no puede quitarse.
+
+#### SSL/TLS
+
+Puede configurarse como obligatorio el cifrado por SSL/TLS entre cliente y la instancia RDS.
+
+Se utiliza KMS para crear las encryption keys.
+
+Los datos los cifra el RDS host en el que se ejecuta la instancia RDS. Dentro del host los datos no están cifrados, se cifran cuando salen  de este hacia EBS.
+
+Se cifra, utilizando el mimo encryption key:
+
+- Almacenamiento.
+- Logs.
+- Snapshots.
+- Replicas.
+
+#### TDE
+
+TDE = Transparente Data Encryption.
+
+Pueden utilizarlo MSSQL (Microsoft SQL) y Oracle; además de usar KMS.
+
+El cifrado se gestiona por el engine db, no por el host. Esto ofrece mayor seguridad porque los datos se cifran entre el engine db y EBS, quedan cifrados antes de dejar la instancia RDS.
+
+#### CloudHSM
+
+Oracle puede utilizarlo en conjunto con TDE.
+
+Esto da mayor seguridad que las anteriores opicones porque las keys las gestiona el usuario en lugar de AWS.
+
+### IAM authentication
+
+La autenticación a RDS se realiza empleando bases de datos con usuarios y contraseñas.
+
+Pero puede emplearse IAM; para ello se crea en la instancia RDS una base de datos para autenticación configurada para utilizar tokens AWS, en ella se guarda el token AWS de autenticación. Al rol IAM se le asocian políticas que mapean la identidad IAM con el usuario de RDS y se generan tokens de autenticación de 15 minutos que reemplazan a las contraseñas.
+
+Esto es solo para autenticación, la autorización la sigue realizando el DB engine sobre el usuario de la base de datos local.
