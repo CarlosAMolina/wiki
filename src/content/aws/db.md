@@ -184,17 +184,6 @@ Otras diferencias con respecto a Multi AZ modo instance:
 - El hardware empleado es más rápido que en Multi AZ instance deployment.
 - En caso de error, el tiempo de recuperar la disponibilidad es de 35 segundos porque utiliza transaction log que es mas rápido.
 
-## Amazon Aurora
-
-No está dentro de RDS, se trata de un producto diferente y hay diferencias entre ellos.
-
-Es un engine creado por AWS; tiene compatibilidad con los engines MySQL y PostgreSQL.
-
-Diferencias con RDS:
-
-- Al configurarlo no es necesario indicar cuánto almacenamiento provisionar, como sí es necesario en algunos casos de RDS.
-- Al contrario que high availability con Multi AZ Cluster, con Aurora se puede tener más de 2 instancias Reader.
-
 ## Seguridad
 
 ### Cifrado
@@ -237,3 +226,15 @@ La autenticación a RDS se realiza empleando bases de datos con usuarios y contr
 Pero puede emplearse IAM; para ello se crea en la instancia RDS una base de datos para autenticación configurada para utilizar tokens AWS, en ella se guarda el token AWS de autenticación. Al rol IAM se le asocian políticas que mapean la identidad IAM con el usuario de RDS y se generan tokens de autenticación de 15 minutos que reemplazan a las contraseñas.
 
 Esto es solo para autenticación, la autorización la sigue realizando el DB engine sobre el usuario de la base de datos local.
+
+## Amazon Aurora
+
+No está dentro de RDS, se trata de un producto diferente y hay diferencias entre ellos.
+
+Es un engine creado por AWS; tiene compatibilidad con los engines MySQL y PostgreSQL.
+
+Diferencias con RDS:
+
+- Al configurarlo no es necesario indicar cuánto almacenamiento provisionar, como sí es necesario en algunos casos de RDS.
+- Al contrario que high availability con Multi AZ Cluster, con Aurora se puede tener más de 2 instancias Reader.
+
