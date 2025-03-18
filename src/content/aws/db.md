@@ -20,7 +20,7 @@ Los puntos negativos de ejecutarlo en una instancia EC2 es:
 
 RDS = Relational Database Service
 
-No se trata de DBaaS (Database as a Service) porque en DBaaS pagas por una base de datos; en el caso de RDS pagamos por un servidor de base de datos, por lo que podemos tener varias bases de datos en una instancia RDS, es decir, en un servidor DB.
+No se trata de DBaaS (Database as a Service) porque en DBaaS pagas por una base de datos; en el caso de RDS pagamos por un servidor de base de datos, por lo que podemos tener varias bases de datos en una instancia RDS; es decir, en un servidor DB, totalmente gestionado por AWS.
 
 Por defecto, al crear una instancia de RDS, no se crea una base de datos en ella, pero puede elegirse que sí.
 
@@ -28,7 +28,7 @@ RDS gestiona el hardware, sistema operativo, instalación y mantenimiento.
 
 DB engines disponibles: MySQL, MariaDb, PostgreSQL, Oracle, Microsoft SQL Server. Como se ve, algunos casos requieren de licencia.
 
-Accedemos a las instancias por VPN o con AWS Direct Connect. No tenemos acceso al sistema operativo o acceso con SSH; aunque hay casos en que se puede tener cierto nivel de acceso.
+Accedemos a las instancias por VPN o con AWS Direct Connect. No tenemos acceso al sistema operativo o acceso con SSH; aunque hay casos en que se puede tener cierto nivel de acceso. Está limitado el acceso al sistema operativo o db engine a lo que permita RDS.
 
 Es un servicio que funciona en una VPC, por lo que no es público como S3 a menos que lo configuremos para ello asignándole una IP pública.
 
@@ -226,6 +226,17 @@ La autenticación a RDS se realiza empleando bases de datos con usuarios y contr
 Pero puede emplearse IAM; para ello se crea en la instancia RDS una base de datos para autenticación configurada para utilizar tokens AWS, en ella se guarda el token AWS de autenticación. Al rol IAM se le asocian políticas que mapean la identidad IAM con el usuario de RDS y se generan tokens de autenticación de 15 minutos que reemplazan a las contraseñas.
 
 Esto es solo para autenticación, la autorización la sigue realizando el DB engine sobre el usuario de la base de datos local.
+
+## RDS custom
+
+Permite:
+
+- Más nivel de gestión que RDS. Es una solución intermedia entre RDS, que está gestionado por AWS, y ejecutar una base de datos en ec2 donde gestionamos nosotros totalmente el servidor de bases de datos.
+- Utilizar aspectos de RDS.
+
+Puedes conectarte mediante SSH, RDP y Session Manager al sistema operativo y db engine.
+
+Compatible con MS SQL y Oracle.
 
 ## Amazon Aurora
 
