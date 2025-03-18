@@ -227,7 +227,7 @@ Pero puede emplearse IAM; para ello se crea en la instancia RDS una base de dato
 
 Esto es solo para autenticación, la autorización la sigue realizando el DB engine sobre el usuario de la base de datos local.
 
-## RDS custom
+### RDS custom
 
 Permite:
 
@@ -238,14 +238,38 @@ Puedes conectarte mediante SSH, RDP y Session Manager al sistema operativo y db 
 
 Compatible con MS SQL y Oracle.
 
-## Amazon Aurora
+### Amazon Aurora
 
-No está dentro de RDS, se trata de un producto diferente y hay diferencias entre ellos.
 
-Es un engine creado por AWS; tiene compatibilidad con los engines MySQL y PostgreSQL.
+Es un db engine creado por AWS; tiene compatibilidad con los engines MySQL y PostgreSQL.
 
-Diferencias con RDS:
+Forma parte de RDS aunque hay diferencias:
 
-- Al configurarlo no es necesario indicar cuánto almacenamiento provisionar, como sí es necesario en algunos casos de RDS.
-- Al contrario que high availability con Multi AZ Cluster, con Aurora se puede tener más de 2 instancias Reader.
+- Ofrece mejoras con respecto RDS.
+- Utiliza el término Cluster que es una instancia primaria y 0 o mas réplicas; las replicas puede funcionar cuando la primara falla y también, a diferencia que RDS, pueden configurarse para lectura y escritura junto a la primaria en funcionamiento normal. Puede haber hasta 15 réplicas para usar en caso de error en la primaria.
+- Al configurarlo no es necesario indicar cuánto almacenamiento provisionar, como sí hace falta en algunos casos de RDS, se provisiona conforme haga falta, el máximo es de 128 TB.
+- No utiliza local storage sino un cluster volume compartido por todas las instancias en el cluster, ofrece mejor rendimiento y en caso de fallar una instancia no hace falta cambiar de storage.
+
+Los backups funcionan del mismo modo que en RDS. Restaurar un backup crea un nuevo cluster. De habilitar backtrack, podemos restaurar los datos a una estado anterior sin tener que crear un nuevo cluster.
+
+Se utiliza almacenamiento SSD que está replicado en distintas AZ, solo escribe la primaria, las réplicas leen. Aurora detecta y soluciona errores de corrupción.
+
+Funciona en múltiples AZ, puede haber varias réplicas en una misma AZ.
+
+Tiene la opción de fast clone que crea una base de datos pero sin copiar el storage, lo que hace es referenciar al original y almacena las diferencias, aunque puede elegirse que estas diferencias se almacenen también en la original. Esto hace que la provisión sea muy rápida.
+
+#### Cobro
+
+A excepción de las versiones más recientes de Aurora, el cobro de almacenamiento utiliza un high water mark, donde se cobra por el máximo utilizado en cualquier momento en la vida del cluster. Aunque hayamos borrado datos datos, seguiremos pagando por el máximo uso que hayamos hecho; para cambiar esto hay que migrar los datos a un nuevo cluster. Poco a poco el high water mark lo está deprecando AWS, pero aún se utiliza en muchas versiones.
+
+Por el almacenamiento se cobra por GB mensual (teniendo en cuenta el high water mark) y operaciones IO. Por la computación hay un coste a la hora, se cobra por segundo con un mínimo de 10 minutos.
+
+Para los backups tenemos un tamaño gratuito igual al del storage utilizado.
+
+#### Endpoints
+
+- Cluster endpoint: apunta a la instancia primaria
+- Reader endpoint: apunta a la instancia primaria si es la única que existe, pero si hay endpoints de lectura, apunta a estos. Actúa de load balancer entre los endpoints de lectura.
+- Custom endpoint: podemos crearlos, se asigna uno a cada instancia y la aplicación debe apuntar al que le interese.
+
 
