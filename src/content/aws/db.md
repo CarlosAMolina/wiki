@@ -272,4 +272,26 @@ Para los backups tenemos un tamaño gratuito igual al del storage utilizado.
 - Reader endpoint: apunta a la instancia primaria si es la única que existe, pero si hay endpoints de lectura, apunta a estos. Actúa de load balancer entre los endpoints de lectura.
 - Custom endpoint: podemos crearlos, se asigna uno a cada instancia y la aplicación debe apuntar al que le interese.
 
+#### Aurora serverless
 
+Aurora serverless es a Aurora lo que Fargate es a ECS.
+
+Lo visto antes de aurora serverless es aurora provisioned.
+
+Ofrece db as service, no tenemos que provisionarlo. Solo seleccionar el valor máximo y mínimo que pueden tener los ACU.
+
+Se utiliza un cluster como en los aurora provision pero es un cluster serverless. También se emplea el mismo tipo de storage, el cual se replica en 6 nodos repartidos por AZs.
+
+En lugar de utilizar servidores provisionados, tenemos los ACU (Aurora Capacity Units); son la memoria y CPU a utilizar. El cluster se ajusta según la carga, añadiendo o quitando ACU desde un pool y quedando en pausa de no utilizarse, en este caso aparecerá en la consola de AWS como que usa 0 capacity units.
+
+Hay que tener en cuenta que, si no utiliza ninguna ACU, cuando reciba una petición, tardará un poco en volver a emplear alguna para dar respuesta, no es inmediato.
+
+La conexión entre la aplicación y los ACU es a través del proxy fleet, con lo que se evita paradas cuando aurora cluster escala.
+
+Solo se cobra por los recursos utilizados, se cobra la cantidad de ACU consumida en el momento y el cluster storage (el storage se paga aunque la instancia esté en pausa). Se cobra por segundo.
+
+Utilizado en aplicaciones donde:
+
+- No tienen un uso continuado.
+- No conocemos el tamaño de la base de datos.
+- La carga variable.
