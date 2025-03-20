@@ -240,7 +240,6 @@ Compatible con MS SQL y Oracle.
 
 ### Amazon Aurora
 
-
 Es un db engine creado por AWS; tiene compatibilidad con los engines MySQL y PostgreSQL.
 
 Forma parte de RDS aunque hay diferencias:
@@ -257,6 +256,8 @@ Se utiliza almacenamiento SSD que está replicado en distintas AZ, solo escribe 
 Funciona en múltiples AZ, puede haber varias réplicas en una misma AZ.
 
 Tiene la opción de fast clone que crea una base de datos pero sin copiar el storage, lo que hace es referenciar al original y almacena las diferencias, aunque puede elegirse que estas diferencias se almacenen también en la original. Esto hace que la provisión sea muy rápida.
+
+El cluster puede tener 1 instancia read/write y hasta 15 instancias read only replicas.
 
 #### Cobro
 
@@ -295,3 +296,15 @@ Utilizado en aplicaciones donde:
 - No tienen un uso continuado.
 - No conocemos el tamaño de la base de datos.
 - La carga variable.
+
+#### Aurora global database
+
+Permite hacer backups desde una región primaria a otras regiones secundarias, máximo 5 secundarias.
+
+El cluster secundario es solo de lectura y pueden tener hasta 16 read replicas en cada región. Pueden cambiar a que sean de tipo read/write en caso de fallo de la primaria.
+
+Una aplicación puede utilizar como read replicas las de la primaria o de la secundaria.
+
+La replicación se hace a nivel de storage por lo que el rendimiento no se ve afectado durante la replicación al no consumir CPU.
+
+Tarda cerca de 1 segundo.
