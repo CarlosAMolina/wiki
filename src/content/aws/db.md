@@ -264,6 +264,40 @@ Ejemplo de usos:
 - Evitar errores por múltiples conexiones a db, porque ayuda a reducir el número de conexiones. Ayuda al trabajar con instancias que no tienen muchos recursos.
 - Cando necesitamos low latency y/o gran resilencia.
 
+### DMS
+
+DMS = database migration service.
+
+Es un servicio para migración de datos.
+
+Definimos la db origen y destino, por lo menos una (cualquiera de ellas) debe estar en AWS, la otra puede ser on premise.
+
+Dentro del servicio DMS hay un replication instance, que es una instancia ec2 con software para replicar los datos y donde se definen las actividades de replicación donde se establece la configuración.
+
+Pueden realizarse distintas modos de replicación:
+
+- Full load: se migran todos los datos en una vez, crea las tablas que sean necesarias en el destino.
+- Full load + CDC (change data capture): tras hacer el full load, se migrarán los cambios.
+- CDC only: solamente replica cambios en los datos. Es útil si el full load lo hemos realizado con herramientas externas a AWS.
+
+Ofrece que no hay pérdida de datos y un downtime de migración bajo o nulo.
+
+DMS no puede modificar los esquemas de db, pero para ello AWS ofrece el servicio SCT (schema conversion tool).
+
+### SCT
+
+SCT = schema conversion tool.
+
+Utilizado cuando el origen y destino de la migración tienen diferentes engines, por ejemplo uno es PostgreSQL y otro MySQL.
+
+No se utiliza al migrar entre DB con engines mismo tipo, por ejemplo los dos son MySQL aunque una DB sea on premise y la otra no.
+
+También es empleado cuando las migraciones con DMS son grandes y se necesita otro servicio adicional como por ejemplo S3 o snowball. Ejemplo de los pasos:
+
+- Con SCT se extraen los datos localmente y se mueven a snowball.
+- Los datos se envían a AWS y se cargan en S3.
+- DMS migra de S3 al destino.
+
 ### Amazon Aurora
 
 Es un db engine creado por AWS; tiene compatibilidad con los engines MySQL y PostgreSQL.
