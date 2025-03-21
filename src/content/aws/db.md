@@ -308,3 +308,15 @@ Una aplicación puede utilizar como read replicas las de la primaria o de la sec
 La replicación se hace a nivel de storage por lo que el rendimiento no se ve afectado durante la replicación al no consumir CPU.
 
 Tarda cerca de 1 segundo.
+
+#### Aurora multi-master
+
+Por defecto, aurora trabaja en modo Single-Master, donde hay una instancia reader/writer y 0 o más read replicas.
+
+En modo multi-master, todas las instancias son de tipo read-write. Por lo que se evita el tiempo que necesita el modo single-master en caso de error para cambiar una instancia de lectura a tipo lectura-escritura.
+
+No hay load balancer, la aplicación que utilice aurora debe encargarse de apuntar a las instancias que le interesen.
+
+Cuando se escribe en una instancia, el dato se guarda en todos los nodos de storage y en la cache que usan las instancias read/write.
+
+De haber conflicto entre el dato guardado por varias instancias writer, se devuelve un error.
