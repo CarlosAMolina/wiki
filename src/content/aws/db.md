@@ -238,6 +238,32 @@ Puedes conectarte mediante SSH, RDP y Session Manager al sistema operativo y db 
 
 Compatible con MS SQL y Oracle.
 
+### RDS proxy
+
+Compatible con RDS y aurora.
+
+Ayuda en los siguientes aspectos:
+
+- Abrir y cerrar conexiones a db requiere tiempo, lo que se nota en aplicaciones serverless.
+- Gestionar errores con db en la aplicación puede ser complicado y añadir bugs.
+
+Con RDS proxy, las aplicaciones se conectan a un proxy que tiene un pool de conexiones a db ya establecidas; esta conexión es mas rápida que una directa a db.
+
+Funciona en una VPC y puede estar en varias AZ.
+
+Permite multiplexed connections, es decir, utilizar una misma conexión a db para varios usos.
+
+El proxy se encarga de cambiar de instancia db en caso de error; el cliente se mantiene conectado al mismo proxy endpoint y cuando la nueva instancia esté disponible, el proxy continúa con la petición.
+
+Por defecto tiene auto scaling y high availability. Es totalmente gestionado por AWS.
+
+Puede asegurar el uso de SSL/TLS.
+
+Ejemplo de usos:
+
+- Evitar errores por múltiples conexiones a db, porque ayuda a reducir el número de conexiones. Ayuda al trabajar con instancias que no tienen muchos recursos.
+- Cando necesitamos low latency y/o gran resilencia.
+
 ### Amazon Aurora
 
 Es un db engine creado por AWS; tiene compatibilidad con los engines MySQL y PostgreSQL.
