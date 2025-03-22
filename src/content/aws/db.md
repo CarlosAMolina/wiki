@@ -167,7 +167,7 @@ El backup se realiza desde la instancia standby, por lo que no hay un impacto en
 En esta arquitectura:
 
 - La instancia primaria se utiliza para escribir, es el writer. Se utiliza tanto para escritura como lectura.
-- En otras AZ se crean dos instancias utilizadas solo para lectura (solo puede haber 2), cada una en una AZ. Los datos se copian del writer a los readers con replicación síncrona. Permite un poco de scaling en la lectura.
+- En otras AZ se crean dos instancias utilizadas solo para lectura (máximo 2 instancias de lectura), cada una en una AZ. Los datos se copian del writer a los readers con replicación síncrona. Permite un poco de scaling en la lectura.
 
 En el Writer se considera que los datos están committed no solo cuando se guardan en el writer, también por lo menos un reader debe confirmar que se ha escrito el dato en él.
 
@@ -198,7 +198,7 @@ Se utiliza KMS para crear las encryption keys.
 
 Los datos los cifra el RDS host en el que se ejecuta la instancia RDS. Dentro del host los datos no están cifrados, se cifran cuando salen  de este hacia EBS.
 
-Se cifra, utilizando el mimo encryption key:
+Se cifra, utilizando el mismo encryption key para:
 
 - Almacenamiento.
 - Logs.
@@ -217,7 +217,7 @@ El cifrado se gestiona por el engine db, no por el host. Esto ofrece mayor segur
 
 Oracle puede utilizarlo en conjunto con TDE.
 
-Esto da mayor seguridad que las anteriores opicones porque las keys las gestiona el usuario en lugar de AWS.
+Esto da mayor seguridad que las anteriores opciones porque las keys las gestiona el usuario en lugar de AWS.
 
 ### IAM authentication
 
