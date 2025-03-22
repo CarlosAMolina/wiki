@@ -15,6 +15,7 @@
   - [CloudWatch](cloudwatch.html)
   - [Control Tower](control-tower.html)
   - [EC2](ec2.html)
+  - [EFS](efs.html)
   - [IAM](iam.html)
   - [KMS](kms.html)
   - [Route53](route53.html)
