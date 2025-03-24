@@ -10,6 +10,7 @@
   - [Arn](arn.html)
   - [Database](db.html)
   - [Athena](athena.html)
+  - [Backup](backup.html)
   - [CFN](cfn.html)
   - [CloudTrail](cloudtrail.html)
   - [CloudWatch](cloudwatch.html)
