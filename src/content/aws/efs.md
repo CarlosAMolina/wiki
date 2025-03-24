@@ -6,6 +6,8 @@ Es una implementación de NFSv4 (network file system).
 
 Proporciona un file system sobre la red, se le otorga una IP, puede montarse en diversas instancias linux EC2.
 
+No es compatible con Windows.
+
 Por defecto, está aislado en la VPC donde se monte; para acceder desde fuera de la VPC utizamos VPN o AWS Direct Connect.
 
 Para tener high availability, conviene montarlo en cada AZ.
@@ -26,4 +28,3 @@ Clases de almacenamiento:
 - Infrequent Access (IA): tiene menor coste, para datos que no se acceden normalmente.
 
 A estas clases de almacenamiento se les puede aplicar políticas lifeclicle para mover los datos entre los tipos de almacenamiento.
-
