@@ -12,6 +12,7 @@
   - [Athena](athena.html)
   - [Backup](backup.html)
   - [CFN](cfn.html)
+  - [CloudFront](cloudfront.html)
   - [CloudTrail](cloudtrail.html)
   - [CloudWatch](cloudwatch.html)
   - [Control Tower](control-tower.html)
