@@ -18,6 +18,7 @@
   - [Control Tower](control-tower.html)
   - [EC2](ec2.html)
   - [EFS](efs.html)
+  - [ELB](elb.html)
   - [IAM](iam.html)
   - [KMS](kms.html)
   - [Route53](route53.html)
