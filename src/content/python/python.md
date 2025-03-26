@@ -11,6 +11,7 @@
 - [PEP 8](#pep-8)
 - [Pip](#pip)
 - [pipenv: pip y entornos virtuales](#pipenv-pip-y-entornos-virtuales)
+- [Poetry](poetry.html)
 - [Special methods](#special-methods)
 - [Versión de python](#versión-de-python)
   - [Utilizando repositorios de nuestra distribución](#utilizando-repositorios-de-nuestra-distribución)
