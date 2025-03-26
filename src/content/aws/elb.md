@@ -27,7 +27,15 @@ Hay 3 tipos de ELB:
 - Que se ejecute en 2 o más AZ, en cada AZ elegimos 1 subred. Entonces se sitúa uno o más nodos de load balancer en una subred de cada AZ, los nodos escalan con la carga.
 - Cada ELB se configura con un DNS A record que resuelve a los nodos del ELB.
 - Modo:
-  - Internet facing: los nodos tendrán IP pública y privada. Estos nodos pueden acceder a instancias EC2 públicas y privadas de AWS.
-  - Internal: los nodos solo tendrán IP privadas. Se utilizan para conectar distintos tiers de un aplicación.
+  - Internet facing: los nodos tendrán IP pública y privada. Estos nodos pueden acceder a instancias EC2 públicas y privadas de AWS; por lo que no es necesario que las instancias EC2 sean públicas para acceder a ellas desde el exterior.
+  - Internal: los nodos solo tendrán IPs privadas. Se utilizan para conectar distintos tiers de un aplicación, de modo que están desacopladas; no se conectan a algo específico sino que lo hacen al ELB y así la estructura de cada tier puede cambiar sin impacto.
 - Sus nodos se configuran con listeners, que aceptan tráfico en un puerto y protocolo y se comunican con un puerto y protocolo específico.
-- Necesitan que cada subred tenga 8 IPs libres, además hay que tener en cuenta las 5 IPs adicionales que se reservan en una subred. AWS recomienda utilizar mínimo una /27 para que el ELB pueda escalar (en un examen /28 también es respuesta válida si preguntan el mínimo).
+- Necesitan que cada subred tenga mínimo 8 IPs libres, además hay que tener en cuenta las 5 IPs adicionales que se reservan en una subred. AWS recomienda utilizar mínimo una /27 para que el ELB pueda escalar (en un examen /28 también es respuesta válida si preguntan el mínimo).
+
+## Distribución de las conexiones
+
+A cada nodo le llega el mismo porcentaje de tráfico.
+
+Con cross-zone LB se consigue que los nodos ELB puedan enviar tráfico a otras AZ.
+
+De no tener cross-zone LB activado, los nodos solo pueden enviar tráfico en su AZ. Como todos los nodos reciben el mismo porcentaje de tráfico, si un nodo tiene menos instancias que otro, estas terminarán gestionando más carga; gracias a cross-zone LB evitamos esto.
