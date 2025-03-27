@@ -12,14 +12,38 @@ Permite que la infraestructura cambie (aumente, disminuya, repare recursos caíd
 
 Hay 2 versiones de ELB:
 
-- v1. Conviene evitarlo y utilizar v2, salvo en algunas excepciones. Los v1 no gestionan la layer OSI 7 de manera completa y tienen menos funcionalidad que v2, por ejemplo, 1 certificado SSL por Load Balancer lo que implica tener que utilizar múltiples Load Balancers.
-- v2. Mas rápidos y baratos. Ofrecen funcionalidades como target groups y reglas para utilizar un mismo load balancer para distintas funcionalidades como cambiar el comportamiento según los clientes que lo usen.
+- v1. Conviene evitarlo y utilizar v2, salvo en algunas excepciones. Los v1 no gestionan la layer OSI 7 de manera completa y tienen menos funcionalidad que v2, por ejemplo, 1 certificado SSL por Load Balancer lo que implica tener que utilizar múltiples Load Balancers; tampoco permite que las instancias conectadas a él escalen.
+- v2. Mas rápidos y baratos. Ofrecen funcionalidades como target groups (es un conjunto de instancias; además, pueden escalar) y reglas para utilizar un mismo load balancer para distintas funcionalidades como cambiar el comportamiento según los clientes que lo usen, por ejemplo tener rules para distintos dominios, cada rule puede tener un certificado SSL y cada rule apunta a un target group.
 
 Hay 3 tipos de ELB:
 
-- CLB (Classic Load Balancer). Es v1.
-- ALB (Application Load Balancer). Es v2. Soporta HTTP, HTTPS y WebSocket.
-- NLB (Network Load Balancer). Es v2. Soporta TCP, TLS y UDP; por lo que se utiliza en aplicaciones que no emplean HTTP(S), por ejemplo servidores de email o ssh.
+CLB (Classic Load Balancer):
+- Es v1.
+
+ALB (Application Load Balancer):
+
+- Es v2.
+- Soporta HTTP, HTTPS y WebSocket.
+- Al trabajar con la layer 7 puede tatar con componentes de esta como content type, cookies, headers, health checks, etc.
+- La conexión SSL termina en el ALB, luego se genera una nueva del ALB a la aplicación; es decir la conexión SSL se interrumpe entre el cliente y la aplicación.
+- Debe tener certificados SSL para utilizar HTTPS.
+- Más lentos que NLB al haber más niveles de red que gestionar.
+- Utilizan reglas:
+  - Las reglas son conexiones directas que llegan a un listener.
+  - Las reglas se gestionan en orden de prioridad y se configuran con condiciones en los headers, paths solicitados, ip, etc.
+  - Realizan acciones: redirigir petición, authenticación, etc.
+
+NLB (Network Load Balancer):
+
+- Es v2.
+- Trabaja con la layer 4 por lo que soporta TCP, TLS y UDP. Por ello se utiliza en aplicaciones que no emplean HTTP(S), por ejemplo servidores de email, ssh game server o app financieras que no usen http(s).
+- Son muy rápidos, pueden gestionar millones de peticiones.
+- Pueden implementar health checks pero basados en ICMP / TCP.
+- Pueden tener una IP estática. Esto es útil para añadir a lista blanca.
+- No corta las conexiones SSL desde el cliente a la aplicación.
+- Son muy utilizados con private link para dar servicios a otras VPC.
+
+Si la aplicación no necesita una de las características que ofrece NLB, es mejor utilizar ALB porque ofrece más funcionalidades.
 
 ## Configuración
 
