@@ -757,3 +757,19 @@ Esta opción está activada por defecto o puede activarse sin coste en la mayor�
 El almacenamiento EBS utiliza tráfico de red y la red es compartida con la red de datos. Gracias a EBS Optimized tenemos una capacidad dedicada para EBS lo que da mayor velocidad.
 
 La mayoría de instancias son compatibles con esto, por defecto está activado. No tiene coste excepto para algunas instancias antiguas.
+
+## Launch configurations y launch templates
+
+Ambas:
+
+- Se emplean para configurar EC2 en los Auto Scaling Groups que crearán instancias. Configuran: AMI, tipo instancia, almacenamiento, red, iam role, etc.
+
+Launch configuration:
+
+- Una vez definidas, no pueden editarse. Para cambiarla hay que crear una nueva.
+
+Launch templates:
+
+- Una vez definidas, no pueden editarse. Aunque permiten tener versiones, pero una vez lanzada la instancia no puede usar otra versión.
+- Es un producto más nuevo y se recomienda su uso, tiene más características como capacity reservations, elastic graphics, etc.
+- Además de usarse en los Auto Scaling Groups, podemos utilizarlas para iniciar instancias directamente.
