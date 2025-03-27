@@ -758,6 +758,28 @@ El almacenamiento EBS utiliza tráfico de red y la red es compartida con la red 
 
 La mayoría de instancias son compatibles con esto, por defecto está activado. No tiene coste excepto para algunas instancias antiguas.
 
+## Auto Scaling Groups
+
+Permiten que las instancias EC2 escalen según la demanda.
+
+Suelen utilizarse junto a ELB.
+
+Utilizan launch configurations o launch templates para saber qué provisionar; solo pueden utilizar uno de ellos a la vez.
+
+Indican dónde se ejecutarán las instancias. Definen el VPC y las subredes a utilizar; e intentan que las instancias a provisionar estén repartidas de igual modo entre las subredes (haya el mismo número).
+
+Valores a configurar:
+
+- Tamaño mínimo: como mínimo siempre habrá este número de instancias funcionando.
+- Tamaño deseado: el auto scaling group eliminará o añadirá instancias para conseguir este número.
+- Tamaño máximo: entre el número indicado en el tamaño deseado y el máximo, es el número de instancias que pueden provisionarse pero no se hará inmediatamente, sino que, cuando el número sea menor al indicado como tamaño deseado, se generarán inmediatamente las necesarias para alcanzarlo.
+
+Ejemplo de configuración: `1:2:4`, cada número corresponde respectivamente a cada punto definido antes.
+
+Los scaling policies permiten realizar el escalado en base a métricas; por ejemplo, el uso de la CPU. Ajustan el desired capacity entre el tamaño máximo y mínimo.
+
+# TODO continue 5:00
+
 ## Launch configurations y launch templates
 
 Ambas:
