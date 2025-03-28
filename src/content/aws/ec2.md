@@ -771,14 +771,26 @@ Indican dónde se ejecutarán las instancias. Definen el VPC y las subredes a ut
 Valores a configurar:
 
 - Tamaño mínimo: como mínimo siempre habrá este número de instancias funcionando.
-- Tamaño deseado: el auto scaling group eliminará o añadirá instancias para conseguir este número.
+- Tamaño deseado: el auto scaling group provisionará o terminará instancias para conseguir este número.
 - Tamaño máximo: entre el número indicado en el tamaño deseado y el máximo, es el número de instancias que pueden provisionarse pero no se hará inmediatamente, sino que, cuando el número sea menor al indicado como tamaño deseado, se generarán inmediatamente las necesarias para alcanzarlo.
 
 Ejemplo de configuración: `1:2:4`, cada número corresponde respectivamente a cada punto definido antes.
 
-Los scaling policies permiten realizar el escalado en base a métricas; por ejemplo, el uso de la CPU. Ajustan el desired capacity entre el tamaño máximo y mínimo.
+### Scaling policies
 
-# TODO continue 5:00
+Se trata de reglas para configurar los scaling groups.
+
+Tipos de scaling:
+
+- Manual: el usuario ajusta el desired capacity.
+- Scheduled: se ajusta el desired capacity para tiempos determinados en que se sabe que habrá más o menos demanda.
+- Dynamic: al detectar un cambio en algo especificado se configura el autoscaling group. Hay 3 tipos:
+  - Simple. Hay dos reglas, una para iniciar la instancia y otra para terminarla; la regla se define en base a métricas propias o externas de la isntancia EC2. Por ejemplo, si el uso de la CPU supera el 50%, se añade una instancia y si está por debajo del 50% se elimina una instancia; reglas externas a EC2 puede ser la longitud de la cola SQS. Algunas reglas necesitan tener instalado el CloudWatch agent.
+  - Steped. Similar a `simple` pero las reglas tienen más detalle; se basan en cuánto es la diferencia entre lo configurado y el valor actual. Por ejemplo, si el uso de la CPU sobrepasa el 60% de lo indicado, debe añadirse 1 instancia, si sobrepasa el 80% hay que añadir 3, etc. Esto permite una mejor adaptación al cambio que la regla simple.
+  - Target Tracking. Se indica el valor deseado y las instancias escalan automáticamente para conseguirlo. Por ejemplo, quiero un 40% de uso de CPU. No todas las métricas pueden configurarse, ejemplo: CPU, uso de red, peticiones a cada target en el load balancer, etc.
+- Cooldown period: cantidad de segundos a esperar entre que una acción de escalado termina y comienza otra, esto ayuda a evitar grandes costes.
+
+TODO continue 9:00
 
 ## Launch configurations y launch templates
 
