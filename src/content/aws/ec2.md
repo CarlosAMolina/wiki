@@ -780,16 +780,24 @@ Ejemplo de configuración: `1:2:4`, cada número corresponde respectivamente a c
 
 ### Scaling policies
 
-Se trata de reglas para configurar los scaling groups.
+Se trata de reglas para configurar los ASG.
+
+Los Scaling Policies no son necesarios para que el ASG funcione.
 
 Tipos de scaling:
 
-- Manual: el usuario ajusta el desired capacity.
+- Manual: el usuario ajusta los valores de desired capacity, max. y min. de instancias. Esto es útil para testing o en casos donde aplicar algo urgente.
 - Scheduled: se ajusta el desired capacity para tiempos determinados en que se sabe que habrá más o menos demanda.
 - Dynamic: al detectar un cambio en algo especificado se configura el autoscaling group. Hay 3 tipos:
-  - Simple. Hay dos reglas, una para iniciar la instancia y otra para terminarla; la regla se define en base a métricas propias o externas de la isntancia EC2. Por ejemplo, si el uso de la CPU supera el 50%, se añade una instancia y si está por debajo del 50% se elimina una instancia; reglas externas a EC2 puede ser la longitud de la cola SQS. Algunas reglas necesitan tener instalado el CloudWatch agent.
-  - Steped. Similar a `simple` pero las reglas tienen más detalle; se basan en cuánto es la diferencia entre lo configurado y el valor actual. Por ejemplo, si el uso de la CPU sobrepasa el 60% de lo indicado, debe añadirse 1 instancia, si sobrepasa el 80% hay que añadir 3, etc. Esto permite una mejor adaptación al cambio que la regla simple.
+  - Simple scaling. Hay dos reglas, una para iniciar la instancia y otra para terminarla; la regla se define en base a métricas propias o externas de la instancia EC2. Por ejemplo, si el uso de la CPU supera el 50%, se añade una instancia y si está por debajo del 50% se elimina una instancia. Algunas reglas necesitan tener instalado el CloudWatch agent.
+  - Step scaling. Similar a `simple` pero las reglas tienen más detalle. Esto permite una mejor adaptación al cambio que la regla simple. AWS recomienda utilizar step sacaling en lugar de simple scaling. Por ejemplo si el uso de CPU se encuentra:
+    - De 20 a 29%, eliminar 2. Nota, si el número de instancias es el mínimo configurado, no se eliminarán.
+    - De 30 a 39%, eliminar 1.
+    - De 40 a 49%, no hacer nada.
+    - De 50 a 59%, no hacer nada.
+    - De 60 a 69%, añadir 1.
   - Target Tracking. Se indica el valor deseado y las instancias escalan automáticamente para conseguirlo. Por ejemplo, quiero un 40% de uso de CPU. No todas las métricas pueden configurarse, ejemplo: CPU, uso de red, peticiones a cada target en el load balancer, etc.
+- También se puede escalar en base a colas SQS según el número de mensajes visibles.
 - Cooldown period: cantidad de segundos a esperar entre que una acción de escalado termina y comienza otra, esto ayuda a evitar grandes costes por provisión.
 
 ### Health
