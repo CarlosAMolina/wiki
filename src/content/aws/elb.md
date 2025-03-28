@@ -8,6 +8,8 @@ Acepta conexiones de los clientes y las distribuye en las distintas partes de la
 
 Permite que la infraestructura cambie (aumente, disminuya, repare recursos caídos) sin que el usuario lo note.
 
+Nota. En la sección EC2, ver la parte de ASG para más información sobre ELB.
+
 ## Tipos
 
 Hay 2 versiones de ELB:

@@ -760,6 +760,8 @@ La mayoría de instancias son compatibles con esto, por defecto está activado. 
 
 ## Auto Scaling Groups
 
+ASG = Auto Scaling Groups
+
 Permiten que las instancias EC2 escalen según la demanda.
 
 Suelen utilizarse junto a ELB.
@@ -788,9 +790,40 @@ Tipos de scaling:
   - Simple. Hay dos reglas, una para iniciar la instancia y otra para terminarla; la regla se define en base a métricas propias o externas de la isntancia EC2. Por ejemplo, si el uso de la CPU supera el 50%, se añade una instancia y si está por debajo del 50% se elimina una instancia; reglas externas a EC2 puede ser la longitud de la cola SQS. Algunas reglas necesitan tener instalado el CloudWatch agent.
   - Steped. Similar a `simple` pero las reglas tienen más detalle; se basan en cuánto es la diferencia entre lo configurado y el valor actual. Por ejemplo, si el uso de la CPU sobrepasa el 60% de lo indicado, debe añadirse 1 instancia, si sobrepasa el 80% hay que añadir 3, etc. Esto permite una mejor adaptación al cambio que la regla simple.
   - Target Tracking. Se indica el valor deseado y las instancias escalan automáticamente para conseguirlo. Por ejemplo, quiero un 40% de uso de CPU. No todas las métricas pueden configurarse, ejemplo: CPU, uso de red, peticiones a cada target en el load balancer, etc.
-- Cooldown period: cantidad de segundos a esperar entre que una acción de escalado termina y comienza otra, esto ayuda a evitar grandes costes.
+- Cooldown period: cantidad de segundos a esperar entre que una acción de escalado termina y comienza otra, esto ayuda a evitar grandes costes por provisión.
 
-TODO continue 9:00
+### Health
+
+Si una instancia falla o la terminamos manualmente, Auto Scaling Group provisiona una nueva.
+
+Para tener high availability, configurar el auto scaling group como 1:1:1 y configurarlo para usar múltiples subnets en múltiples AZ, así si una AZ falla tendremos la instancia en otra.
+
+### ASG y ELB
+
+Combinándolos se obtiene mejor estructura porque:
+
+- Conseguimos elasticidad en la aplicación. ASG puede provisionar instancias en los target groups de ELB y se monitoriza la carga para añadir o quitar instancias.
+- ASG puede usar los health check de ELB en lugar de los de EC2, lo que ofrece otras opciones de monitorización.
+
+Es decir, conseguimos abstraernos de las instancias EC2.
+
+### Scaling Processes
+
+Son funcionalidades o procesos que se realizan en el ASG y pueden configurarse de este modo:
+
+- Launch: si se configura como SUSPEND, el ASG no provisionará nuevas instancias.
+- Terminate: si se configura como SUSPEND, el ASG no terminará instancias.
+- AddToLoadBalancer: controla si las instancias se añaden al ELB.
+- AlarmNotificacion: para escuchar notificaciones de CloudWatch.
+- AZRebalance: para que el ASG redistribuya instancias en las AZ.
+- HealhCheck: si los health checks están o no activados.
+- ReplaceUnhealthy: para terminar instancias unhealthy y reemplazarlas.
+- ScheduledActions: activar o desactivar las acciones programadas.
+ Standby: para parar la ASG y así poder hacer mantenimiento en algunas instancias sin que el ASG actúe sobre ellas.
+
+### Coste
+
+Los ASG no tienen coste; pero se cobran los recursos creados por lo que el aprovisionamiento tendrá coste (ver lo explicado para Cooldown en otra sección).
 
 ## Launch configurations y launch templates
 
@@ -807,3 +840,8 @@ Launch templates:
 - Una vez definidas, no pueden editarse. Aunque permiten tener versiones, pero una vez lanzada la instancia no puede usar otra versión.
 - Es un producto más nuevo y se recomienda su uso, tiene más características como capacity reservations, elastic graphics, etc.
 - Además de usarse en los Auto Scaling Groups, podemos utilizarlas para iniciar instancias directamente.
+
+ASG vs launch configuration/templates:
+
+- ASG configura el WHEN, en qué casos provisionar, y WHERE, en qué subredes.
+- Launch configuration/templates indican el WHAT, qué instancias provisionar y con qué configuración.
