@@ -311,6 +311,7 @@ En la consola de AWS debemos eliminar:
 ## Tipos de instancias EC2
 
 Links:
+
 - [Página oficial](https://aws.amazon.com/es/ec2/instance-types/).
 - [Página no oficial](https://instances.vantage.sh/).
 
