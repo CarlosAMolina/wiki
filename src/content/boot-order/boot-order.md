@@ -20,7 +20,10 @@ Acceder a System Configuration > Boot Options > UEFI Boot Order: OS boot Manager
 
 [Ejemplo imagen](https://support.hp.com/mx-es/document/c06337099).
 
-Para acceder al menú donde cambiar el orden de arranque, durante el inicio del PC, pulsar la tecla `esc` (tecla escape, situada arriba a la izquierda del teclado) ([link explicación](https://tecnobits.com/como-iniciar-la-bios-en-un-hp-zbook/)). Importante, no mantener presionada la tecla, sino pulsarla con toques breves y repetidos hasta que aparezca el menú donde cambiar la configuración.
+Para acceder al menú donde cambiar el orden de arranque, durante el inicio del PC:
+
+- Pulsar la tecla `esc` (tecla escape, situada arriba a la izquierda del teclado) ([link explicación](https://tecnobits.com/como-iniciar-la-bios-en-un-hp-zbook/)). Importante, no mantener presionada la tecla, sino pulsarla con toques breves y repetidos hasta que aparezca el menú donde cambiar la configuración.
+- Si no funciona, pulsar con toques breves y repetidos `esc` y luego `F10` (no debe estar activada la tecla `fn`), hacerlo repetidamente.
 
 Nota. Si aparece el menú GRUB en lugar de Bios, escribir `fwsetup` ([link](https://askubuntu.com/questions/318796/when-trying-to-enter-bios-gnu-grub-screen-appears)), pulsar enter y esperar a que aparezca el Startup Menú con varias opciones.
 
