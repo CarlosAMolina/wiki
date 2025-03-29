@@ -807,6 +807,19 @@ Si una instancia falla o la terminamos manualmente, Auto Scaling Group provision
 
 Para tener high availability, configurar el auto scaling group como 1:1:1 y configurarlo para usar múltiples subnets en múltiples AZ, así si una AZ falla tendremos la instancia en otra.
 
+Tipos de health checks:
+
+- Status checks de los EC2, detectan fallos en hardware y software. Es el utilizado por defecto en ASG. Se toma como estado unhealthy cuando la instancia no está en estado running, es decir cuando su estado es:
+  - Stopping.
+  - Stopped.
+  - Terminated.
+  - Shutting down.
+  - Impaired (no ha pasado 2 de 2 status checks).
+- Health check de ELB en lugar de los de EC2, lo que ofrece otras opciones de monitorización basadas en la layer 7 OSI. Por defecto están desactivados. Se toma una instancia como health si está running y pasa el ELB health check.
+- Health checks custom realizados por sistemas externos.
+
+Los health check tienen periodo de gracia que son un margen de tiempo antes de marcar una instancia como no healthy, por defecto es de 5 minutos. Esto es útil para dar tiempo a la aplicación a configurarse.
+
 ### ASG y ELB
 
 Combinándolos se obtiene mejor estructura porque:
