@@ -834,6 +834,26 @@ Son funcionalidades o procesos que se realizan en el ASG y pueden configurarse d
 
 Los ASG no tienen coste; pero se cobran los recursos creados por lo que el aprovisionamiento tendrá coste (ver lo explicado para Cooldown en otra sección).
 
+### Lifecycle Hooks
+
+Permiten que definamos acciones a realizar cuando los ASG lanzan (ejemplo, cargar datos) o terminan (ejemplo hacer backup) una instancia.
+
+Las instancias quedan en pausa hasta que:
+
+- El lifecycle action se completa cuando se ejecute el comando `complete-lifecycle-action` o la operación `CompleteLifecycleAction`.
+- O cuando pasa un cierto tiempo de timeout; por defecto es de 1 hora, al menos en estado Terminating: Wait.
+
+Estados de la instancia:
+
+Cuando ASG hace | Libecycle hook | Estados de la instancia
+----------------|----------------|--------------------------------------------------------------------
+Scale Out       | Desactivado    | Pending > InService
+Scale Out       | Activado       | Pending > Pending: Wait > Pending: Proceed > InService
+Scale In        | Desactivado    | Terminating > Terminated
+Scale In        | Activado       | Terminating > Terminating: Wait > Terminating: Proceed > Terminated
+
+Pueden combinarse con EventBridge o SNS para que el sistema realice acciones o enviar notificaciones, respectivamente.
+
 ## Launch configurations y launch templates
 
 Ambas:
