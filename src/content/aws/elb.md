@@ -65,3 +65,53 @@ A cada nodo le llega el mismo porcentaje de tráfico.
 Con cross-zone LB se consigue que los nodos ELB puedan enviar tráfico a otras AZ.
 
 De no tener cross-zone LB activado, los nodos solo pueden enviar tráfico en su AZ. Como todos los nodos reciben el mismo porcentaje de tráfico, si un nodo tiene menos instancias que otro, estas terminarán gestionando más carga; gracias a cross-zone LB evitamos esto.
+
+## SSH
+
+Modos en que ELB puede gestionar SSL:
+
+- SSL Bridging
+- SSL Pass Through
+- SSL Offloading
+
+### SSL Bridging
+
+Modo por defecto.
+
+Listener configurado para HTTPS.
+
+La conexión termina en el ELB, por lo que el ELB debe tener un certificado SSL que matchee el dominio de la aplicación. Esto significa que AWS tiene acceso al certificado.
+
+Tras el ELB, se inicia una nueva conexión SSL hacia las instancias backend. Las instancias necesitan tener también el certificado SSL del ELB y realizar operaciones criptográficas.
+
+Por tanto, el ELB puede ver el tráfico HTTP, no está cifrado por SSL entre que se termina y se crea otra conexión; de este modo puede tomar decisiones en base a su contenido.
+
+### SSL Pass Through
+
+ELB no termina la conexión SSL; pasa la petición tal cual a las instancias.
+
+Las instancias deben tener el certificado SSL requerido.
+
+Al no estar el certificado en el LB, solo en las instancias que gestionamos nosotros, el certificado no es visible para AWS.
+
+Este tipo de LB es NLB (Network Load Balancer).
+
+Este LB utiliza TCP por lo que toma decisiones en base a las IPs.
+
+### SSL Offloading
+
+La conexión SSL termina en el ELB y, a diferencia de SSL Bridging, el ELB envía las conexiones a las instancias sin cifrar, envía por HTTP.
+
+## Session/Connections stickiness
+
+Se emplea en aplicaciones en las que la sesión del usuario se gestiona desde la instancia.
+
+De no utilizar session stickiness, el LB envía las conexiones a todas las instancias disponibles, y si la sesión del usuario se gestiona en la instancia, cada vez que una nueva instancia se utilice, el usuario deberá iniciar sesión.
+
+Los ELB permiten activar el session stickiness por el que el ELB genera al usuario una cookie llamada `AWSALB`. Esta cookie se encarga de las conexiones vayan a la misma instancia.
+
+Podemos configurar la cookie para que expire entre 1 segundo y 7 días. Al expirar la cookie, el usuario debe logearse de nuevo.
+
+Si la instancia falla, las conexiones irán a una nueva instancia.
+
+El problema con este método es que siempre se usará una instancia aunque el usuario genera mucha carga. Por lo que se recomienda que la sesión del usuario no se gestione en la instancia sino en algo externo, por ejemplo DynamoDB; así las instancias serán serverless y puede distribuirse la carga.
