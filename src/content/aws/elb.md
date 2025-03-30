@@ -115,3 +115,5 @@ Podemos configurar la cookie para que expire entre 1 segundo y 7 días. Al expir
 Si la instancia falla, las conexiones irán a una nueva instancia.
 
 El problema con este método es que siempre se usará una instancia aunque el usuario genera mucha carga. Por lo que se recomienda que la sesión del usuario no se gestione en la instancia sino en algo externo, por ejemplo DynamoDB; así las instancias serán serverless y puede distribuirse la carga.
+
+La opción `stickiness` se configura en la consola de AWS desde EC2 > Target Groups; se activa para las instancias que pertenezcan al target group.
