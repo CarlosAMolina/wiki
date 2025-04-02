@@ -10,6 +10,8 @@ Permite que la infraestructura cambie (aumente, disminuya, repare recursos caíd
 
 Nota. En la sección EC2, ver la parte de ASG para más información sobre ELB.
 
+En la consola de AWS, los load balancers se configuran en la sección de EC2.
+
 ## Tipos
 
 Hay 2 versiones de ELB:
