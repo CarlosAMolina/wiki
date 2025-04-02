@@ -1,4 +1,6 @@
-# ELB
+# LB
+
+LB = Load Balancer
 
 ELB = Elastic Load Balancer
 
@@ -14,12 +16,12 @@ En la consola de AWS, los load balancers se configuran en la sección de EC2.
 
 ## Tipos
 
-Hay 2 versiones de ELB:
+Hay 2 versiones de LB:
 
 - v1. Conviene evitarlo y utilizar v2, salvo en algunas excepciones. Los v1 no gestionan la layer OSI 7 de manera completa y tienen menos funcionalidad que v2, por ejemplo, 1 certificado SSL por Load Balancer lo que implica tener que utilizar múltiples Load Balancers; tampoco permite que las instancias conectadas a él escalen.
 - v2. Mas rápidos y baratos. Ofrecen funcionalidades como target groups (es un conjunto de instancias; además, pueden escalar) y reglas para utilizar un mismo load balancer para distintas funcionalidades como cambiar el comportamiento según los clientes que lo usen, por ejemplo tener rules para distintos dominios, cada rule puede tener un certificado SSL y cada rule apunta a un target group.
 
-Hay 3 tipos de ELB:
+Hay 3 tipos de LB:
 
 CLB (Classic Load Balancer):
 - Es v1.
