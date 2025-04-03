@@ -781,7 +781,7 @@ Ejemplo de configuración: `1:2:4`, cada número corresponde respectivamente a c
 
 ### Scaling policies
 
-Se trata de reglas para configurar los ASG.
+Se trata de reglas para configurar los ASG. Modifican el desired capacity respetando el max. y min. values configurados.
 
 Los Scaling Policies no son necesarios para que el ASG funcione.
 
