@@ -871,11 +871,12 @@ Pueden combinarse con EventBridge o SNS para que el sistema realice acciones o e
 
 Ambas:
 
-- Se emplean para configurar EC2 en los Auto Scaling Groups que crearán instancias. Configuran: AMI, tipo instancia, almacenamiento, red, iam role, etc.
+- Se emplean para configurar EC2 en los Auto Scaling Groups que crearán instancias. Configuran: AMI, tipo instancia, almacenamiento, red, iam role, user-data, etc.
 
 Launch configuration:
 
 - Una vez definidas, no pueden editarse. Para cambiarla hay que crear una nueva.
+- No pueden utilizarse para iniciar instancias directamente.
 
 Launch templates:
 
