@@ -121,3 +121,19 @@ Si la instancia falla, las conexiones irán a una nueva instancia.
 El problema con este método es que siempre se usará una instancia aunque el usuario genera mucha carga. Por lo que se recomienda que la sesión del usuario no se gestione en la instancia sino en algo externo, por ejemplo DynamoDB; así las instancias serán serverless y puede distribuirse la carga.
 
 La opción `stickiness` se configura en la consola de AWS desde EC2 > Target Groups; se activa para las instancias que pertenezcan al target group.
+
+## GWLB
+
+GWLB = Gateway Load Balancers
+
+Es un servicio que permite ejecutar y que escalen productos de terceros como firewalls IDS, IPS, etc; en caso de fallar una instancia, se preocupa de enviar el tráfico a otra. Por ejemplo, un producto que permite analizar el tráfico de entrada y salida, para detectar fuga de información o ataques. Estos productos por defecto no permitirían una arquitectura elástica y gracias a GWLB sí puede conseguirse.
+
+Formado por:
+
+- GWLB endpoints:
+  - El tráfico entra y sale por estos endpoints.
+  - Es un endpoint interface pero puede ser añadido a un route table y luego lo envía al GWLB balancer; tanto el tráfico de entrada y salida para que se analice.
+- GWLB balancers:
+  - Reparte el tráfico entre distintas instancias.
+  - Son dispositivos que usan las layers 3 y 4.
+  - Utiliza el protocolo GENEVE, el tráfico y metadatos son enviado por un túnel al producto de seguridad de modo que los paquetes no son modificados, mantienen las direcciones IP, puertos, etc.
