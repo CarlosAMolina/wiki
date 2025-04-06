@@ -24,8 +24,6 @@ Cuando se invoca:
 
 El cobro es en base a los recursos asignados y el tiempo de ejecución.
 
-La lambda utiliza roles para interactuar con otros servicios.
-
 ## Networking
 
 Tiene dos modos: público y VPC.
@@ -54,3 +52,18 @@ Actualmente, este problema se soluciona porque en lugar de utilizar un ENI por e
 - Si las lambdas usan la misma subred y el mismo security group. Se necesita un solo ENI.
 
 En la arquitectura actual, la ENI se crea al configurar la lambda o cuando se modifica la configuración de red, por lo que no supone retardo cuando se invoca la lambda. Crear la ENI requiere 90 segundos.
+
+### Seguridad
+
+La lambda utiliza:
+
+- IAM roles para interactuar con otros servicios.
+- Resource policies para definir qué servicios y cuentas pueden invocar funciones lambda. Actualmente no puede modificarse con la consola de AWS, solo con la CLI o por API.
+
+### Logs
+
+Puede utilizar:
+
+- CloudWatch. Guarda las métricas; por ejemplo la duración de la ejecución, invocaciones, fallos, latencia, etc.
+- CloudWatch Logs. Recibe cualquier log generado en una lambda. Para esto, la lambda requiere permisos mediante un execution rol.
+- X-Ray. Puede integrarse con X-Ray para obtener información de distributed tracing, por ejemplo sobre el usuario o la parte de una aplicación serverless que invoca la lambda.
