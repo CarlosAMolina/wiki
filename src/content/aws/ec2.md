@@ -608,7 +608,7 @@ Los ECS clusters que pueden funcionar de 2 maneras:
 
 - Modo fargate:
   - Ejecuta los contenedores de manera serverless; AWS gestiona los contenedores, nosotros solo los definimos. No nos preocupamos de las instancias EC2 necesarias.
-  - Se utiliza un Fargate Shared Infrasturcture, el hardware se comparte por todos los usuarios pero sin tener visibilidad de los otros clientes.
+  - Se utiliza un Fargate Shared Infrastructure, el hardware se comparte por todos los usuarios pero sin tener visibilidad de los otros clientes.
   - Como en el modo EC2, Fargate continúa usando cluster que se despliega en una VPC y emplea sus AZs. Se usa el hardware del Fargate Shared Infraestructure pero se conecta a la VPC con una Elastic Network Interface y le asigna una IP dentro de la VPC. También tiene un security group que debe de estar configurado con los puertos a usar por el contenedor.
   - Pagamos por los recursos utilizados en los contenedores empleados. No hay coste por el host.
 
