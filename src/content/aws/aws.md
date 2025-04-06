@@ -18,6 +18,7 @@
   - [Control Tower](control-tower.html)
   - [EC2](ec2.html)
   - [EFS](efs.html)
+  - [Lambda](lambda.html)
   - [LB - Load Balancer](lb.html)
   - [IAM](iam.html)
   - [KMS](kms.html)
