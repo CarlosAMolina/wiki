@@ -8,19 +8,13 @@ Un lambda function:
 
 - Es un código que lambda ejecuta.
 - Utiliza un runtime, por ejemplo Python 3.11. Pueden crearse runtimes propios gracias a las layers.
-- Se ejecuta en un runtime environment. A este le definimos los recursos a utilizar:
+- Se ejecuta en un runtime environment (también llamado execution context). Es como un contenedor al que definimos los recursos a utilizar:
   - Memoria. De 128 MB a 10.240 MB.
   - CPU. Según la cantidad de memoria, AWS asigna una cantidad de CPU.
   - Almacenamiento. Va de 512 MB a 10.240 MB.
 - Tiene un tiempo de funcionamiento máximo de 15 minutos.
 
 La lambda se despliega en AWS como un paquete.
-
-Cuando se invoca:
-
-- Se crea el runtime environment.
-- El paquete de la lambda se lanza en el runtime environment.
-- Los datos y los environments no se mantienen entre invocaciones. Hay situaciones en que se usa el mismo runtime environment, pero como norma general, se crea uno nuevo.
 
 El cobro es en base a los recursos asignados y el tiempo de ejecución.
 
@@ -68,7 +62,7 @@ Puede utilizar:
 - CloudWatch Logs. Recibe cualquier log generado en una lambda. Para esto, la lambda requiere permisos mediante un execution rol.
 - X-Ray. Puede integrarse con X-Ray para obtener información de distributed tracing, por ejemplo sobre el usuario o la parte de una aplicación serverless que invoca la lambda.
 
-### Invocación
+### Tipos de invocación
 
 #### Sincronización síncrona
 
@@ -118,6 +112,29 @@ Como no se envían eventos, sino que se leen del origen, el Event Source Mapping
 
 Los eventos fallidos pueden ser enviados a una DLQ. Por ejemplo, cola SQS o topic SNS.
 
+### Cold y Warm start
+
+Al invocarse una lambda:
+
+- Se crea y configura el execution context.
+- Se descarga e instala el runtime, ejemplo Python 3.11.
+- Se descarga e instala el deployment package de la lambda
+
+Estos pasos se almacenan en el execution context.
+
+Realizar estos pasos se llama cold start, lo que requiere cientos de milisegundos. Si una lambda se vuelve a ejecutar en poco tiempo, puede (no es algo seguro) que use el mismo execution context por lo que se ahorran los pasos anteriores, esto es un warm start y la lambda se ejecutaría en cuestión de milisegundos.
+
+Los datos y los environments no se mantienen entre invocaciones. Hay situaciones en que se usa el mismo runtime environment, pero como norma general, se crea uno nuevo. Los context los va eliminando AWS.
+
+Ejecuciones concurrentes utilizan distintos execution context y seguramente sean nuevos.
+
+Puede activase el provisioned concurrency, con el que AWS crea y mantiene unos contexts listos para usar.
+
+Hay otras opciones para mejorar el rendimiento, como usar el execution context entre distintas invocaciones de la lambda, pero no tenemos la certeza de que las invocaciones vayan a usar el mismo invocation context por lo que la lambda debe estar preparada para generar lo que sea necesario de nuevo. Ejemplo:
+
+- Guardar en la ruta `/tmp/` datos y así no hay que descargarlos.
+- Iniciar las conexiones a base de datos fuera del lambda handler.
+
 ## Versiones
 
 Una lambda puede tener distintas versiones.
@@ -129,3 +146,4 @@ Una vez publicada una versión, no puede modificarse, cada una tiene su propio A
 Existe la variable `$Latest` que apunta la última versión.
 
 Puede crearse alias que apunten a distintas versiones de la lambda. Ejemplo de alias: dev, stagre, prod. Estos alias pueden modificarse.
+
