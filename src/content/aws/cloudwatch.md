@@ -9,7 +9,15 @@ CloudWatch permite:
 - Almacenar y acceder a logs. Dentro de CloudWatch tenemos disponible para ello a `CloudWatch Logs`.
 - Obtener métricas de otros servicios y software que use AWS. Ejemplo: uso CPU, peticiones REST, etc. Algunas métricas se generan por defecto (ejemplo, uso CPU en instancias EC2) pero otras requieren instalar el CloudWatch agent.
 - CloudWatch Logs: permite monitorizar logs y realizar acciones en base a ellos. Hay situaciones en las que hay que instalar el CloudWatch agent.
-- CloudWatch Events: pueden ejecutarse acciones cuando ocurran sucesos, por ejemplo que un EC2 se inicie, y también pueden lanzarse eventos programados para que se realicen otras acciones.
+- CloudWatch Events. Explicado en su sección.
+
+## CloudWatch Events
+
+Gestiona eventos de sistema prácticamente en tiempo real; describen cambios en los productos y servicios de AWS. Ejemplo, que una instancia EC2 se inicie o se pare.
+
+Permite ejecutar acciones cuando ocurra un evento. También, permite lanzar eventos programados para que se realicen otras acciones.
+
+Se está reemplazando por EventBridge.
 
 ## CloudWatch Agent
 
