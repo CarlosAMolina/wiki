@@ -67,3 +67,53 @@ Puede utilizar:
 - CloudWatch. Guarda las métricas; por ejemplo la duración de la ejecución, invocaciones, fallos, latencia, etc.
 - CloudWatch Logs. Recibe cualquier log generado en una lambda. Para esto, la lambda requiere permisos mediante un execution rol.
 - X-Ray. Puede integrarse con X-Ray para obtener información de distributed tracing, por ejemplo sobre el usuario o la parte de una aplicación serverless que invoca la lambda.
+
+### Invocación
+
+#### Sincronización síncrona
+
+Al ser síncrono, tras invocar a la lambda se espera una respuesta, que indica si el proceso fue correcto o tuvo fallos.
+
+La gestión de errores o reprocesar lo realiza el cliente.
+
+Ejemplo, cuando se invoca la lambda:
+
+- Desde CLI o API.
+- API Gateway.
+
+#### Sincronización asíncrona
+
+Cuando un servicio de AWS invoca una lambda.
+
+Una vez invocada la lambda, no esperamos respuesta.
+
+Por ejemplo, al subir una imagen a S3.
+
+La lambda es responsable de volver a ejecutarse en caso de error. Podemos configurar que haya entre 0 y 2 intentos.
+
+La lambda debe ser `idempotent`, es decir, que al volver a procesarse de el mismo resultado. Por ejemplo, si tengo 10€ en mi banco y quiero incrementarlo a 20€, si las lambda lo que hace es sumar 10€, en caso de error y volver a procesar puede que haya sumado 10€ más de una vez y acabe con más de 20€; pero si la lambda lo que hace es establecer la cantidad total de 20€, siempre se tendrá el mismo resultado aunque se ejecute varias veces.
+
+La lambda puede enviar los eventos que no ha podido procesar tras los intentos a una DLQ (Dead Letter Queues), utilizado por ejemplo para diagnosis.
+
+La lambda puede enviar el evento de salida (sea procesado correctamente o fallido) a destinos como:
+
+- SQS.
+- SNS.
+- Lambda.
+- EventBridge.
+
+La lambda no necesita permisos sobre el origen para leer el evento enviado; pero si necesita solicitar información adicional entonces sí requiere más permisos.
+
+#### Event source mappings
+
+Utilizada en streams o colas que no soportan generación de eventos para invocar lambdas, ejemplo:
+
+- Kinesis.
+- DynamoDB streams.
+- SQS.
+
+En los productos de tipo stream, los consumidores pueden leer del stream, pero no se generan eventos al añadir datos. Como la lambda necesita ser notificada cuando hay nuevos datos, se utiliza el Event Source Mapping que va leyendo el stream o las colas, devuelve la información al stream o cola (a esta información se le llama source batch) y también la envía a la lambda (a esta información se la llama event batch). La lambda puede recibir cientos de event batch, según el tiempo que tarde en procesar cada evento, por lo que hay que tener en cuenta el tiempo máximo de ejecución de la lambda de 15 minutos.
+
+Como no se envían eventos, sino que se leen del origen, el Event Source Mapping requiere permisos para interactuar con el origen. El Event Source Mapping utiliza los permisos del execution rol de la lambda al que envía el Event Batch.
+
+Los eventos fallidos pueden ser enviados a una DLQ. Por ejemplo, cola SQS o topic SNS.
