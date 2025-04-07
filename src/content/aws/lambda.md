@@ -117,3 +117,15 @@ En los productos de tipo stream, los consumidores pueden leer del stream, pero n
 Como no se envían eventos, sino que se leen del origen, el Event Source Mapping requiere permisos para interactuar con el origen. El Event Source Mapping utiliza los permisos del execution rol de la lambda al que envía el Event Batch.
 
 Los eventos fallidos pueden ser enviados a una DLQ. Por ejemplo, cola SQS o topic SNS.
+
+## Versiones
+
+Una lambda puede tener distintas versiones.
+
+Una versión es el código más la configuración de la lambda.
+
+Una vez publicada una versión, no puede modificarse, cada una tiene su propio ARN (Amazon Resource Name).
+
+Existe la variable `$Latest` que apunta la última versión.
+
+Puede crearse alias que apunten a distintas versiones de la lambda. Ejemplo de alias: dev, stagre, prod. Estos alias pueden modificarse.
