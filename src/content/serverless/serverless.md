@@ -1,8 +1,18 @@
 # Serverless
 
+## Caracterísiticas
+
+- Las aplicaciones son colecciones de funciones pequeñas y especializadas en realizar una acción.
+- No se gestiona ninguno o casi ningún servidor.
+- Los entornos son stateless y efímeros; al ejecutarse obtienen la información que necesitan y para almacenarla lo hacen en algo externo.
+- Utilizan arquitectura event-driven.
+- Se intentan emplear productos de terceros cuando sea posible (ejemplo para el login, así evitamos su desarrollo, mantenimiento y coste) y FaaS cuando se necesite realizar operaciones de cómputo.
+
 ## Event-Driven Arquitecture
 
 Las diferentes partes de la aplicación se comunican por eventos; están desacopladas unas de otras.
+
+Las partes de la aplicación solo se ejecutan cuando es requerido.
 
 La aplicación la forman:
 
