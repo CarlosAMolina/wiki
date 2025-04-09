@@ -24,5 +24,6 @@
   - [KMS](kms.html)
   - [Route53](route53.html)
   - [S3](s3.html)
+  - [SNS](sns.html)
   - [Step Function](sf.html)
   - [VPC](vpc.html)
