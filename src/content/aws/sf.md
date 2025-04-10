@@ -1,5 +1,25 @@
 # Step Function
 
+## Características
+
+- Tipos de modos de funcionamiento, varía la velocidad y otros puntos:
+  - Standard. Tipo por defecto, duración máxima de 1 año.
+  - Express. Diseñao para manejar gran cantidad de volumen de datos. Duración máxima de 5 minutos.
+- Puede iniciarse de diferentes modos: API Gateway, EventBridge, Lambda etc.
+- Puede exportarse su definición utilizando ASL (Amazon States Language), es una plantilla JSON.
+- Reciben permisos mediante IAM Roles.
+
+## States
+
+Es lo que ocurre en un worflow, los states que hay disponibles son:
+
+- Succeed & Fail.
+- Wait. El proceso para hasta una hora específica o fecha.
+- Choice. Se realiza un proceso u otro según un input.
+- Parallel. Para ejecutarse procesos en paralelo.
+- Map. Realiza una acción en cada acción de una lista.
+- Task. Se comunica con otros servicios para ejecutarlos. Ejemplo: lambda, batch, SNS, otro SF, etc.
+
 ## AWS cli
 
 [Referencia](https://docs.aws.amazon.com/cli/latest/reference/stepfunctions/).
