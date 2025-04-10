@@ -1,5 +1,13 @@
 # Step Function
 
+## Introducción
+
+SF = Step Function
+
+Los SF permiten crear step machines.
+
+Un step machine es un workflow serverless de larga duración.
+
 ## Características
 
 - Tipos de modos de funcionamiento, varía la velocidad y otros puntos:
