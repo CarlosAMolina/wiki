@@ -8,6 +8,7 @@
 - [Servicios y zona pública y privada](zone-public-private.html)
 - [Servicios](services.html):
   - [Arn](arn.html)
+  - [API Gateway](api-gateway.html)
   - [Database](db.html)
   - [Athena](athena.html)
   - [Backup](backup.html)
