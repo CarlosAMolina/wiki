@@ -25,6 +25,7 @@
   - [KMS](kms.html)
   - [Route53](route53.html)
   - [S3](s3.html)
+  - [SQS. Simple Queue Service](sqs.html)
   - [SES. Simple Email Service](ses.html)
   - [SNS](sns.html)
   - [Step Function](sf.html)

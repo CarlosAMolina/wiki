@@ -36,4 +36,6 @@ Pueden ser: HTTP(s), email, SQS, SMS, Lambda, etc.
 
 ## Fanout arquitecture
 
-Es cuando múltiples subscriptores SQS escuchan un topic; esto permite desencadenar múltiples procesos.
+Es cuando múltiples subscriptores SQS (Simple Queue Service) escuchan un topic; esto permite desencadenar múltiples procesos.
+
+Por ejemplo, es útil si tenemos una aplicación que convierte los vídeos que llegan a S3 a diferentes calidades (480p, 720p, etc). Gracias a fanout podemos enviar el mensaje al topic SNS y a este topic tenemos subscritas una cola SQS por cada calidad; cada SQS iniciará el proceso que modifica la calidad del vídeo.
