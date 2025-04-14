@@ -53,6 +53,23 @@ Cuando un cliente termina de procesar un mensaje, para eliminarlo debe realizar 
 
 Si no es eliminado, el mensaje aparece de nuevo en la cola tras el visibility time. Esto es útil en casos de error donde el mensaje no se procesó correctamente.
 
+Durante el visibility timeout, el mensaje no está disponible en la cola.
+
+Valor por defecto es de 30 segundos, los podemos configurar de 0 segundos a 12 horas. Puede configurarse para la cola o por mensaje.
+
+## SQS Delay Queues
+
+Permite indicar un tiempo inicial de espera hasta que los mensajes puedan ser visibles para los consumers.
+
+Su valor por defecto es 0, el máximo son 15 minutos.
+
+Puede hacerse una configuración por cola o por mensaje:
+
+- Por cola. Usamos delay queues. El valor configurado se llama `DelaySeconds`.
+- Por mensaje. Esta opción no está disponible en colas FIFO. La opción por mensaje sobreescribe la configuración de la cola. Se configura con los message timers.
+
+Utilizado cuando queremos un delay en nuestra aplicación hasta que se inicia el proceso de los mensajes.
+
 ### Dead-Letter queues
 
 Es la cola donde van mensajes erróneos. Ejemplo, mensajes que no han podido procesarse tras 5 intentos.
@@ -71,4 +88,3 @@ Hay 2 tipos de polling:
 ## Coste
 
 En base a peticiones que hagamos a SQS, no en base a número de mensajes.
-
