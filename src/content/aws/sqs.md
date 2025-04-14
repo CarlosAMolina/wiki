@@ -72,9 +72,21 @@ Utilizado cuando queremos un delay en nuestra aplicación hasta que se inicia el
 
 ### Dead-Letter queues
 
-Es la cola donde van mensajes erróneos. Ejemplo, mensajes que no han podido procesarse tras 5 intentos.
+Es la cola donde van mensajes erróneos que no han podido procesarse tras varios intentos. Ejemplo, tras 5 intentos.
 
-Permite hacer distintos tipos de procesado en estos mensajes.
+Se configura una redrive policy, en esta se especifica:
+
+- Source Queue que monitorizar.
+- Dead-Letter Queue al que enviar los mensajes erróneos. Puede usarse una misma Dead-Letter para diferentes Source Queue.
+- Configuramos el `maxReceiveCount`. Cuando un mensaje vuelve a la cola tras el Visibility Timeout, se incrementa el ReceiveCount; si este es mayor que el maxReceiveCount, el mensaje es movido a la Dead-Letter Queue.
+
+Permite realizar distintas acciones en estos mensajes. Por ejemplo:
+
+- Enviar una notificación informando del mensaje que llega a la cola.
+- Crear y analizar los logs del mensaje erróneo o su contenido, para determinar la causa de que no se procese.
+- Aplicar otro procesamiento a estos mensajes.
+
+Hay que tener en cuenta que, cuando un mensaje llega a la cola original, se le asigna un timestamp de llegada, llamado `enqueue timestamp`. Al mover el mensaje a la Dead-Letter Queue, este valor no se actualiza y el `retention period` de la dead-letter queue debe tener en cuenta el `retention period` de la cola original; es decir, si en la cola original estuvo 1 día y el `retention period` del dead-letter queue es de 2 días, solo estará en el la cola dead-letter 1 día hasta ser eliminado automáticamente.
 
 ## Polling
 
