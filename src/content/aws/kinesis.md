@@ -4,24 +4,24 @@
 
 Es un servicio de streaming de datos escalable.
 
+Se encuentra en la zona pública de AWS. Es highly available en la región.
+
+Utilizado para data analytics de gran cantidad de datos en tiempo real o dashboards.
+
 Los datos pueden leerlos diferentes consumers. Los leen cada cierto tiempo (segundos, horas, etc). Los consumers pueden ser ec2, lambdas, on permise services, etc.
 
 Gestiona una gran cantidad de datos de diferentes aplicaciones (producers). Los producers pueden ser ec2, servicios on premise, IoT, etc.
 
-Los producers envían datos a un `kinesis stream`. Por defecto los datos se mantienen en el stream 24 horas, puede ampliarse este tiempo hasta 365 días con un coste adicional. El almacenamiento de los datos está incluido en el servicio.
+Los producers envían datos a un `kinesis stream`. Pueden ser diferentes servicios (de AWS o de terceros). Ejemplo: CloudWatch, IoT, etc.
+
+Kinesis es un servicio en tiempo real. Pueden consumirse los datos del kinesis stream en tiempo real, sobre 200 mili segundos.
+
+Por defecto los datos se mantienen en el stream 24 horas, puede ampliarse este tiempo hasta 365 días con un coste adicional. El almacenamiento de los datos está incluido en el servicio.
 
 El kinesis stream está formado por:
 
 - Canales, cada uno tiene 1 MB para añadir datos y 2 MB para consumir. Escala al necesitar más capacidad añadiendo más canales, lo que incrementa el coste.
 - En los canales los datos se guardan en kinesis data records que tienen un tamaño de 1 MB máximo.
-
-Se encuentra en la zona pública de AWS. Es highly available en la región.
-
-Utilizado para data analytics de gran cantidad de datos en tiempo real o dashboards.
-
-## Kinesis data firehose
-
-Permite almacenar los datos de Kinesis de manera permanente en otro servicio, por ejemplo S3.
 
 ## Kinesis VS SQS
 
@@ -35,3 +35,31 @@ SQS:
 
 - Suele tener un origen o un grupo de origen de los datos, y 1 consumidor o 1 grupo consumidor. No cientos de ellos.
 - No hay que utilizarlo para persistencia de datos. Tras procesarlos, se eliminan.
+
+## Kinesis data firehose
+
+Es un servicio diferente a Kinesis.
+
+Kinesis no puede enviar los datos de manera nativa a los destinos pero Kinesis data firehose permite enviar los datos de Kinesis a:
+
+- Data lakes.
+- Data stores. Así pueden almacenarse los datos de Kinesis de manera permanente, por ejemplo en otro servicio de AWS como S3.
+- Servicios de analytics.
+
+Los destinos permitidos son:
+
+- Servicios, de AWS o de terceros, a los que se les envían los datos por HTTP.
+- Splunk.
+- Redshift. En el caso de Redshift, se utiliza S3 de manera intermedia y luego se copian los datos a Redshift.
+- ElasticSearch.
+- S3.
+
+Escala de manera automática, es serverless y tiene resilencia.
+
+Puede tomar los datos de Kinesis o del producer directamente.
+
+El envío de los datos al destino no es en tiempo real como en Kinesis, sí que llegan en tiempo real pero la entrega es `near realtime`, tarda cerca de 60 segundos. Almacena datos y los envía al llegar a 1 MB o pasar 60 segundos; esto puede configurarse.
+
+Permite modificar datos utilizando lambdas, se envían a una lambda y vuelven a Kinesis data firehose para ser enviados al destino. Puede almacenarse un backup de datos sin modificar en S3.
+
+Se cobra en base a la cantidad de datos gestionados.
