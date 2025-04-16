@@ -99,3 +99,22 @@ Conviene utilizarlo cuando:
 - Dahsboards en tiempo real, por ejemplo en juegos.
 - Métricas en tiempo real para seguridad.
 
+
+## Kinesis Video Streams
+
+Se alimenta con vídeos (u otros datos que no son vídeo) en directo. Escala con la volumetría recibida.
+
+Las fuentes que envían información pueden ser:
+
+- Fuentes de vídeo. Ejemplo: cámaras de seguridad, smartphones, coches, drones, etc.
+- Fuentes no de vídeo: audio, datos de temperatura, profundidad, radar, etc.
+
+La información la envían las fuentes a Kinesis Video Streams. Por ejemplo, cada cámara de seguridad envía datos a un stream.
+
+Se puede acceder a información de los datos frame-by-frame o como sea necesario. Pero es importante saber que no pueden accederse a los datos tal cual, ya que no son almacenados como son originalmente; se consumen mediante API.
+
+Los datos pueden ser almacenados y cifrados (en tránsito o en tiempo real).
+
+Suele usarse con otros servicios de AWS como Rekognition, para reconocimiento facial o Connect, para procesar audio.
+
+Ejemplo. Cámaras de seguridad envían datos a kinesis video streams, estos los llevan a Rekognition Video y este da los datos del análisis a kinesis data stream el cual los lleva a una lambda para que tome decisiones en base a los resultados del análisis, por ejemplo según un nivel de matcheo de que las caras captadas por las cámaras corresponden a gente conocida o no.
