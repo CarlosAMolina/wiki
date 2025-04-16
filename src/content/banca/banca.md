@@ -8,7 +8,7 @@ Por ejemplo, si el fondo tiene una rentabilidad del 2% pero el del benchmark es 
 
 Ejemplos de benchmark: el índice S&P 500, el IBEX 35, el Eurostoxx 50 o uno mixto compuesto por más de un índice.
 
-[Enlace](https://www.ing.es/ennaranja/invertir-dinero/fondos-de-inversion/como-calcular-rentabilidad-fondo-inversion/)
+[Enlace](https://www.ing.es/ennaranja/invertir-dinero/fondos-de-inversion/como-calcular-rentabilidad-fondo-inversion/).
 
 ## NAV o valor liquidativo
 
@@ -16,7 +16,7 @@ NAV = Net Asset Value = Valor neto de los activos.
 
 Es el precio de cada participación del fondo en un momento determinado; el valor neto de los activos del fondo que pertenece a los accionistas.
 
-Cálculo. NAV = (valor total de los activos de un fondo - valor total de los pasivos) / número de acciones en circulación
+Cálculo. NAV = (valor total de los activos de un fondo - valor total de los pasivos) / número de acciones en circulación.
 
 Siendo:
 
@@ -29,7 +29,7 @@ Se calcula diariamente, no fluctúa segundo a segundo.
 Enlaces:
 
 - [financionario](https://financionario.com/definicion-net-asset-value-valor-neto-de-activos).
-- [economipedia](https://economipedia.com/definiciones/valor-liquidativo-vl.html)
+- [economipedia](https://economipedia.com/definiciones/valor-liquidativo-vl.html).
 
 ## Participaciones de un fondo de inversión
 
@@ -71,6 +71,6 @@ Indica si el comportamiento del fondo es parecido al de su benchmark.
 Un valor:
 
 - Bajo. Significa que el fondo se comporta similar al índice de referencia.
-- Alto. Hay diferencia entre la rentabilidad del fondo y la del benchmark
+- Alto. Hay diferencia entre la rentabilidad del fondo y la del benchmark.
 
-[Enlace](https://www.ing.es/ennaranja/invertir-dinero/fondos-de-inversion/como-calcular-rentabilidad-fondo-inversion/)
+[Enlace](https://www.ing.es/ennaranja/invertir-dinero/fondos-de-inversion/como-calcular-rentabilidad-fondo-inversion/).
