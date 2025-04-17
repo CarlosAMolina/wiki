@@ -20,6 +20,7 @@
   - [Control Tower](control-tower.html)
   - [EC2](ec2.html)
   - [EFS](efs.html)
+  - [Glue](glue.html)
   - [Kinesis](kinesis.html)
   - [Lambda](lambda.html)
   - [LB - Load Balancer](lb.html)
