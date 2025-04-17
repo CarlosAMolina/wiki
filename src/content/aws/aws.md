@@ -16,6 +16,7 @@
   - [CloudFront](cloudfront.html)
   - [CloudTrail](cloudtrail.html)
   - [CloudWatch](cloudwatch.html)
+  - [Cognito](cognito.html)
   - [Control Tower](control-tower.html)
   - [EC2](ec2.html)
   - [EFS](efs.html)

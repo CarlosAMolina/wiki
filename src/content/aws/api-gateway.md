@@ -8,6 +8,8 @@ Es un intermediario entre los clientes y las integraciones (los que realizan las
 
 Puede utilizarse para conectarse a aplicaciones monolíticas legacy y ayudar en el proceso de convertirlas a serverless.
 
+Puede trabajar directamente con JWT.
+
 ## Características
 
 - Tiempo máximo 29 segundos, si la petición y respuesta dura más, tenemos error de timeout.
