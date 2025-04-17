@@ -3,7 +3,7 @@
 ## Caracterísiticas
 
 - Las aplicaciones son colecciones de funciones pequeñas y especializadas en realizar una acción.
-- No se gestiona ninguno o casi ningún servidor.
+- No se gestiona ninguno o casi ningún servidor. Esto es responsabilidad del proveedor del servicio.
 - Los entornos son stateless y efímeros; al ejecutarse obtienen la información que necesitan y para almacenarla lo hacen en algo externo.
 - Utilizan arquitectura event-driven.
 - Se intentan emplear productos de terceros cuando sea posible (ejemplo para el login, así evitamos su desarrollo, mantenimiento y coste) y FaaS cuando se necesite realizar operaciones de cómputo.
