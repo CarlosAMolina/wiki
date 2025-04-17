@@ -47,6 +47,18 @@ Cuando recibes un código (por sms, email, etc.) que copias y pegas en la web pa
 
 Actualmente, también es utilizado en los magic links. Son links que te da una web y al acceder a ellos quedas logeado sin usar una contraseña.
 
+## SAML
+
+SAML = Security Assertion Markup Language = lenguaje de marcado para confirmaciones de seguridad.
+
+Es una tecnología estandarizada para autenticación.
+
+La aserción SAML es un mensaje que indica a un servicio que un usuario ha iniciado sesión y permite dar información sobre su identidad.
+
+Hace posible la tecnología SSO.
+
+[Enlace](https://www.cloudflare.com/es-es/learning/access-management/what-is-saml/)
+
 ## SSO
 
 SSO = Single Sign On
