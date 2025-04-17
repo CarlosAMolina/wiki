@@ -35,9 +35,9 @@ Hay webs en las que tenemos un panel de control y vamos añadiendo los métodos 
 
 Tiene que ver más con autorización que con autenticación.
 
-Te logeas usando un servidor de terceros.
+Te logeas usando un servidor de terceros. Por ejemplo, cuando te identificas en una web pero usando tus credenciales de otra red social como Google, GitHub, Facebook, etc.
 
-Por ejemplo, cuando te logeas en una web usando tus credenciales de otra red social como Google, GitHub, Facebook, etc.
+La web no puede ver la información que compartes con el tercero. Tras logearte, obtienes un token del tercero que usas en la web inicial.
 
 ## OTP
 
@@ -66,3 +66,7 @@ SSO = Single Sign On
 Tiene que ver más con autorización que con autenticación.
 
 Tras autenticar a un usuario una sola vez; se hace automáticamente para múltiples lugares. Por ejemplo, te logeas en tu empresa en la web A y puedes acceder a otras webs distintas.
+
+## Web Identity Federation
+
+Por ejemplo, en AWS es cuando se convierte el token dado por un tercero (al logearnos con Oauth) en las credenciales temporales de AWS que sirven para autorizarnos a utilizar los servicios de AWS.
