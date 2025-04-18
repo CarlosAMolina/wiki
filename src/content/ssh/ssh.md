@@ -6,6 +6,7 @@
   - [Generar clave de identificación](#generar-clave-de-identificación)
   - [Configurar cliente para acceder al servidor](#configurar-cliente-para-acceder-al-servidor)
   - [Eliminar clave de identificación](#eliminar-clave-de-identificación)
+  - [scp](#scp)
   - [Referencias](#referencias)
 
 ## Conexión a servidor con SSH sin credenciales
@@ -54,6 +55,20 @@ ssh foo
 ### Eliminar clave de identificación
 
 Para evitar que un equipo se conecte al servidor con el método explicado en este apartado, solamente debemos eliminar en el archivo `~/.ssh/authorized_keys` del servidor la clave que corresponda al equipo.
+
+### scp
+
+De tener configurado el host en `~/.ssh/config`:
+
+```
+scp HOST_IN_THE_CONFIG:VPS_FILE_PATH LOCAL_FILE_PATH
+```
+
+De no tener configurado el host:
+
+```
+scp -P VPS_PORT VPS_USER@VPS_IP:VPS_FILE_PATH LOCAL_FILE_PATH
+```
 
 ### Referencias
 
