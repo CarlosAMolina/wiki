@@ -60,13 +60,13 @@ Para evitar que un equipo se conecte al servidor con el método explicado en est
 
 De tener configurado el host en `~/.ssh/config`:
 
-```
+```bash
 scp HOST_IN_THE_CONFIG:VPS_FILE_PATH LOCAL_FILE_PATH
 ```
 
 De no tener configurado el host:
 
-```
+```bash
 scp -P VPS_PORT VPS_USER@VPS_IP:VPS_FILE_PATH LOCAL_FILE_PATH
 ```
 
