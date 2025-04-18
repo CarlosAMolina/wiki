@@ -6,7 +6,7 @@ SQS. Simple Queue Service.
 
 Se encuentra en la zona pública de AWS.
 
-Proporciona colas de mensajes.
+Proporciona colas de mensajes. Las colas ofrecen una comunicación uno a uno.
 
 Al crear una cola SQS, son high availability y gestionada por AWS. Está disponible en una región.
 

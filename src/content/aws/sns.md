@@ -24,6 +24,8 @@ En ellos se tratan los permisos y otras configuraciones.
 
 Es por donde viajan los mensajes.
 
+Presenta una comunicación one to many.
+
 ### Publisher
 
 Es quien envía mensajes al topic.

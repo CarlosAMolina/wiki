@@ -26,6 +26,7 @@
   - [Kinesis](kinesis.html)
   - [LB - Load Balancer](lb.html)
   - [Lambda](lambda.html)
+  - [MQ](mq.html)
   - [Route53](route53.html)
   - [S3](s3.html)
   - [SES. Simple Email Service](ses.html)
