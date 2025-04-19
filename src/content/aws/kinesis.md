@@ -4,6 +4,8 @@
 
 Es un servicio de streaming de datos escalable.
 
+No está muy enfocado a arquitecturas serverless.
+
 Se encuentra en la zona pública de AWS. Es highly available en la región.
 
 Utilizado para data analytics de gran cantidad de datos en tiempo real o dashboards.
@@ -22,6 +24,7 @@ El kinesis stream está formado por:
 
 - Canales, cada uno tiene 1 MB para añadir datos y 2 MB para consumir. Escala al necesitar más capacidad añadiendo más canales, lo que incrementa el coste.
 - En los canales los datos se guardan en kinesis data records que tienen un tamaño de 1 MB máximo.
+- Un shard es una secuencia de data records que se identifica de manera única; un stream está formado por uno o mas shards. La capacidad de un stream es la suma de las capacidades de los shards, si el data reate cambia, podemos modificar la cantidad de shards en el stream.
 
 ## Kinesis VS SQS
 
@@ -99,7 +102,6 @@ Conviene utilizarlo cuando:
 - Dahsboards en tiempo real, por ejemplo en juegos.
 - Métricas en tiempo real para seguridad.
 
-
 ## Kinesis Video Streams
 
 Se alimenta con vídeos (u otros datos que no son vídeo) en directo. Escala con la volumetría recibida.
@@ -118,3 +120,7 @@ Los datos pueden ser almacenados y cifrados (en tránsito o en tiempo real).
 Suele usarse con otros servicios de AWS como Rekognition, para reconocimiento facial o Connect, para procesar audio.
 
 Ejemplo. Cámaras de seguridad envían datos a kinesis video streams, estos los llevan a Rekognition Video y este da los datos del análisis a kinesis data stream el cual los lleva a una lambda para que tome decisiones en base a los resultados del análisis, por ejemplo según un nivel de matcheo de que las caras captadas por las cámaras corresponden a gente conocida o no.
+
+## Enlaces
+
+- [Términos Kinesis](https://docs.aws.amazon.com/streams/latest/dev/key-concepts.html#shard)
