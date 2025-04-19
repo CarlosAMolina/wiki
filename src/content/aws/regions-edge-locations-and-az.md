@@ -27,7 +27,13 @@ Las regiones se identifican de 2 maneras:
 
 Como puede que un país no tenga una región de AWS, Amazon crea Edge Locations para que los usuarios estén más cerca de la infraestructura de AWS y así obtener más velocidad.
 
-Son más pequeños que una región, están en más lugares que las regiones y suelen tener solamente servicios de distribución de contenido.
+Son más pequeños que una región, pueden ser por ejemplo 1 o más racks en un data center de terceros.
+
+Están distribuidos globalmente, se encuentran en más lugares que las regiones.
+
+Suelen tener solamente servicios de distribución de contenido. No pueden emplearse para desplegar instancias EC2.
+
+A día de hoy hay más de 200 edge locations.
 
 ## Availability Zones
 
