@@ -28,7 +28,19 @@ Es donde se definen patrones para matchear paths de objetos. El patrón por defe
 
 Permite tener distintas configuraciones en un distribution, una para cada path matcheado.
 
-Podemos configurar: TTL, policies, orígenes, restringir acceso, etc.
+Podemos configurar:
+
+- Orígenes.
+- Caché.
+- Restringir acceso. Por ejeplo a rutas que contienen certificado. Se utiliza signed cookies o signed URLs. Opciones:
+  - Trusted key groups. Es el modo actual que debe usarse.
+  - Trusted signer. Es el modo legacy.
+- Políticas del protocolo que utilizar: HTTP o/y HTTPS.
+- Métodos HTTP que utilizar: GET, POST, etc.
+- Cifrado, desde el punto de entrada del edge location al resto de la red de CF.
+- Lambda edge functions.
+- TTL.
+- Etc.
 
 Si una petición matchea un behaviour, se utiliza el behaviour matcheado, en caso contrario se acaba utilizando el behaviour por defecto.
 
@@ -38,9 +50,15 @@ Por ejemplo, tenemos un bucket con imágenes que no deben ser públicas, creamos
 
 Es la unidad de configuración de CF.
 
-En esta configuración se indica cuál es el origen. Pueden indicarse uno o más orígenes.
+En esta configuración se indica:
 
-Tiene como mínimo un behaviour, puede tener más.
+- Cuál es el origen. Pueden indicarse uno o más orígenes.
+- Tiene como mínimo un behaviour, puede tener más.
+- La localización de los edge locations a utilizar.
+- AWS WAF.
+- Nombre de dominio.
+- Certificado SSL.
+- Security policy (versión de SSL o TLS).
 
 Con el distribution se crea un nombre de dominio para este distribution que termina en `cloudfront.net`, ejemplo https:/d123456abcdef8sdf.cloudfront.net`. Será único en cada distribution que creemos. También puede utilizar un dominio nuestro.
 
