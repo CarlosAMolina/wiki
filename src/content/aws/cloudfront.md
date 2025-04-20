@@ -60,7 +60,7 @@ En esta configuración se indica:
 - Certificado SSL.
 - Security policy (versión de SSL o TLS).
 
-Con el distribution se crea un nombre de dominio para este distribution que termina en `cloudfront.net`, ejemplo https:/d123456abcdef8sdf.cloudfront.net`. Será único en cada distribution que creemos. También puede utilizar un dominio nuestro.
+Con el distribution se crea un nombre de dominio para este distribution que termina en `cloudfront.net`, ejemplo `https:/d123456abcdef8sdf.cloudfront.net`. Será único en cada distribution que creemos. También puede utilizar un dominio nuestro.
 
 Una vez tenemos el distribution, se despliega en los edge location a los que pueden hacer peticiones los clientes. Es decir, lo que configuramos se despliega fuera de CF, pero la configuración está en CF.
 
@@ -81,3 +81,53 @@ Se encuentra ete los edge location y el origen. Sopora los edge location en la m
 Se utilizan para cachear datos de acceso menos frecuente. Es beneficioso cuando ofrece mejor resultados que acceder directamente al origen, y en despliegues globales.
 
 Como se indicó en los edge location, se utiliza el regional edge cache si los edge location no tienen la información solicitada en su caché. Si la información tampoco está en el regional edge cache, este la solicita al origen y la cachea.
+
+## TTL
+
+Controlan el tiempo que el contenido se encuentra en los edge locations.
+
+Cuando el TTL ha pasado, el objeto no es eliminado inmediatamente del edge location; al solicitar el objeto en el edge location, este consulta con el origen si el objecto ha cambiado:
+
+- Si no ha cambiado, el origen responde con un `304 Not Modified`. Se mantiene la versión del edge location como la actual.
+- La versión del origen es distinta. Devuelve un `200 OK`.
+
+El cache HIT es la frecuencia con que el edge location entrega contenido a los clientes. Cuanto mayor sea, menor es la carga en el origen y mejores respuestas tendrá el cliente.
+
+Los objetos tienen por defecto un validity period o TTL de 24 horas; tras este tiempo, el objeto se marca como expirado.
+
+Podemos configurar un TTL mínimo y uno máximo. Estos no afectan al TTL, indican el rango de posibles valores que puede tener un objeto, porque cada objeto puede tener un TTL distinto, se especifica en las cabeceras. Si las cabeceras sobrepasan estos límites, se usa el valor de los límites.
+
+Cabeceras para indicar cuándo un objeto se considera expirado:
+
+- Cache-Control max-age. Son segundos.
+- Cache-Control s-maxage. Son segundos.
+- Expires. Fecha y hora.
+
+Configurar una o ambas de las cabeceras `max-age` y `s-maxage` causa el mismo efecto.
+
+Las cabeceras se configuran según el origen:
+
+- S3. Se indica en los metadatos de los objetos; mediante API, CLI o con la consola de AWS.
+- Aplicación propia. La aplicación o el web server establece las cabeceras.
+
+## Cache Invalidation
+
+Al utilizarlo, se marcan como expirados los objetos especificados mediante un path, independientemente de su TTL. Ejemplo:
+
+- /images/dog1.png
+- /images/dog*
+- /images/*
+- /*
+
+Se realiza en el distribution, por lo que afecta a todos los edge locations del distribution y es algo que lleva tiempo, no se aplica de manera inmediata.
+
+Tiene un coste, independiente del número de objetos a los que aplica el cambio.
+
+Si de manera habitual estamos invalidando la caché de objetos, es mejor utilizar versionado en los nombres. Ejemplo, dog_v1.png, dog_v2.png, etc. Y actualizar la aplicación para apuntar a la versión deseada. Versionado en el nombre tiene ventajas como:
+
+- No afecta que el objeto esté cacheado en el navegador del usuario ya que al tener otro nombre, hay que solicitar el nuevo.
+- Los logs son mas claros al saber qué objeto se utiliza al tener cada uno distinto nombre.
+- Mantenemos todas las versiones de los objetos, por lo que son consistentes en todos los edge locations y podemos utilizar cualquiera independientemente.
+- Reduce costes al no tener que utilizar cache invalidation continuamente.
+
+Versionado en los nombres es diferente al versionado de S3 porque este utiliza el mismo nombre para distintas versiones.
