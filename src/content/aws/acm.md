@@ -9,7 +9,7 @@ Permite la creación, gestión, renovación y despliegue de certificados.
 Es un servicio regional. Un certificado no puede cambiar de región:
 
 - Los servicios deben estar en la misma región que el certificado. Por ejemplo, para usar un certificado en un ALB, el certificado en el ACM debe estar en la misma región que el ALB.
-- CloudFront presenta una excepción a esto. Al ser un servicio global, el certificado debe encontrarse en `us-east-1`. El Distribution de ClouFront debe estar en `us-east-1`; luego el Distribution despliega el certificado en los edge locations aunque estos se encuentren en otras regiones.
+- CloudFront presenta una excepción a esto. Al ser un servicio global, el certificado debe encontrarse en `us-east-1` (Northern Virginia). El Distribution de ClouFront debe estar en `us-east-1`; luego el Distribution despliega el certificado en los edge locations aunque estos se encuentren en otras regiones.
 
 Realiza la función de Certificate Authority (CA). Puede ser:
 

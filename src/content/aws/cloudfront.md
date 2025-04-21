@@ -35,7 +35,10 @@ Podemos configurar:
 - Restringir acceso. Por ejeplo a rutas que contienen certificado. Se utiliza signed cookies o signed URLs. Opciones:
   - Trusted key groups. Es el modo actual que debe usarse.
   - Trusted signer. Es el modo legacy.
-- Políticas del protocolo que utilizar: HTTP o/y HTTPS.
+- Políticas del protocolo que utilizar:
+  - HTTP y HTTPS.
+  - Que HTTP se rediriga a HTTPS.
+  - Solo HTTPS.
 - Métodos HTTP que utilizar: GET, POST, etc.
 - Cifrado, desde el punto de entrada del edge location al resto de la red de CF.
 - Lambda edge functions.
@@ -60,7 +63,9 @@ En esta configuración se indica:
 - Certificado SSL.
 - Security policy (versión de SSL o TLS).
 
-Con el distribution se crea un nombre de dominio para este distribution que termina en `cloudfront.net`, ejemplo `https:/d123456abcdef8sdf.cloudfront.net`. Será único en cada distribution que creemos. También puede utilizar un dominio nuestro.
+Con el distribution se crea un nombre de dominio para este distribution que termina en `cloudfront.net`, ejemplo `https:/d123456abcdef8sdf.cloudfront.net`. Es el modo por defecto que utilizamos para acceder a un distribution, es un CNAME en el DNS. Será único en cada distribution que creemos.
+
+El distribution también puede utilizar un dominio nuestro, es decir, un Alternate Domain Name. Para ello hemos de verificar que el domino es nuestro, para lo que se requiere un certificado SSL (se use o no se use HTTPS) que coincida con el nombre utilizado, el certificado se crea o importa con ACM.
 
 Una vez tenemos el distribution, se despliega en los edge location a los que pueden hacer peticiones los clientes. Es decir, lo que configuramos se despliega fuera de CF, pero la configuración está en CF.
 
@@ -81,6 +86,14 @@ Se encuentra ete los edge location y el origen. Sopora los edge location en la m
 Se utilizan para cachear datos de acceso menos frecuente. Es beneficioso cuando ofrece mejor resultados que acceder directamente al origen, y en despliegues globales.
 
 Como se indicó en los edge location, se utiliza el regional edge cache si los edge location no tienen la información solicitada en su caché. Si la información tampoco está en el regional edge cache, este la solicita al origen y la cachea.
+
+### Viewer protocol
+
+Es la conexión entre el cliente o viewer y el edge location.
+
+### Origin protocol
+
+Es la conexión entre el edge location y el origen.
 
 ## TTL
 
@@ -131,3 +144,34 @@ Si de manera habitual estamos invalidando la caché de objetos, es mejor utiliza
 - Reduce costes al no tener que utilizar cache invalidation continuamente.
 
 Versionado en los nombres es diferente al versionado de S3 porque este utiliza el mismo nombre para distintas versiones.
+
+## SSL
+
+Podemos habilitar que se use SSL por defecto al acceder al distribution.
+
+CF emplea un certificado SSL por defecto que utiliza `*.cloudfront.net`, por lo que los distributions configurados para trabajar con la dirección terminada en esto, harán uso del certificado.
+
+Hay dos conexiones SSL:
+
+- Desde el cliente/viewer a CF. El certificado aplicado a CF debe coincidir con el nombre DNS de lo utilizado por el cliente para acceder a CF.
+- De CF al origen. El certificado instalado en los orígenes debe coincidir con el nombre del DNS que CF utiliza para conectarse con el origen.
+
+Ambas conexiones, y cualquier conexión intermedia, necesitan certificados públicos válidos, no sirven certificados autofirmados:
+
+- Para el viewer protocol, los certificados deben ser emitidos por un Certificate Authority (CA) o ACM en la región us-east-1.
+- Respecto al origin protocol, en el caso de:
+  - S3 no hay que preocuparse por el certificado, lo gestiona de manera nativa.
+  - ALB. Puede usar certificados de una CA o de ACM.
+  - Si el origen es un EC2 o es on-premise. Solo puede utilizar certificados de CA, no de ACM.
+
+### SNI
+
+SNI = Server Name Indication.
+
+Antes de 2003, si un servidor con una IP tenía varios dominios, el cliente indicaba el dominio deseado en las cabeceras de la petición. Como el cifrado se inicia en la conexión TCP, y las cabeceras se encuentran en la layer 7/aplicación, después de la conexión TCP, no es posible usar SSL para verificar la identidad del host y esto implicaba que cada dominio con SSL tuviera su propia dirección IP.
+
+Por esto apareció SNI, es una extensión de TLS que permite que un cliente indique a un servidor el dominio a visitar. Esto habilita que distintos dominios usen la misma IP; cada dominio debe tener su propio certificado SSL.
+
+Pero no todos los navegadores soportan SNI.
+
+CF no tiene coste adicional por usar SNI pero sí para IPs dedicadas en los edge location (600$ al mes por cada distribution), esta última opción es la que permitiría que todos los navegadores puedan usar HTTPS contra una IP con varios dominios.
