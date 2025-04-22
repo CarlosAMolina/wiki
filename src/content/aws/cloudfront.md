@@ -38,6 +38,11 @@ De utilizar un custom origin, se puede configurar:
 - Puerto.
 - A diferencia de un origin S3, no puede configurarse directamente para que el origin solo sea accesible con CF. Pero pueden configurarse para añadir unas caberas propias y de este modo hacer un filtrado en origin en base a ellas.
 
+Al configurar el origin en el distribution:
+
+- De utilizar el nombre del bucket, el origen será de tipo S3.
+- De especificar el nombre del dominio DNS del sitio web estático, para CF el origen será un custom origin, creo que aunque sea S3, CF lo verá como un custom origin.
+
 ### Behaviour
 
 Los orígenes no están asociados directamente a los distribution sino que lo están a los `behaviours` y estos a los distribution.
