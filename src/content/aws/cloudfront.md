@@ -18,6 +18,26 @@ Localización original del contenido.
 
 Puede ser S3 o cualquier servidor con una IP pública.
 
+Si en un distribution tienes varios orígenes, puedes crear un origin group, esto ofrece resilencia. En el behaviour se escoge entre utilizar un origin o un origin group.
+
+Tipos de origin:
+
+- AWS S3 bucket.
+- AWS media package channel endpoint.
+- AWS media store container endpoint.
+- Resto. Son orígenes propios, como web servers.
+
+S3 bucket es la manera más sencilla de integrar con CloudFront, ofrece otras opciones de configuración que si eligiéramos un custom origin. Por ejemplo podemos configurar que el bucket sea solo accesible a través de CF; también pueden añadirse cabeceras a la petición.
+
+De usar S3 origin, el origin protocol será igual que el viewer protocol, ejemplo HTTP o HTTPS.
+
+De utilizar un custom origin, se puede configurar:
+
+- Mínimo protocolo SSL.
+- Origin protocol, a diferencia que en S3 origin, no es obligatorio que sea igual al viewer protocol.
+- Puerto.
+- A diferencia de un origin S3, no puede configurarse directamente para que el origin solo sea accesible con CF. Pero pueden configurarse para añadir unas caberas propias y de este modo hacer un filtrado en origin en base a ellas.
+
 ### Behaviour
 
 Los orígenes no están asociados directamente a los distribution sino que lo están a los `behaviours` y estos a los distribution.
