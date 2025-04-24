@@ -200,3 +200,57 @@ Por esto apareció SNI, es una extensión de TLS que permite que un cliente indi
 Pero no todos los navegadores soportan SNI.
 
 CF no tiene coste adicional por usar SNI pero sí para IPs dedicadas en los edge location (600$ al mes por cada distribution), esta última opción es la que permitiría que todos los navegadores puedan usar HTTPS contra una IP con varios dominios.
+
+## OAI
+
+### Introducción
+
+Utilizado para securizar los origin, evita que alguien acceda a ellos directamente sin usar CF.
+
+Es un tipo de identidad, con diferencias respecto a IAM user o IAM role.
+
+### Origin S3
+
+Se asocia el OAI con los CF Distributions y lo usan los edge locations, de modo que cuando estos acceden a un origin S3, el CF es el OAI; al ser una identidad, se le pueden aplicar políticas del bucket para permitir el acceso a los recursos y los accesos sin OAI están denegados.
+
+### Custom origin
+
+A diferencia de S3, no pueden utilizarse identities.
+
+Hay dos opciones, pueden utilizarse ambas:
+
+- Configurar los edge locations para modificar las peticiones de los clientes, de modo que les añade unas cabeceras que espera el origin para ofrecer el contenido. Estas nuevas cabeceras son entre el edge location y el origin, y al estar las peticiones protegidas con HTTPS, nadie excepto CF y el origin pueden conocer su valor.
+- Configurar un firewall en el origen que solo acepte el rango de IPs de CF.
+
+## Private Behaviours
+
+Un CF distribution se crea con un behaviour. Este behaviour puede ser público o privado.
+
+De ser privado, se accede al contenido utilizando cookies firmadas o URLs firmadas.
+
+Un signer es una entidad que puede crear signed URLs o cookies, por ejemplo, una lambda que realice esta función.
+
+Cuando un signer se asocia a un behaviour, este es privado. Para configurar esto:
+
+- La opción antigua era crear un Trusted Signer. En esta opción el Account Root User genera un CloudFront Key. Al tener esta key, la cuenta actúa como Trusted Signer.
+- El modo actual es emplear trusted key groups, son los que deciden las keys que pueden utilizarse para obtener signed key groups o cookies. Este método ofrece las ventajas de:
+  - No tener que utilizar el Account Root User.
+  - Ofrece más flexibilidad en la configuración: puede gestionarse con la API de CF y permite crear múltiples keys.
+
+### Signed URLs vs Cookies
+
+Signed URLs:
+
+- Dan acceso a un solo objeto.
+- Algunos clientes no permiten trabajar con cookies.
+- Ofrecen una URL diferente por lo que de querer que la URL no cambie, es mejor utilizar las cookies.
+
+Cookies:
+
+- Permite gestionar varios objetos, incluso dividiéndolos en grupos, por ejemplo, las imágenes de gatos.
+
+### Arquitectura private behaviours
+
+Por ejemplo, un usuario se logea a través de API Gateway, la lambda signer genera una cookie que se guarda en el navegador del usuario y lo usan las peticiones a CF de modo que se habilita el acceso.
+
+En este ejemplo es importante que el origin esté protegido con OAI para evitar que se salte esta seguridad, es decir, acceder a todo el contenido sin restricción.
