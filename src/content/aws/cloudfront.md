@@ -4,7 +4,7 @@
 
 CF = CloudFront.
 
-Es un CDN (Content Delivery Network), por lo que se encarga de cachear contenido en diferentes partes del mundo para ofrecer la respuesta más cercana posible a los clientes y de este modo mejorar el rendimiento.
+Es un CDN (Content Delivery Network), por lo que se encarga de cachear contenido en diferentes partes del mundo para ofrecer la respuesta más cercana posible a los clientes/viewers y de este modo mejorar el rendimiento.
 
 Puede trabajar con ACM (Aws Certificate Manager), lo que permite utilizar certificados SSL en CF, por ejemplo HTTPS.
 
@@ -92,7 +92,7 @@ Con el distribution se crea un nombre de dominio para este distribution que term
 
 El distribution también puede utilizar un dominio nuestro, es decir, un Alternate Domain Name. Para ello hemos de verificar que el domino es nuestro, para lo que se requiere un certificado SSL (se use o no se use HTTPS) que coincida con el nombre utilizado, el certificado se crea o importa con ACM.
 
-Una vez tenemos el distribution, se despliega en los edge location a los que pueden hacer peticiones los clientes. Es decir, lo que configuramos se despliega fuera de CF, pero la configuración está en CF.
+Una vez tenemos el distribution, se despliega en los edge location a los que pueden hacer peticiones los viewers. Es decir, lo que configuramos se despliega fuera de CF, pero la configuración está en CF.
 
 ### Edge location
 
@@ -129,7 +129,7 @@ Cuando el TTL ha pasado, el objeto no es eliminado inmediatamente del edge locat
 - Si no ha cambiado, el origen responde con un `304 Not Modified`. Se mantiene la versión del edge location como la actual.
 - La versión del origen es distinta. Devuelve un `200 OK`.
 
-El cache HIT es la frecuencia con que el edge location entrega contenido a los clientes. Cuanto mayor sea, menor es la carga en el origen y mejores respuestas tendrá el cliente.
+El cache HIT es la frecuencia con que el edge location entrega contenido a los viewers. Cuanto mayor sea, menor es la carga en el origen y mejores respuestas tendrá el viewer.
 
 Los objetos tienen por defecto un validity period o TTL de 24 horas; tras este tiempo, el objeto se marca como expirado.
 
@@ -269,3 +269,32 @@ Puede configurarse de dos maneras:
 - En la consola de AWS, en la parte de CloudFront, seleccionamos un Distribution.
 
 De ese modo generamos un policy que debemos utilizar en el bucket S3 origin, por lo que debemos modificar las políticas de este. Esta política indica que el bucket solo aceptará peticiones de CF.
+
+## Lambda@Edge
+
+Permite a CF ejecutar lambdas ligeras en CF edge locations para modificar el tráfico entre el viewer y el origen.
+
+Lambda@Edge puede ejecutar una lambda en cada una de estas peticiones que hay al utilizar CF:
+
+- Viewer request: del viewer al edge location. La lambda se ejecuta después de que CF recibe la petición del viewer.
+- Origin request: del edge location al origin. Se ejecuta la lambda antes de que CF envíe la petición al origin.
+- Origin response: del origin al edge location. Se ejecuta la lambda después de que CF recibe la respuesta del origin.
+- Viewer response: del edge location al viewer. Se ejecuta la lambda antes de que la respuesta se lleva al cliente.
+
+Las lambdas en un edge location no tienen todas las características de una lambda normal de AWS:
+
+- Solo permite Node.js y Python.
+- No pueden trabajar con lambda layers.
+- Funciona en AWS public space, por lo que no puede acceder a VPCs.
+- Las funciones tienen otros límites de tamaño y tiempo de ejecución que las lambdas habituales:
+  - Viewer request/response. Máximo memoria 128 MB y 5 segundos de timeout.
+  - Origin request/response. Máximo memoria igual que una lambda normal y 30 segundos de timeout.
+
+Ejemplos de uso ([link](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-examples.html#lambda-examples-redirecting-examples)):
+
+- Viewer request:
+  - A/B testing. Suele utilizarse con viewer request. Permite ofrecer distintas respuestas sin necesitar que el cliente visite distintas URLs, el cliente utiliza una URL y la lambda apuntará a otras. Ejemplo, devolver distintas versiones de imágenes, cada una aleatoriamente o en base a un porcentaje de visitas.
+- Lambdas en origin request:
+  - Migrar entre S3 origins. Por ejemplo, vamos cambiando el porcentaje del tráfico que accede al nuevo origin.
+  - Distintas respuestas según el dispositivo que hace la petición. Por ejemplo, enviar una imagen de mayor calidad si la pantalla del viewer lo permite.
+  - Distinto contenido según el país del viewer.
