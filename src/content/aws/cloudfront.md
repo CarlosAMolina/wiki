@@ -207,6 +207,8 @@ CF no tiene coste adicional por usar SNI pero sí para IPs dedicadas en los edge
 
 Utilizado para securizar los origin, evita que alguien acceda a ellos directamente sin usar CF.
 
+La manera recomendada de evitar que se acceda directamente al origin es OAC, OAI es el modo antiguo.
+
 Es un tipo de identidad, con diferencias respecto a IAM user o IAM role.
 
 ### Origin S3
@@ -254,3 +256,16 @@ Cookies:
 Por ejemplo, un usuario se logea a través de API Gateway, la lambda signer genera una cookie que se guarda en el navegador del usuario y lo usan las peticiones a CF de modo que se habilita el acceso.
 
 En este ejemplo es importante que el origin esté protegido con OAI para evitar que se salte esta seguridad, es decir, acceder a todo el contenido sin restricción.
+
+## OAC
+
+OAC = Origin Access Control
+
+Es la manera recomendada de evitar que se acceda directamete al origin. OAI es el modo antiguo.
+
+Puede configurarse de dos maneras:
+
+- En la consola de AWS, en el menu de la izquierda: Security > Origin access.
+- En la consola de AWS, en la parte de CloudFront, seleccionamos un Distribution.
+
+De ese modo generamos un policy que debemos utilizar en el bucket S3 origin, por lo que debemos modificar las políticas de este. Esta política indica que el bucket solo aceptará peticiones de CF.
