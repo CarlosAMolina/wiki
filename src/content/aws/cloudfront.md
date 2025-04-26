@@ -6,6 +6,8 @@ CF = CloudFront.
 
 Es un CDN (Content Delivery Network), por lo que se encarga de cachear contenido en diferentes partes del mundo para ofrecer la respuesta más cercana posible a los clientes/viewers y de este modo mejorar el rendimiento.
 
+Es un CDN global capaza de cachear contenido estático y dinámico.
+
 Puede trabajar con ACM (Aws Certificate Manager), lo que permite utilizar certificados SSL en CF, por ejemplo HTTPS.
 
 Es importante destacar que, CloudFront es solo para operaciones de descarga. No tiene caché de escritura, las operaciones de subida se comunican directamente con el origen (explicado en la sección de términos).
@@ -183,7 +185,7 @@ Hay dos conexiones SSL:
 
 Ambas conexiones, y cualquier conexión intermedia, necesitan certificados públicos válidos, no sirven certificados autofirmados:
 
-- Para el viewer protocol, los certificados deben ser emitidos por un Certificate Authority (CA) o ACM en la región us-east-1.
+- Para el viewer protocol, los certificados deben ser emitidos por un Certificate Authority (CA) o ACM en la región us-east-1. Esto es obligatorio solo si ACM debe trabajar con CF (explicado en el apartado de ACM).
 - Respecto al origin protocol, en el caso de:
   - S3 no hay que preocuparse por el certificado, lo gestiona de manera nativa.
   - ALB. Puede usar certificados de una CA o de ACM.
