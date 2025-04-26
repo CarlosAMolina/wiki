@@ -22,6 +22,7 @@
   - [Database](db.html)
   - [EC2](ec2.html)
   - [EFS](efs.html)
+  - [Global Accelerator](global-accelerator.html)
   - [Glue](glue.html)
   - [IAM](iam.html)
   - [KMS](kms.html)
