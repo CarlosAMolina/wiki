@@ -64,6 +64,11 @@ Hay dos opciones de configuración:
 
 En una VPC por defecto se usan IPs IPv4 privadas, las públicas se asignan al querer conexión fuera de la VPC.
 
+Por defecto:
+
+- IPv4 públicas pueden comunicarse con el internet público y servicios de AWS público; también, estos pueden comunicarse con las IPv4 públicas de AWS.
+- IPv4 privadas no pueden comunicarse con el internet público o servicios en la zona pública de AWS.
+
 Se puede utilizar IPv6 pero hay limitaciones en algunos servicios. En IPv6 no hay partes privadas pero aun así hay que configurar explícitamente comunicación con el exterior.
 
 ## DNS
@@ -143,9 +148,17 @@ De asignar al IGW una IPv6, ya tiene acceso público; no hace falta otras config
 
 Al configurar la ruta ::/0 de IPv6 se da acceso bidireccional, de la VPC al exterior y viceversa.
 
-### Egess-Only IGW
+### Egress-Only IGW
 
-Es un tipo de gateway que funciona con IPv6 y da acceso solo al exterior de la VPC.
+Es un tipo de IGW, que solo permite conexiones iniciadas dentro de la VPC al exterior (y su respuesta).
+
+Solo funciona con IPv6.
+
+Como las IPv6 son públicas, estas pueden comunicarse con el internet público y los servicios públicos de AWS, y también el exterior puede iniciar conexiones con estas IPs. Para evitar que el exterior se comunique con las IPv6, se utiliza el Egress-Only IGW porque NAT no funciona con IPv6.
+
+Al ser un IGW, es High Availability, escala según sea necesario.
+
+Se configura añadiendo el default IPv6 Route `::/0` al route table, con eigw-id como el target.
 
 ## Bastion Host o Jumpbox
 
@@ -190,7 +203,7 @@ Los SG solo se asocian a Elastic Network Interfaces (ENI's); no se asocian ni a 
 
 NATGW = NAT Gateway
 
-Con NAT damos a un recurso privado acceso de salida a Internet.
+Con NAT damos a un recurso privado acceso de salida a Internet. Permite a IPs privadas acceder al internet público y la zona pública de AWS, pero no permite que conexiones externas inicien conexiones con las IPs privadas.
 
 Tienen resilencia AZ. Para tener resilencia regional como el Internet Gateway, hay que desplegar un NATGW en cada AZ.
 
@@ -213,7 +226,6 @@ Entre un EC2 y un NATGW hay estas diferencias:
 - El NATGW de detectar mas tráfico escala automáticamente hasta 45 Gbps, el EC2 depende del ancho de banda del tipo de instancia.
 
 Para tener una IP pública, debe estar en una subred pública (que asigne IP públicas). Las subredes privadas en la misma VPC que necesiten NAT pueden apuntar al NATGW de la red pública.
-
 
 ### NAT Gateway e IGW
 
