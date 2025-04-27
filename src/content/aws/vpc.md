@@ -241,3 +241,40 @@ Los NAT Gateway usan lo que se conoce como elastic IP.
 ### Coste
 
 Se cobra por hora de uso y por cantidad de tráfico.
+
+## VPC Flow logs
+
+Proporciona información del tráfico de red en la VPC.
+
+La información que lee de los paquetes del tráfico son sus metadatos (IPs origen y destino, puertos, tamaño, etc.), no su contenido. Para el contenido debemos usar un sniffer.
+
+La parte que obtiene esta información puede ser configurada de 3 maneras:
+
+- A nivel de VPC. Monitoriza todas las ENIs de todas las subredes de la VPC.
+- A nivel de subred. Monitoriza todas las ENIs de esa subred.
+- A nivel de ENI. Solo monitoriza esa ENI.
+
+No son realtime.
+
+Los flow logs pueden ir a:
+
+- S3. Permite integración con software de terceros y AWS Athena.
+- CloudWatch Logs. Permite integración directa con los servicios de AWS.
+
+Pueden configurarse para trabajar con el tráfico de conexiones aceptadas, rechazadas (ejemplo por security groups) o ambas.
+
+En el flow log:
+
+- El protocolo utilizado aparece con representado con un ID:
+    - 1: ICMP
+    - 6: TCP
+    - 17: UDP
+- Primero aparece el source IP y después el destination IP.
+- De usar security groups, solo generarán una fila en el flow log ya que son stateful, lo que significa que si algo es aceptado, la respuesta también. De utilizar NACL, se generarán dos líneas ya que, al ser stateless, la respuesta se trata como algo diferente a la petición.
+
+Hay tráfico que no es monitorizado por los VPC fow logs
+
+- Peticiones al servicio de metadatos (IP 169.254.169.254).
+- Peticiones al time service (IP 169.254.169.123).
+- Peticiones DHCP dentro de la VPC.
+- Peticiones a AWS DNS serve y Amazon Windoes license.
