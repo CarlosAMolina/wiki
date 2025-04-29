@@ -297,9 +297,11 @@ Gateway endpoints e interface endpoints ofrecen la misma funcionalidad pero para
 
 ### Gateway endpoints
 
-Ofrecen acceso a servicios como S3 y DynamoDB desde una VPC privada sin necesidad de utilizar direcciones publicas (S3 es un servicio público).
+Ofrecen acceso a servicios como S3 y DynamoDB desde una VPC privada sin necesidad de utilizar direcciones públicas (S3 es un servicio público).
 
 Se crea en una región y se asocian con las subredes que deseemos de la VPC; asociarse significa que se añade al route table de las subredes una lista de direcciones IP que llevarán el tráfico al Gateway endpoint y de este a S3 y DynamoDB.
+
+Esta lista de direcciones es un prefix list, que es una representación lógica de servicios
 
 No queda asociado a un AZ o subred, sino que es high availability en todas las AZ de la región.
 
@@ -314,3 +316,28 @@ Ejemplos de uso:
 - Una vpc que no tenga acceso al exterior, solo a s3. Así no usa IGW ni Nat Gateway, solo el VPC router y el Gateway Endpoint.
 - S3 que solo puedan ser accedidos por gateways endpoints.
 
+### Interface endpoints
+
+Permite acceso privado a servicios públicos de AWS.
+
+Utilizados para dar acceso a los servicios excepto a DynamoDB.
+
+No son highly available por defecto, se trata de interfaces en la VPC asociadas a subredes de la VPC, al estar asociada a una subred, lo está a una AZ; por lo que fallará de hacerlo la AZ. De querer high availability, habrá que colocar un interface en cada AZ.
+
+Al ser interfaces, podemos utilizar security groups para controlar quién los utiliza.
+
+Al igual que los Gateway endpoints, pueden emplearse enpoint policies para restringir lo que puede hacer el endpoint.
+
+Solo trabajan con TCP e IPv4.
+
+Utilizan PrivateLink. Los PrivateLink se utilizan para dar acceso a servicios de AWS o de terceros a VPCs.
+
+No utilizan routing, sino DNS.
+
+Al asociar un interface endpoint a un servicio, se asocia un DNS name que resuelve a la dirección IP privada del interface endpoint y este nombre puede emplearse para acceder al servicio a través del interface endpoint. De configurar la aplicación para usar también ese nombre, podemos acceder a ella sin requerir IP pública.
+
+El interface endpoint recibe varios nombre DNS:
+
+- DNS regional. Con este puede accederse al edpoint sin preocuparnos de la AZ en la que nos encontremos.
+- Cada interfaz en cada AZ recibe un Zonal DNS, el cual funciona dentro la AZ.
+- Private DNS. Asocia un private hosted zone de Route S3 con la VPC, esto sobreescribe el default DNS del VPC para que resuelva al interface ednpoint IP, por lo que los servicios que están en la VPC utilizarán esta interfaz sin necesidad de configurarlos.
