@@ -290,3 +290,27 @@ Hay tráfico que no es monitorizado por los VPC fow logs
 - Peticiones al time service (IP 169.254.169.123).
 - Peticiones DHCP dentro de la VPC.
 - Peticiones a AWS DNS serve y Amazon Windoes license.
+
+## VPC endpoints
+
+Gateway endpoints e interface endpoints ofrecen la misma funcionalidad pero para distintos servicios de AWS y de distintas formas.
+
+### Gateway endpoints
+
+Ofrecen acceso a servicios como S3 y DynamoDB desde una VPC privada sin necesidad de utilizar direcciones publicas (S3 es un servicio público).
+
+Se crea en una región y se asocian con las subredes que deseemos de la VPC; asociarse significa que se añade al route table de las subredes una lista de direcciones IP que llevarán el tráfico al Gateway endpoint y de este a S3 y DynamoDB.
+
+No queda asociado a un AZ o subred, sino que es high availability en todas las AZ de la región.
+
+No son accesibles desde fuera de la VPC.
+
+Utiliza endpoint policies para controlar a qué se puede acceder, por ejemplo a qué buckets.
+
+Solo permite acceder a servicios en la misma región.
+
+Ejemplos de uso:
+
+- Una vpc que no tenga acceso al exterior, solo a s3. Así no usa IGW ni Nat Gateway, solo el VPC router y el Gateway Endpoint.
+- S3 que solo puedan ser accedidos por gateways endpoints.
+
