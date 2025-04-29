@@ -341,3 +341,5 @@ El interface endpoint recibe varios nombre DNS:
 - DNS regional. Con este puede accederse al edpoint sin preocuparnos de la AZ en la que nos encontremos.
 - Cada interfaz en cada AZ recibe un Zonal DNS, el cual funciona dentro la AZ.
 - Private DNS. Asocia un private hosted zone de Route S3 con la VPC, esto sobreescribe el default DNS del VPC para que resuelva al interface ednpoint IP, por lo que los servicios que están en la VPC utilizarán esta interfaz sin necesidad de configurarlos.
+
+Ejemplo de uso. Tenemos un EC2 sin IP pública en una VPC privada (sin IGW); para acceder a la instancia desde internet, podemos conectarnos a la IP pública de EC2 instance connect y este accederá a la instancia mediante el interface endpoint. No podemos utilizar solamente EC2 instance connect porque necesita que la instancia EC2 tenga una IP pública.
