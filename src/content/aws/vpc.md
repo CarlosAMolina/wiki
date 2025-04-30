@@ -158,7 +158,7 @@ Como las IPv6 son públicas, estas pueden comunicarse con el internet público y
 
 Al ser un IGW, es High Availability, escala según sea necesario.
 
-Se configura añadiendo el default IPv6 Route `::/0` al route table, con eigw-id como el target.
+Tras indicar que se utilice este IGW, hay que configurar el route table añadiendo el default IPv6 Route `::/0`, con el egress-only IGW como target.
 
 ## Bastion Host o Jumpbox
 
@@ -301,9 +301,9 @@ Ofrecen acceso a servicios como S3 y DynamoDB desde una VPC privada sin necesida
 
 Se crea en una región y se asocian con las subredes que deseemos de la VPC; asociarse significa que se añade al route table de las subredes una lista de direcciones IP que llevarán el tráfico al Gateway endpoint y de este a S3 y DynamoDB.
 
-Esta lista de direcciones es un prefix list, que es una representación lógica de servicios
+Esta lista de direcciones es un prefix list, que es una representación lógica de servicios.
 
-No queda asociado a un AZ o subred, sino que es high availability en todas las AZ de la región.
+El gateway endpoint no queda asociado a un AZ o subred, sino que es high availability en todas las AZ de la región.
 
 No son accesibles desde fuera de la VPC.
 
@@ -343,3 +343,32 @@ El interface endpoint recibe varios nombre DNS:
 - Private DNS. Asocia un private hosted zone de Route S3 con la VPC, esto sobreescribe el default DNS del VPC para que resuelva al interface ednpoint IP, por lo que los servicios que están en la VPC utilizarán esta interfaz sin necesidad de configurarlos.
 
 Ejemplo de uso. Tenemos un EC2 sin IP pública en una VPC privada (sin IGW); para acceder a la instancia desde internet, podemos conectarnos a la IP pública de EC2 instance connect y este accederá a la instancia mediante el interface endpoint. No podemos utilizar solamente EC2 instance connect porque necesita que la instancia EC2 tenga una IP pública.
+
+## VPC Peering
+
+Es un servicio que crea una conexión de red cifrada entre dos VPC.
+
+Cada conexión VPC conecta dos VPC entre sí, ninguna mas.
+
+Las VPC pueden estar en la misma o distinta región y en la misma o diferente cuenta de AWS.
+
+De estar las VPC en:
+
+- Distintas regiones:
+
+  - Habrá algunas limitaciones.
+  - Se utiliza el AWS global network lo que da mejor rendimiento y seguridad que el internet público.
+
+- La misma región:
+
+  - Pueden referenciarse unos a otros utilizando el Security Group ID, esto da más seguridad que llamar a las IPs.
+
+Puede habilitarse la opción de que los hostnames públicos de los servicios en el VPC peering resuelvan a sus direcciones IP privadas, lo que permite que los llamemos utilizando su nombre.
+
+VPC peering no soporta transitive peering, es decir, si la VPC A está conectada con la VPC B y la B está conectada con la VPC C, no están conectadas las VPC A y C, para ello habría que añadir otro VPC peering.
+
+Al crear un VPC peering se crea un gateway lógico en cada VPC, y hay que:
+
+- Configurar el routing table en cada VPC permitiendo el tráfico entre el CIDR remoto y el peer gateway.
+- No puede haber direcciones IPs que se pisen unas a otras entre las VPC conectadas.
+- Tener en cuenta que los security groupos o NACL no bloquean el tráfico.
