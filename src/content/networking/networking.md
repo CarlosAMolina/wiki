@@ -56,6 +56,31 @@ Es para asignar automáticamente IPs a los hosts.
 
 - [Servidor web para simular respuestas a peticiones - httpbin](https://httpbin.org/).
 
+### IPSEC
+
+Es un conjunto de protocolos.
+
+Crea túneles seguros entre redes no seguras. Proporciona autenticación y cifrado.
+
+Para establecer los túneles hay dos fases:
+
+Fase 1:
+
+- Genera en cada peer la misma clave simétrica mediante un proceso pesado que utiliza cifrado asimétrico.
+- Se crea un túnel sobre el que se negociará el IPSEC SA (security association).
+
+Fase 2:
+
+- Es un proceso más rápido que emplea lo generado en la fase 1.
+- Los peers negocian el IPSEC SA para autenticar el tráfico que irá por el túnel. Utiliza la clave simétrica generada en la fase anterior para crear otra key simétrica con la que cifrar lo enviado, IPSEC key.
+- También genera otro túnel, este túnel es creado sobre el de la fase 1.
+- Esta nueva clave y túnel funcionan cuando hay que transmitir tráfico de interés, es decir, tráfico que se detecta como que debe ser cifrado; en los momentos en que no hay tráfico de interés que enviar, se elimina este túnel y vuelve a crearse cuando sea necesario.
+
+Hay dos tipos de VPN:
+
+- Policy-based. Utiliza reglas para identificar el tráfico de interés. Pueden utilizarse diferentes matcheos y configuraciones de seguridad, lo que da más seguridad; por ejemplo un túnel de fase 2 para el tráfico del departamento financiero, otro para el tráfico de las cámaras de seguridad, etc. Hay varios SA pair, uno por túnel, y un solo IPSEC key.
+- Route-based. Identifica qué cifrar mediante prefijos. Utiliza una sola SA Pair y un solo IPSEC key.
+
 ### NAT
 
 El protocolo NAT (Network Address Translation) permite traducir una dirección IP Pública en una Privada. Son unos procesos que modifican la dirección IP origen o destino de los paquetes de red.
