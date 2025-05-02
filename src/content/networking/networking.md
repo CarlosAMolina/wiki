@@ -52,6 +52,10 @@ Dynamic Host Configuration Protocol.
 
 Es para asignar automáticamente IPs a los hosts.
 
+### HTTP
+
+- [Servidor web para simular respuestas a peticiones - httpbin](https://httpbin.org/).
+
 ### NAT
 
 El protocolo NAT (Network Address Translation) permite traducir una dirección IP Pública en una Privada. Son unos procesos que modifican la dirección IP origen o destino de los paquetes de red.
