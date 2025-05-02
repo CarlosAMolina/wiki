@@ -19,6 +19,33 @@ En los firewalls de tipo stateful la configuración es más sencilla al tener qu
 
 El protocolo ARP (Address Resolution Protocol) obtiene la dirección MAC de una dirección IP.
 
+### BGP
+
+BGP = Border Gateway Protocol
+
+Es un path-vector protocol, comparte el path más corto entre diferentes destinos, este path se llama ASPATH.
+
+Utiliza el protocolo TCP, puerto 179.
+
+Corrige errores que se produzcan en la red.
+
+Los destinos que gestiona se llaman AS (Autonomous System), esos pueden ser una gran red o un conjunto de routers, pero en cualquier caso, gestionados por una sola entidad. Para BGP, cada AS es una caja negra.
+
+Cada AS recibe un número dado por IANA, llamado ASN. Su valor va de 0 a 65.535, siendo 64-12 al 16.534 privados.
+
+El ASPATH está formado, por el ASN destino e `i` que indica la propia red. Ejemplo:
+
+- ASPATH si el destino es la propia red: i.
+- ASPATH si el destino otra red conectada directamente y con ASN 201: 201, i.
+- ASPATH si el destino otra red no conectada directamente: 202, 201, i.
+
+Como el path más corto que utiliza BGP no tiene por qué ser el que ofrece mejor velocidad, podemos emplear `AS Path Prepending` para dar preferencia a otros paths. Consiste en modificar artificialmente el ASPATH, por ejemplo convertir el `201, i` en `201, 201, 201, i`, así es más largo que otra ruta más rápida como puede ser `202, 201, i`
+
+Hay dos tipos:
+
+- iBGP: internal BGP. Conecta redes dentro de un AS.
+- eBGP: external BGP. Conecta AS entre sí.
+
 ### DHCP
 
 Dynamic Host Configuration Protocol.
