@@ -27,7 +27,7 @@ Puede utilizarse con Direct Connect de diferentes modos:
 En AWS podemos crear dos tipos de VPN:
 
 - Estáticas:
-  - Las rutas de la parte del cliente se guardan en las routes tables de AWS de manera estática.
+  - Las rutas de la parte del cliente se guardan en las routes tables de AWS de manera estática; hay que configurarlas.
   - Redes del cliente están configuradas de manera estática en la conexión VPN.
   - No permite load balancing ni multi conexión en caso de fallo.
 - Dinámicas:
