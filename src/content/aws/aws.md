@@ -20,6 +20,7 @@
   - [Cognito](cognito.html)
   - [Control Tower](control-tower.html)
   - [Database](db.html)
+  - [Direct Connect](direct-connect.html)
   - [EC2](ec2.html)
   - [EFS](efs.html)
   - [Global Accelerator](global-accelerator.html)
