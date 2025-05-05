@@ -12,7 +12,7 @@ Crea un IPSEC VPN entre AWS VPC y una red externa como on premise o de terceros.
 - Los routes table de AWS deben tener configuradas el rango de IPs privadas utilizadas en la red externa y viceversa.
 - El coste es por hora y GB.
 
-Tiene limitaciones que pueden hacer que usar otra alternativa, por ejemplo  AWS Direct Connect, sea una mejor opción:
+Tiene limitaciones que pueden hacer que usar otra alternativa, por ejemplo AWS Direct Connect, sea una mejor opción:
 
 - AWS tiene la limitación de velocidad de 1.25 Gbps como máximo; en la parte de cliente podría implicar una menor velocidad. Este máximo de 1.25 Gbps aplica al conjunto de todas las conexiones que usan el mismo VGW.
 - Al utilizar el internet público, cada salto añade latencia.
