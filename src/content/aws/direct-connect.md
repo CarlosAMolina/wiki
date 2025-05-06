@@ -49,7 +49,7 @@ Por hora que está habilitada la conexión y por tráfico de salida.
 
 Como se dijo, ni las VIFs privadas ni las públicas ofrecen cifrado. Para conseguirlo, podemos utiliza VIFs + IPSec VPN.
 
-Con esto conseguimos una conexión cifrada end to end desde el CGW (customer wateway) a VPCs (al AWS VGW, virtual private gateway, o TGW, trasnti gateway).
+Con esto conseguimos una conexión cifrada end to end desde el CGW (customer wateway) a VPCs (al AWS VGW, virtual private gateway, o TGW, transit gateway).
 
 Se utiliza una interfaz VIF pública ya que las privadas solo dan acceso a IPs privadas, no a recursos públicos de AWS como VGW o TGW.
 
