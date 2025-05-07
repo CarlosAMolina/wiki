@@ -37,6 +37,7 @@
   - [SNS](sns.html)
   - [SQS. Simple Queue Service](sqs.html)
   - [Step Function](sf.html)
+  - [Storage Gateway](storage-gateway.html)
   - [Transit Gateway](tgw.html)
   - [VPC](vpc.html)
   - [VPN](vpn.html)
