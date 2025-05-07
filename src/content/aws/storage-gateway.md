@@ -29,3 +29,21 @@ On premise tenemos almacenamiento de caché con el frequently accessed data, y e
 Como en stored mode, también se crean EBS snapshots en AWS.
 
 Los datos en AWS solo son visibles mediante la consola del Storage Gateway, en la consola de AWS no podemos verlos ya que se almacenan como bloques, no son archivos.
+
+## Store Gateway Tape o VTL Mode
+
+### VTL
+
+VTL = Virtual Tape Library.
+
+Es una manera de realizar backups para terabytes de datos.
+
+No permite acceso aleatorio; para tomar un dato, primero hay que localizarlo. Tampoco pueden modificarse los datos, hay que sobreescribirlos.
+
+Cuando el almacenamiento deja de utilizarse, es movido otra localización gestionada por un tercero, esto tiene un coste de transporte. En caso de necesitarlos, se transportan de nuevo desde esta localización.
+
+### Storage Gateway Tape
+
+La arquitectura es como la de la funcionalidad de volume store en modo cached. AWS guarda los datos en S3 (realiza la función de VTL) y S3 glacier se comporta como el tercero que en un VTL almacena/recupera en otra localización los datos que ya no son accedidos.
+
+Esta solución puede combinarse con el sistema de backups que tengamos on premise.
