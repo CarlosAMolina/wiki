@@ -34,6 +34,7 @@
   - [Route53](route53.html)
   - [S3](s3.html)
   - [SES. Simple Email Service](ses.html)
+  - [Snow](snow.html)
   - [SNS](sns.html)
   - [SQS. Simple Queue Service](sqs.html)
   - [Step Function](sf.html)
