@@ -21,6 +21,7 @@
   - [Control Tower](control-tower.html)
   - [Database](db.html)
   - [Direct Connect](direct-connect.html)
+  - [Directory Service](directory-service.html)
   - [EC2](ec2.html)
   - [EFS](efs.html)
   - [Global Accelerator](global-accelerator.html)
