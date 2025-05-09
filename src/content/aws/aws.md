@@ -20,6 +20,7 @@
   - [Cognito](cognito.html)
   - [Control Tower](control-tower.html)
   - [Database](db.html)
+  - [DataSync](datasync.html)
   - [Direct Connect](direct-connect.html)
   - [Directory Service](directory-service.html)
   - [EC2](ec2.html)
