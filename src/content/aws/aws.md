@@ -25,6 +25,7 @@
   - [Directory Service](directory-service.html)
   - [EC2](ec2.html)
   - [EFS](efs.html)
+  - [FSx](fsx.html)
   - [Global Accelerator](global-accelerator.html)
   - [Glue](glue.html)
   - [IAM](iam.html)
