@@ -22,7 +22,7 @@ Debemos configurar interfaces virtuales sobre esta conexión física, llamadas V
 - Public VIFs. Para acceder a los servicios públicos de AWS.
 - Vifs privadas. Para acceder a VPCs en AWS y así a servicios privados de AWS.
 
-Ni las VIFs privadas ni las públicas ofrecen cifrado. Para conseguirlo, podemos utiliza VIFs + IPSec VPN, explicado en su propia sección.
+Ni las VIFs privadas ni las públicas ofrecen cifrado. Para conseguirlo, podemos utiliza VIFs + IPSec VPN, explicado en su propia sección más abajo.
 
 Gracias a estas interfaces, nos conectamos a AWS sin pasar por los ISP. No sirve para acceder a internet.
 
