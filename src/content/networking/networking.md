@@ -13,6 +13,12 @@ Los firewalls de tipo sateless no pueden relacionar esta petición inicial con l
 
 En los firewalls de tipo stateful la configuración es más sencilla al tener que configurar solamente la petición (inbound u outbound), la regla para la respuesta (inbound u outbound) se genera automáticamente, ya que estos firewalls relacionan la petición con la respuesta. Tampoco necesitan configurar el rango entero de puertos efímeros porque el firewall sabe cuál se ha utilizado.
 
+### Firewall y OSI layers
+
+Un firewall que trabaje con la capa X, puede analizar los valores de las layers inferiores y de esa misma layer, pero no de las superiores.
+
+Por ejemplo, un firewall level 7, puede analizar los protocolos de este nivel, de la layer 3, 5, etc. Por ejemplo, para HTTPS puede ver DNS, cabeceras, etc., y en el firewall se cortará la comunicación segura, analizará su contenido y vuelve a cifrar la comunicación; aunque desde el punto de vista del cliente, la conexión está cifrada hasta el servidor objetivo. Además de analizar el tráfico, puede bloquearlo, modificarlo, etc.
+
 ## Protocolos
 
 ### ARP
