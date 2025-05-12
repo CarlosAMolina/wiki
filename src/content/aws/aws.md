@@ -36,6 +36,7 @@
   - [MQ](mq.html)
   - [Route53](route53.html)
   - [S3](s3.html)
+  - [Secrets Manager](secrets-manager.html)
   - [SES. Simple Email Service](ses.html)
   - [Snow](snow.html)
   - [SNS](sns.html)
