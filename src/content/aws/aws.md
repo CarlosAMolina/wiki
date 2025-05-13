@@ -47,3 +47,4 @@
   - [Transit Gateway](tgw.html)
   - [VPC](vpc.html)
   - [VPN](vpn.html)
+  - [Web Application Firewall](waf.html)
