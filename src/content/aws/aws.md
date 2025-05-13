@@ -38,6 +38,7 @@
   - [S3](s3.html)
   - [Secrets Manager](secrets-manager.html)
   - [SES. Simple Email Service](ses.html)
+  - [Shield](shield.html)
   - [Snow](snow.html)
   - [SNS](sns.html)
   - [SQS. Simple Queue Service](sqs.html)
