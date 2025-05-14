@@ -15,6 +15,7 @@
   - [Backup](backup.html)
   - [CFN](cfn.html)
   - [CloudFront](cloudfront.html)
+  - [CloudHSM](cloudhsm.html)
   - [CloudTrail](cloudtrail.html)
   - [CloudWatch](cloudwatch.html)
   - [Cognito](cognito.html)
