@@ -12,6 +12,7 @@
   - [AppFlow](app-flow.html)
   - [Arn](arn.html)
   - [Athena](athena.html)
+  - [AWS config](aws-config.html)
   - [Backup](backup.html)
   - [CFN](cfn.html)
   - [CloudFront](cloudfront.html)
