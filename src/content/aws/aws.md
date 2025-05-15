@@ -35,6 +35,7 @@
   - [Kinesis](kinesis.html)
   - [LB - Load Balancer](lb.html)
   - [Lambda](lambda.html)
+  - [Macie](macie.html)
   - [MQ](mq.html)
   - [Route53](route53.html)
   - [S3](s3.html)
