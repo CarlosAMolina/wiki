@@ -30,6 +30,7 @@
   - [FSx](fsx.html)
   - [Global Accelerator](global-accelerator.html)
   - [Glue](glue.html)
+  - [GuardDuty](guardduty.html)
   - [IAM](iam.html)
   - [Inspector](inspector.html)
   - [KMS](kms.html)
