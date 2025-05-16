@@ -4,9 +4,9 @@
 
 WAF = Web Application Firewall.
 
-Es un firewall de layer 7.
+Es un firewall de layer 7. Protege por ejemplo contra SQL Injection, Cross-Site Scripting, etc.
 
-Puede proteger servicios de AWS globales como CloudFront y regionales como ALB, AppSync, API Gateway, etc.
+Puede proteger servicios de AWS globales como CloudFront y regionales como ALB, AppSync, API Gateway, etc. No protege EC2 o lambda.
 
 Es posible almacenar los logs en S3 (puede tardar hasta 5 minutos), cloudwatch, firehose, etc.
 

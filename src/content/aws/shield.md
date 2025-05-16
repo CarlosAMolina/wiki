@@ -5,7 +5,7 @@ Protege contra ataques DDOS.
 Hay dos tipos: standard y advanced.
 
 Standard:
-- Es gratuito y está activado por defecto.
+- Es gratuito y está activado por defecto en servicios como CloudFront o R53. Ejemplo de servicios con los que no funciona son API Gateway o ALB.
 - Actúa en el límite de la región o edge.
 - Gestiona ataques típicos en las layer 3 y 4 del modelo OSI.
 

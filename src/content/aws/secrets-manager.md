@@ -6,7 +6,7 @@ Permite gestionar valores secretos (contraseñas, API Keys, etc.) en AWS; están
 
 Suele confundirse con SSM Parameter Store ya que en este también pueden guardarse strings protegidos.
 
-Permite rotación automática de los valores, mediante una lambda que los actualiza.
+Permite rotación automática de los valores, mediante una lambda que los actualiza; SSM Parameter Store no soporta esto.
 
 Puede utilizarse mediante:
 
