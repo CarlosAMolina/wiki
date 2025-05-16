@@ -31,6 +31,7 @@
   - [Global Accelerator](global-accelerator.html)
   - [Glue](glue.html)
   - [IAM](iam.html)
+  - [Inspector](inspector.html)
   - [KMS](kms.html)
   - [Kinesis](kinesis.html)
   - [LB - Load Balancer](lb.html)
