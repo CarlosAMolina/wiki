@@ -1,5 +1,23 @@
 # Teclado
 
+## Nombre de los símbolos
+
+- `"`: double quote.
+- `#`: hash.
+- `&`: ampersand.
+- `'`: single quote, apostrophe.
+- `,`: comma.
+- `-`: hyphen, dash.
+- `_`: underscore.
+- `.`: period or dot.
+- `::`: double colon.
+- `:`: colon.
+- `;`: semicolon.
+- `\`: backslash.
+- `^`: caret.
+- `{`, `}`: curly brace.
+- `~`: tilde.
+
 ## Recursos
 
 - [Nombres de signos de puntuación y símbolos](https://i.pinimg.com/originals/4b/39/2c/4b392c48f28a350e515da5e584254dd2.png).
