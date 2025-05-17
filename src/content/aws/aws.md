@@ -14,7 +14,7 @@
   - [Athena](athena.html)
   - [AWS config](aws-config.html)
   - [Backup](backup.html)
-  - [CFN](cfn.html)
+  - [CloudFormation](cloudformation.html)
   - [CloudFront](cloudfront.html)
   - [CloudHSM](cloudhsm.html)
   - [CloudTrail](cloudtrail.html)
