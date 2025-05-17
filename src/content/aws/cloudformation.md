@@ -14,6 +14,14 @@ En la plantilla tenemos distintos apartados: versión, descripción, recursos, e
 
 Hay algunas peculiaridades como que indicar el número de versión es opcional, pero en caso de hacerlo, entonces es obligatorio que el siguiente apartado sea el de descripción.
 
+### Plantillas no portables
+
+Una plantilla no es portable si por ejemplo no permite:
+
+- Aplicar la misma plantilla varias veces. Por ejemplo, si hardcodeamos el nombre de un bucket S3, solamente podremos lanzar el stack una vez porque el resto dará error al ya existir el bucket.
+- Aplicar la plantilla en distintas regiones. Por ejemplo, al hardcodear el AMI ID de una máquina EC2, como el ID cambia entre regiones, la plantilla solo podrá utilizarse en una región.
+- Aplicarla en distintas cuentas de AWS.
+
 ## Stack
 
 Stack es lo que CFN crea a partir de una plantilla.
