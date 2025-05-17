@@ -14,20 +14,29 @@ En la plantilla tenemos distintos apartados: versión, descripción, recursos, e
 
 Hay algunas peculiaridades como que indicar el número de versión es opcional, pero en caso de hacerlo, entonces es obligatorio que el siguiente apartado sea el de descripción.
 
-
 ## Stack
 
 Stack es lo que CFN crea a partir de una plantilla.
 
-El stack contiene los recuros de manera lógica. A partir del stack, AWS crea, actualiza o elimina los recursos de manera física.
+El stack contiene los recursos de manera lógica y los creará de manera física.
 
-A partir de la misma plantilla se pueden crear más de un stack.
+El stack mantiene los recursos físicos y lógicos sincronizados, es decir, crea, actualiza o elimina los recursos de manera física según cambie la plantilla. Para ello, cuando actualicemos la plantilla hemos de actualizar el stack con los cambios.
 
-Al eliminar un stack se borran los recursos lógicos y físicos que creó.
+Con la misma plantilla pueden crearse más de un stack.
+
+Al eliminar un stack se borran sus recursos lógicos, lo que implica que también se eliminarán los físicos.
 
 ## Recursos
 
-- Recurso lógico: es un recurso definido en una plantilla de CloudFormation.
-- Recurso físico: es un recurso físico creado al crear un stack de CloudFormation.
+[Referencias de los recursos de CFN](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html).
 
-- [Referencias de los recursos de CFN](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html)
+### Recurso lógico
+
+Es un recurso definido en una plantilla de CloudFormation.
+
+Definen qué queremos crear y CFN se encarga de cómo crearlos.
+
+### Recurso físico
+
+Es un recurso físico creado al crear un stack de CloudFormation. El stack crea un recurso físico por cada recurso lógico.
+
