@@ -24,9 +24,11 @@ Una plantilla no es portable si por ejemplo no permite:
 
 ### Parámetros de plantilla y pseudo parámetros
 
-Los parámetros de la plantilla y los pseudo parámetros pueden utilizarse juntos en la plantilla, se complementan entre sí.
+Son maneras de dar inputs a la plantilla, para influenciar a los recursos a crear y su configuración.
 
 Ayudan a conseguir plantillas portables.
+
+Los parámetros de la plantilla y los pseudo parámetros pueden utilizarse juntos en la plantilla, se complementan entre sí.
 
 #### Parámetros de la plantilla
 
@@ -50,6 +52,27 @@ En lugar de indicar su valor un usuario o un proceso al crearse el stack, los da
   - `AWS::Region`. Toma el valor de la región en la que se aplique la plantilla.
   - `AWS::AccountId`. ID de la cuenta utilizada para crear el stack.
   - `AWS StackName` y `AWS StackId`. Valores del stack que se está creando.
+
+### Intrinsic Functions
+
+[Documentación](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference.html).
+
+Son funciones para gestionar los stacks, se utilizan en las plantillas para dar valores a propierties cuando estos valores no están disponibles hasta que se ejecuta la plantilla para crear el stack.
+
+Ejemplo:
+
+- `Ref` y `Fn::GetAtt`. Para referenciar un recurso desde otro. Por ejemplo, para que una subred esté dentro de una VPC que crearemos.
+  - `Ref`. Al utilizarlo en parámetros o pseudo parámetros de una plantilla, devuelve su valor. Al utilizarlo en un recurso lógico, por ejemplo al crear una instancia EC2, normalmente devuelve su ID físico, depende del tipo de recurso.
+  - `GetAtt`. Devuelve un atributo asociado al recurso, por ejemplo la IP pública de una instancia.
+- `Fn::Join` y `Fn::Split`. Para modificar strings. Ejemplo al crear un EC2 con nombre DNS, podemos añadirle el protocolo `http` para tener una URL a la que acceder.
+- `Fn::GetAZs` y `Fn::Select`. Lista las AZ en una región y permite elegir una; en realidad devuelve las AZ en las que el default VPC tiene subredes por lo que de no estar configurado correctamente, puede que no devuelva todas las AZ de la región.
+- Condicionales (if, and equals, not, or). Para provisionar recursos en base a condiciones. Ejemplo, si estamos en producción o development, elegir distintos tamaños de instancias.
+- `Fn::Base64`. Para dar valores que necesitan codificarse en base 64, por ejemplo UserData.
+- `Fn::Sub`. Modificar texto en base a runtime information. Ejemplo el ID de una instancia EC2 con `${Instance.InstanceId}`.
+- `Fn:Cidr`. Para crear valores de red. Puedes indicar el rango de red, número de subredes a generar, etc.
+- Etc.
+
+Pueden utilizarse en conjunto.
 
 ## Stack
 
