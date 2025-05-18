@@ -8,14 +8,15 @@
 - `'`: single quote, apostrophe.
 - `,`: comma.
 - `-`: hyphen, dash.
-- `_`: underscore.
 - `.`: period or dot.
 - `::`: double colon.
 - `:`: colon.
 - `;`: semicolon.
 - `\`: backslash.
 - `^`: caret.
+- `_`: underscore.
 - `{`, `}`: curly brace.
+- `|`: pipe.
 - `~`: tilde.
 
 ## Recursos
