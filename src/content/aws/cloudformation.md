@@ -44,7 +44,7 @@ Pueden configurarse con valores:
 - No echo. Para no mostrar el valor introducido, por ejemplo contraseñas.
 - Etc.
 
-Gracias a SSM, podemos acceder a valores de los activos. Por ejemplo, como el AMI ID de un EC2 cambia en cada región, indicamos el tipo de EC2 y la plantilla obtendrá su valor.
+Gracias a SSM, podemos acceder a valores de los activos. Por ejemplo, como el AMI ID de un EC2 cambia en cada región, indicamos el tipo de EC2 y la plantilla obtendrá su valor. [Documentación](https://docs.aws.amazon.com/systems-manager/latest/userguide/parameter-store-public-parameters.html).
 
 #### Pseudo parámetros
 
