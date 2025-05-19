@@ -74,6 +74,24 @@ Ejemplo:
 
 Pueden utilizarse en conjunto.
 
+### Mappings
+
+Es otra característica que ayuda a crear plantillas portables.
+
+El mapeo relaciona claves con valores. Ejemplo, tener el valor para producción.
+
+Puede que una key devuelva un valor o que haya key de 1º y 2º nivel, por ejemplo obtener el AMI ID de una máquina, la key de 1º nivel es la región y la de 2º el tipo de arquitectura. Ejemplo:
+
+```
+Mappings:
+  Region Map:
+    us-east-1:
+      HVM64: "ami-1234..."
+      HVMG2: "ami-4321..."
+```
+
+En la plantilla se especifica en la sección `Mappings`, y se accede a los valores con el intrinsic function `FindInMap`.
+
 ## Stack
 
 Stack es lo que CFN crea a partir de una plantilla.
