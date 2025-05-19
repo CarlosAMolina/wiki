@@ -92,6 +92,16 @@ Mappings:
 
 En la plantilla se especifica en la sección `Mappings`, y se accede a los valores con el intrinsic function `FindInMap`.
 
+### Outputs
+
+Es una sección opcional en la plantilla donde declaramos valores a mostrar o a los que hacer referencia.
+
+Permite:
+
+- Mostrar información en la AWS CloudFormation console o CLI, por ejemplo, ayuda a conocer los objetos creados.
+- De esta manera son accesibles desde el parent stack cuando anidamos stacks en otros.
+- Puede exportarse, lo que permite referencias cross-stack.
+
 ## Stack
 
 Stack es lo que CFN crea a partir de una plantilla.
