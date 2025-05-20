@@ -110,6 +110,16 @@ Las plantillas permiten definir condiciones que se evaluan antes de crear un rec
 
 Pueden combinarse varias condiciones.
 
+### DependsOn
+
+Utilizado para que un recurso sea creado después de otro o de otros.
+
+CFN para ser más eficiente crea los recursos en paralelo. Tiene en cuenta que si un recurso necesita de otro, por ejemplo una máquina EC2 se encuentra en una VPC, primero creará el recurso que no  necesite de otro. Estas dependencias implícitas se definen con el Intrinsic Function `Ref`.
+
+Con DependsOn podemos definir la dependencia de manera explícita.
+
+Hay casos en que no utilizamos `Ref` para definir un recurso, por ejemplo un ENI; si este depende de otro, en este caso de un API Gateway; y no se ha creado, el stack fallará, a veces funcionará porque los recursos se crearon en el orden correcto y otras fallará; ocurrirá lo mismo al eliminar el stack. Para evitar estos errores aleatorios es necesario emplear `DependsOn`.
+
 ## Stack
 
 Stack es lo que CFN crea a partir de una plantilla.
