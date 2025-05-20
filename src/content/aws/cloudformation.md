@@ -146,3 +146,12 @@ Definen qué queremos crear y CFN se encarga de cómo crearlos.
 
 Es un recurso físico creado al crear un stack de CloudFormation. El stack crea un recurso físico por cada recurso lógico.
 
+## cfn-signal
+
+Puede ser que una recurso aparezca como creado correctamente pese a no ser así; por ejemplo una instancia EC2 que tras iniciarse, se indica que se ha creado pero además tiene tiene que ejecutar UserData y aunque este proceso falle, la instancia ya aparecerá como creada.
+
+Para evitarlo, configuramos CFN con un CreationPolicy para que esperece recibir un cierto número de sucess signals antes de marcar el recurso como completado de manera correcta; también puede indicarse un teimout de hasta 12 horas de margen para recibirlas. En caso de recibir una signal de fallo, la creación habrá fallado.
+
+Gracias a cfn-signal se envían estas señales.
+
+También pueden utilizarse WaitConditions para que no se pase a un estado hasta que se reciba una señal o pase cierto tiempo. El WaitConditions genera una preSigned URL para recibir signals, a esta preSigned URL puede enviarse otra información que utilizar en la creación del Stack.
