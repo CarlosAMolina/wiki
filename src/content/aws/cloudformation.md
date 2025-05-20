@@ -104,6 +104,12 @@ Permite:
 - De esta manera son accesibles desde el parent stack cuando anidamos stacks en otros.
 - Puede exportarse, lo que permite referencias cross-stack.
 
+### Condiciones
+
+Las plantillas permiten definir condiciones que se evaluan antes de crear un recurso y determina si crearlo o no. El usuario puede indicar valores que usar en las condiciones gracias a los template parameters.
+
+Pueden combinarse varias condiciones.
+
 ## Stack
 
 Stack es lo que CFN crea a partir de una plantilla.
