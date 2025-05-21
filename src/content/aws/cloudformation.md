@@ -155,3 +155,44 @@ Para evitarlo, configuramos CFN con un CreationPolicy para que esperece recibir 
 Gracias a cfn-signal se envían estas señales.
 
 También pueden utilizarse WaitConditions para que no se pase a un estado hasta que se reciba una señal o pase cierto tiempo. El WaitConditions genera una preSigned URL para recibir signals, a esta preSigned URL puede enviarse otra información que utilizar en la creación del Stack.
+ 
+## Multi stack
+
+En un stack pueden definirse como máximo 500 recursos.
+
+No permite utilizar los recursos creados en otros stacks de manera sencilla. Por ejemplo, hacer referencia a una VPC creada en otro stack.
+
+Para crear proyectos multi stack, tenemos dos opciones:
+
+- Nested stack.
+- Cross stack.
+
+### Nested stack
+
+Hay un stack que es el stack parent o root stack. Este stack puede crear stack hijos, los cuales son capaces de crear otros hijos.
+
+La sub stack se define en la stack padre como si fuera otro recurso, para ello:
+
+- El tipo es `AWS::CloudFormation::Stack`.
+- Se indica un TemplateUrl.
+
+Los outputs del nested stack pueden ser utilizados por el root stack y enviarlos a otro nested stack.
+
+Una ventaja de nested stacks es que la plantilla de los sub stacks puede utilizarse en otros stacks, apuntando a su TemplateUrl; se crearán recursos diferentes desde la misma plantilla. Es decir, se reutiliza la plantilla, no el recurso.
+
+Permite evitar la limitación de los 500 recursos máximo de emplear solo un stack. Puedes tener más de 2.500 recursos pero en un despliegue solo puedes crear, eliminar o actualizar 2.500.
+
+Debemos utilizarla cuando los recursos tienen un ciclo de vida relacionado (se crean y eliminan juntos), si los recursos se actualizan de manera independiente unos de otros, es mejor no usar este método.
+
+### Cross stack
+
+En este caso se reutilizan recursos creados por otro stack.
+
+Consiste en exportar los outputs de un stack para que podamos emplearlos en otros. El nombre utilizado en la exportación debe ser único por región y cuenta de AWS.
+
+Para utilizar este valor, se emplea el `!ImportValue` intrinsic function. Solo puede utilizarse en la misma región y cuenta de AWS.
+
+Ejemplo de uso:
+
+- Aplicaciones que necesitan compartir o reutilizar recursos, como por ejemplo una VPC.
+- Cuando los recursos tienen diferente ciclo de vida.
