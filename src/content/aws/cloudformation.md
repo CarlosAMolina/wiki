@@ -197,7 +197,7 @@ Ejemplo de uso:
 - Aplicaciones que necesitan compartir o reutilizar recursos, como por ejemplo una VPC.
 - Cuando los recursos tienen diferente ciclo de vida.
 
-### StackSets
+## StackSets
 
 Permite modificar infraestructura en distintas regiones y cuentas de AWS.
 
@@ -222,3 +222,16 @@ Usos:
 - Habilitar AWS Config.
 - AWS Config rules: MFA, EIPS, cifrado EBS.
 - Crear Roles IAM para acceso cross-account.
+
+## DeletionPolicy
+
+De no tener este atributo, CFN por defecto borrará el recurso cuando lo eliminamos de la plantilla.
+
+Permite:
+
+- Mantener un recurso al eliminar el stack, es decir, el recurso no se modifica.
+- Hacer un backup si el recurso es compatible con esta opción, por ejemplo:
+  - Es útil para no perder información en RDS, EBS, etc. Nosotros seremos responsables de eliminar estos backups.
+  - EC2 no es compatible con esta opción de backup.
+
+Eso solo aplica a operaciones de eliminación, no a las que actualizan recursos; además si un recursos se reemplaza (no es una operación de eliminación), se perderán sus datos.
