@@ -196,3 +196,29 @@ Ejemplo de uso:
 
 - Aplicaciones que necesitan compartir o reutilizar recursos, como por ejemplo una VPC.
 - Cuando los recursos tienen diferente ciclo de vida.
+
+### StackSets
+
+Permite modificar infraestructura en distintas regiones y cuentas de AWS.
+
+La plantilla empleada en un StackSet es una plantilla CFN normal.
+
+StackSets se encuentran en la cuenta llamada administradora, administradora significa solamente que es donde residen los StackSets.
+
+Los StackSets tienen referencias a las instancias stack, un stack instance es un contenedor que guarda lo que ocurre en un stack particular; si el stack falla, en el stack instance se indicará el motivo.
+
+Los stack instances y los stacks se encuentran en los target accounts; se llama así a las cuentas donde se despliegan los recursos. Cada stack se encuentra en una región y una cuenta de AWS.
+
+Al crearlo se utiliza roles gestionados por CFN o en conjunto por CFN y aws organizations.
+
+Términos:
+
+- Concurrent accounts. Número de cuentas de AWS en que pueden desplegarse los recursos simultáneamente.
+- Failure tolerance. Número de stacks que pueden fallar antes de marcar el StackSet como fallido.
+- Retain Stacks. Configura la eliminación de instancias stacks.
+
+Usos:
+
+- Habilitar AWS Config.
+- AWS Config rules: MFA, EIPS, cifrado EBS.
+- Crear Roles IAM para acceso cross-account.
