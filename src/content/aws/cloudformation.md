@@ -243,3 +243,16 @@ CFN utiliza los permisos de la identidad que ha ejecutado el stack.
 Por tanto, necesitamos permisos para interactuar con stacks y los recursos de AWS.
 
 CFN es capaz de asumir un rol para obtener sus permisos. Un IAM rol puede pasarse al stack mediante PassRole. Así conseguimos role separation de modo distintas cuentas de AWS pueden lanzar stacks sin tener permisos sobre todos los recursos implicados.
+
+## cfn -init
+
+Con `AWS::CloudFormation::Init` y cfn-init es posible dar configuración a una instancia EC2.
+
+Es una alternativa a bootstrapping con UserData, pero UserData no es algo nativo de CFN. Con UserData indicamos qué hacer; con cfn-init solo definimos lo que queremos y CFN lo llevará acabo, si algo ya existe no lo volverá a crear, es mejor que UserData ya que con este último habría que escribir las comprobaciones necesarias.
+
+La configuración se indica en la template mediante `AWS::CloudFormation::Init`, que estará dentro de la sección `Metadata`en la sección `EC2Instance`.
+
+cfn-init:
+
+- Es un script instalado en el sistema operativo del EC2. Se envía mediante órdenes en UserData, pero órdenes sencillas para ejecutar este script indicándole datos como la región de AWS.
+- Soporta todo los tipos de metadatos de Linux y algunos de Windows.
