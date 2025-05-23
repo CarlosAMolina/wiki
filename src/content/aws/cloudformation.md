@@ -235,3 +235,11 @@ Permite:
   - EC2 no es compatible con esta opción de backup.
 
 Eso solo aplica a operaciones de eliminación, no a las que actualizan recursos; además si un recursos se reemplaza (no es una operación de eliminación), se perderán sus datos.
+
+## Stack Roles
+
+CFN utiliza los permisos de la identidad que ha ejecutado el stack.
+
+Por tanto, necesitamos permisos para interactuar con stacks y los recursos de AWS.
+
+CFN es capaz de asumir un rol para obtener sus permisos. Un IAM rol puede pasarse al stack mediante PassRole. Así conseguimos role separation de modo distintas cuentas de AWS pueden lanzar stacks sin tener permisos sobre todos los recursos implicados.
