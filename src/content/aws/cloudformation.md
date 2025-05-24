@@ -130,6 +130,8 @@ El stack mantiene los recursos físicos y lógicos sincronizados, es decir, crea
 
 Con la misma plantilla pueden crearse más de un stack.
 
+[Documentación sobre update stack](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html).
+
 Al eliminar un stack se borran sus recursos lógicos, lo que implica que también se eliminarán los físicos.
 
 ## Recursos
@@ -148,11 +150,11 @@ Es un recurso físico creado al crear un stack de CloudFormation. El stack crea 
 
 ## cfn-signal
 
-Puede ser que una recurso aparezca como creado correctamente pese a no ser así; por ejemplo una instancia EC2 que tras iniciarse, se indica que se ha creado pero además tiene tiene que ejecutar UserData y aunque este proceso falle, la instancia ya aparecerá como creada.
+Puede ser que una recurso aparezca como creado correctamente pese a no ser así; por ejemplo una instancia EC2 que tras iniciarse, se indica que se ha creado pero además tiene tiene que ejecutar UserData y aunque este proceso falle o no haya terminado, la instancia ya aparecerá como creada.
 
-Para evitarlo, configuramos CFN con un CreationPolicy para que esperece recibir un cierto número de sucess signals antes de marcar el recurso como completado de manera correcta; también puede indicarse un teimout de hasta 12 horas de margen para recibirlas. En caso de recibir una signal de fallo, la creación habrá fallado.
+Para evitarlo, configuramos CFN con un CreationPolicy para que esperece recibir un cierto número de sucess signals antes de marcar el recurso como completado de manera correcta; también puede indicarse un timeout de hasta 12 horas de margen para recibirlas. En caso de recibir una signal de fallo, la creación habrá fallado.
 
-Gracias a cfn-signal se envían estas señales.
+Gracias a cfn-signal se envían estas señales, se indica al final del UserData.
 
 También pueden utilizarse WaitConditions para que no se pase a un estado hasta que se reciba una señal o pase cierto tiempo. El WaitConditions genera una preSigned URL para recibir signals, a esta preSigned URL puede enviarse otra información que utilizar en la creación del Stack.
  
@@ -259,6 +261,10 @@ cfn-init:
 
 Solo se ejecuta una vez, si actualizamos la plantilla y volvemos a ejecutarla, cfn-init no se volverá a ejecutar.
 
+Pueden verse sus logs en los archivos de la instancia `/var/log/cfn-init-cmd.log` y `/var/log/cfn-init.log`.
+
 ## cfn-hup
 
 El usuario es responsable de instalarlo, es un demonio que detecta cambios en los metadatos de EC2 y así se ejecutar de nuevo cfn-init; ya que como se dijo, cfn-init solo se ejecuta la primera vez que se lanza el stack.
+
+Pueden verse sus logs en el archivo de la instancia `/var/log/cfn-hup.log`.
