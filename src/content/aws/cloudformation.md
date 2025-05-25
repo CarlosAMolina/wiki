@@ -268,3 +268,13 @@ Pueden verse sus logs en los archivos de la instancia `/var/log/cfn-init-cmd.log
 El usuario es responsable de instalarlo, es un demonio que detecta cambios en los metadatos de EC2 y así se ejecutar de nuevo cfn-init; ya que como se dijo, cfn-init solo se ejecuta la primera vez que se lanza el stack.
 
 Pueden verse sus logs en el archivo de la instancia `/var/log/cfn-hup.log`.
+
+## Change sets
+
+Cuando actualizamos un stack puede que:
+
+- Los recursos sufran interrupción.
+- Se pierdan los datos.
+- Se eliminen recursos.
+
+Con change sets podemos visualizar qué cambios se aplicarán y elegir si realizarlos o no.
