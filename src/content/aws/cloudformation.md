@@ -278,3 +278,11 @@ Cuando actualizamos un stack puede que:
 - Se eliminen recursos.
 
 Con change sets podemos visualizar qué cambios se aplicarán y elegir si realizarlos o no.
+
+## Custom resources
+
+Permiten a CFN utilizar opciones para las que actualmente no tiene soporte nativo.
+
+Por ejemplo, añadir objetos a un bucket cuando se crea, o eliminar los objetos al borrar el bucket ya que si CFN intenta eliminar un bucket con objetos, dará error.
+
+Para utilizarlos, se envía un evento a algo como lambda o SNS con la información necesaria y cuando termine el proceso se notifica al stack de lo realizado.
