@@ -130,3 +130,36 @@ Es menos eficiente que utilizar query, pero ofrece mayor flexibilidad.
 Analiza todos los items de una tabla. Por lo que la capacidad consumida es de todos los iems.
 
 Podemos aplicar cualquier filtro sobre los atributos de un item, por ejemplo que un valor esté comprendido entre otros valores que digamos nosotros.
+
+## Índices
+
+Permiten que las queries sean más eficientes.
+
+Aunque `query` es la opción más eficiente, solo puede trabajar con un valor de PK en cada petición y con una o varias SK. Gracias a los índices, creamos vistas alternativas en los datos de las tablas que permiten hacer más tipos de peticiones, se pueden indicar los atributos a utilizar.
+
+Hay dos tipos:
+
+- LSI.
+- GSI.
+
+### LSI
+
+LSI = Local Secondary Indexes.
+
+Permite crear SK alternativos sobre el mismo PK. Son como una vista de la tabla, donde se emplea la misma PK y una SK diferente.
+
+Estos índices son sparse, lo que implica que únicamente los items con valor en la SK serán añadidos al índice. Esto es una ventaja porque de usar peticiones scan sobre esta vista, se leerán menos datos y no tendrá tanto coste.
+
+Deben crearse junto a la tabla, más tarde no es posible.
+
+Máximo 5 por tabla.
+
+Comparte el RCU y WCU de la tabla.
+
+Al crearla puedes elegir utilizar: todos los atributos, solo algunos o solo las keys.
+
+### GSI
+
+GSI = Global Secondary Indexes
+
+Permite crear distintos PK y SK alternativos.
