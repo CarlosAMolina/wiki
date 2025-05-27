@@ -135,12 +135,14 @@ Podemos aplicar cualquier filtro sobre los atributos de un item, por ejemplo que
 
 Permiten que las queries sean más eficientes.
 
-Aunque `query` es la opción más eficiente, solo puede trabajar con un valor de PK en cada petición y con una o varias SK. Gracias a los índices, creamos vistas alternativas en los datos de las tablas que permiten hacer más tipos de peticiones, se pueden indicar los atributos a utilizar.
+Aunque `query` es la opción más eficiente, solo puede trabajar con un valor de PK en cada petición y con una o varias SK. Gracias a los índices, creamos vistas alternativas en los datos de las tablas que permiten hacer otros tipos de peticiones, se pueden indicar los atributos a utilizar.
 
 Hay dos tipos:
 
 - LSI.
 - GSI.
+
+Al crearla puedes elegir utilizar: todos los atributos, solo algunos o solo las keys. De solicitar un atributo no añadido, se obtendrá el valor, pero por detrás se harán peticiones muy costosas.
 
 ### LSI
 
@@ -156,10 +158,18 @@ Máximo 5 por tabla.
 
 Comparte el RCU y WCU de la tabla.
 
-Al crearla puedes elegir utilizar: todos los atributos, solo algunos o solo las keys.
-
 ### GSI
 
 GSI = Global Secondary Indexes
 
 Permite crear distintos PK y SK alternativos.
+
+Pueden crearse en cualquier momento.
+
+Máximo 20 por tabla.
+
+Tienen su propio RCU y WCU.
+
+Como los LSI, son sparse. Solo se añadirán a la nueva visa los items con valor en la nueva PK y SK.
+
+Estas tablas son siempre eventually consistent porque la replicación entre la tabla y las vistas es asíncrona.
