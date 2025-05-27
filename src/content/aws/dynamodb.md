@@ -142,6 +142,8 @@ Hay dos tipos:
 - LSI.
 - GSI.
 
+Se recomienda usar GSI al ser más flexible y LIS cuando necesitemos strong consistency.
+
 Al crearla puedes elegir utilizar: todos los atributos, solo algunos o solo las keys. De solicitar un atributo no añadido, se obtendrá el valor, pero por detrás se harán peticiones muy costosas.
 
 ### LSI
