@@ -92,6 +92,27 @@ Cada operación consume mínimo 1 RCU o WCU.
 
 Cada tabla tienen un RCU y WCU burst pool de 300 segundos.
 
+#### Read operations
+
+En DynamoDB los datos se replican en las AZ, en los llamados Storage Nodes. Hay un nodo lider y si falla este, otro pasa a ser el lider; los datos se guardan en el node lider y se replican al resto, esto tarda milisegundos.
+
+Hay dos modos:
+
+- Strongly consistency read. Asegura que todos los nodos tienen la información actualizada porque siempre se lee del lider node.
+- Eventually consistency read. No es seguro de que todos los nodos tengan la información actualizada. Se leen datos de cualquier nodo. Permite leer el doble de datos que el strongly consistency read para el mismo RCU, es 50% más barato que strongly consistency.
+
+Para calcular la provisión, es necesario saber la media de los ítems a recibir por segundo y la media de su tamaño:
+
+1º. RCU por ítem = redondear enteros (tamaño ítem / 4 KB)
+2º. Multiplicar valor anterior por el número de lecturas por segundo. Este valor es para strongly consistency, de ser eventually consistency, dividimos el resultado entre dos.
+
+#### Write operations
+
+Para determinar la provisión, necesitamos conocer la media de los items por segundo que serán escritos y la media de su tamaño, con esto el cálculo es:
+
+1º. WCU por ítem = redondear enteros (tamaño del item / 1 KB)
+2º. WCU total = multiplicar valor anterior por el número de items por segundo.
+
 ## Query
 
 La petición debe pedir una PK o combinación de PK y SK.
