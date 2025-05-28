@@ -175,3 +175,23 @@ Tienen su propio RCU y WCU.
 Como los LSI, son sparse. Solo se añadirán a la nueva visa los items con valor en la nueva PK y SK.
 
 Estas tablas son siempre eventually consistent porque la replicación entre la tabla y las vistas es asíncrona.
+
+## Streams & triggers
+
+Los streams almacenan cronológicamente los cambios que ha tenido un item cuando se hace insert, update o delete.
+
+Almacena las últimas 24 horas.
+
+Se activa por tabla.
+
+Hay 4 opciones view types disponibles:
+
+- keys_only. Se guarda la PK y de manera opcional la SK del item.
+- new_image. Almacena el item tras el cambio.
+- old_image. Guarda el item antes de cambiar.
+- new_and_old_images. Guarda el item antes y después del cambio.
+
+Los streams son la base de los triggers, que permiten invocar a lambdas cuando nuevas entradas se añaden al stream. En este momento se genera un evento que contiene información de lo que ha cambiado, los datos que contiene depende del view type.
+
+Utilizado para reporting, analytics, aggregation, messaging o notificación.
+
