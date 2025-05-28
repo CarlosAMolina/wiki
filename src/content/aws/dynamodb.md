@@ -195,3 +195,16 @@ Los streams son la base de los triggers, que permiten invocar a lambdas cuando n
 
 Utilizado para reporting, analytics, aggregation, messaging o notificación.
 
+## Global tables
+
+Las tablas se crean en distintas regiones y son añadidas al mismo global table.
+
+Cuando haya un cambio en cualquiera de las tablas que forman parte del global table, se replicará en todas las demás, tarda menos de un segundo, aunque estén en otras regiones.
+
+Todas las tablas pueden utilizarse para escritura y lectura.
+
+En caso de conflicto, se utiliza el último dato escrito.
+
+Solo puedes tener lecturas strongly consistent en la misma región, en otras será eventually consistent.
+
+Proporciona high availability, disaster recovery a nivel global y continuidad de negocio global.
