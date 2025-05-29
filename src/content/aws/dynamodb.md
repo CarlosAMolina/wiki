@@ -235,3 +235,11 @@ El tiempo de respuesta disminuye de un segundo a nanosegundos.
 Puede escalar añadiendo más instancias o incrementando su tamaño.
 
 No debe usarse en aplicaciones que requieren strong consistency.
+
+## TTL
+
+Especifica el tiempo para que un item se elimine de una tabla.
+
+Un proceso se encarga de marcar como expirados los items y otro proceso de eliminarlos. También se elimina de los índices y queda guardada la operación en el stream de haberlo. Además, puede configurarse un stream para guardar los eventos de eliminación, lo que es útil para conocer las TTL aplicadas; tiene una duración de 24 horas.
+
+No supone costre adicional.
