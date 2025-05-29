@@ -208,3 +208,30 @@ En caso de conflicto, se utiliza el último dato escrito.
 Solo puedes tener lecturas strongly consistent en la misma región, en otras será eventually consistent.
 
 Proporciona high availability, disaster recovery a nivel global y continuidad de negocio global.
+
+## DAX
+
+DAX = DynamoDB Accelerator.
+
+Es una caché en memoria, utilizarlo requiere menos gestión que una caché de db normal ya que está integrado de manera nativa con DynamoDB y usan la misma SDK.
+
+Para emplearlo, la aplicación debe hacer uso del DAX SDK.
+
+Pese a que DynamoDB es un servicio público, DAX se despliega en una VPC, los nodos deben estar en todas las AZ para tener high availability.
+
+En una AZ está el nodo primario y se replica al resto de nodos en las otras AZ, los cuales funcionan como read replicas. El nodo primario se comunica con DynamoDB. Si falla el nodo primario, una réplica pasará a ser el primario.
+
+Hay dos tipos de caché:
+
+- Item caché. Cachea los items de manera individual.
+- Query caché. Almacena colecciones de operaciones que son el resultado de una operación query o scan; también guarda los parámetros utilizados en la query original.
+
+Al escribir datos en DynamoDB, puedes elegir que estos se escriban en DAX, también irán a DynamoDB.
+
+Con DAX se reduce el coste si la aplicación repite mucho las peticiones.
+
+El tiempo de respuesta disminuye de un segundo a nanosegundos.
+
+Puede escalar añadiendo más instancias o incrementando su tamaño.
+
+No debe usarse en aplicaciones que requieren strong consistency.
