@@ -20,6 +20,7 @@
   - [CloudTrail](cloudtrail.html)
   - [CloudWatch](cloudwatch.html)
   - [Cognito](cognito.html)
+  - [Comprehend](comprehend.html)
   - [Control Tower](control-tower.html)
   - [Database](db.html)
   - [DataSync](datasync.html)
