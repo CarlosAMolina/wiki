@@ -228,7 +228,7 @@ Hay dos tipos de caché:
 
 Al escribir datos en DynamoDB, puedes elegir que estos se escriban en DAX, también irán a DynamoDB.
 
-Con DAX se reduce el coste si la aplicación repite mucho las peticiones.
+Con DAX se reduce el coste si la aplicación requiere altas cargas de peticiones de lectura.
 
 El tiempo de respuesta disminuye de un segundo a nanosegundos.
 
