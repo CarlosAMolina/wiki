@@ -38,6 +38,7 @@
   - [Inspector](inspector.html)
   - [KMS](kms.html)
   - [Kinesis](kinesis.html)
+  - [Kendra](kendra.html)
   - [LB - Load Balancer](lb.html)
   - [Lambda](lambda.html)
   - [Macie](macie.html)
