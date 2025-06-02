@@ -41,6 +41,7 @@
   - [Kendra](kendra.html)
   - [LB - Load Balancer](lb.html)
   - [Lambda](lambda.html)
+  - [Lex](lex.html)
   - [Macie](macie.html)
   - [MQ](mq.html)
   - [Redshift](redshift.html)
