@@ -46,6 +46,7 @@
   - [MQ](mq.html)
   - [Polly](polly.html)
   - [Redshift](redshift.html)
+  - [Rekognition](rekognition.html)
   - [Route53](route53.html)
   - [S3](s3.html)
   - [Secrets Manager](secrets-manager.html)
