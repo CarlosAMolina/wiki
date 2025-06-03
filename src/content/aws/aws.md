@@ -44,6 +44,7 @@
   - [Lex](lex.html)
   - [Macie](macie.html)
   - [MQ](mq.html)
+  - [Polly](polly.html)
   - [Redshift](redshift.html)
   - [Route53](route53.html)
   - [S3](s3.html)
