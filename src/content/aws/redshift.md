@@ -32,7 +32,7 @@ Los snapshots se guardan en S3 y pueden ser:
 
 Gracias a S3, los datos se replican en las AZ de la región. También podemos llevarlos a otras regiones y aplicar un retention period diferente.
 
-## Redshift Sepectrum
+## Redshift Spectrum
 
 Permite hacer queries a S3; necesitas tener un cluster de Redshfit pero no cargas la información en el.
 

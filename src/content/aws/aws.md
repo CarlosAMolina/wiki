@@ -58,6 +58,7 @@
   - [Step Function](sf.html)
   - [Storage Gateway](storage-gateway.html)
   - [Textract](textract.html)
+  - [Transcribe](transcribe.html)
   - [Transfer Familiy](transfer-family.html)
   - [Transit Gateway](tgw.html)
   - [VPC](vpc.html)
