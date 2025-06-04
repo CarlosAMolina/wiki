@@ -59,6 +59,7 @@
   - [Storage Gateway](storage-gateway.html)
   - [Textract](textract.html)
   - [Transcribe](transcribe.html)
+  - [Translate](translate.html)
   - [Transfer Familiy](transfer-family.html)
   - [Transit Gateway](tgw.html)
   - [VPC](vpc.html)
