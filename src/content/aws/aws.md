@@ -30,6 +30,7 @@
   - [EC2](ec2.html)
   - [EFS](efs.html)
   - [ElastiCache](elasticache.html)
+  - [Forecast 101](forecast-101.html)
   - [FSx](fsx.html)
   - [Global Accelerator](global-accelerator.html)
   - [Glue](glue.html)
