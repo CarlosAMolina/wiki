@@ -51,6 +51,7 @@
   - [Rekognition](rekognition.html)
   - [Route53](route53.html)
   - [S3](s3.html)
+  - [Sagemaker](sagemaker.html)
   - [Secrets Manager](secrets-manager.html)
   - [SES. Simple Email Service](ses.html)
   - [Shield](shield.html)
