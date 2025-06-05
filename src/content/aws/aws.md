@@ -31,6 +31,7 @@
   - [EFS](efs.html)
   - [ElastiCache](elasticache.html)
   - [Forecast 101](forecast-101.html)
+  - [Fraud Detector](fraud-detector.html)
   - [FSx](fsx.html)
   - [Global Accelerator](global-accelerator.html)
   - [Glue](glue.html)
