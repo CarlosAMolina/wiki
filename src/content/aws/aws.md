@@ -44,6 +44,7 @@
   - [LB - Load Balancer](lb.html)
   - [Lambda](lambda.html)
   - [Lex](lex.html)
+  - [Local Zone](local-zone.html)
   - [Macie](macie.html)
   - [MQ](mq.html)
   - [Polly](polly.html)
