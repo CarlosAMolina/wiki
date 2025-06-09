@@ -172,7 +172,7 @@ Ejemplo dónde usar IAM Role:
 - Si hay un usuario con permisos limitados y en situaciones excepcionales requiere más privilegios para realizar una acción puntual.
 - Permitir a cuentas externas acceso a recursos de AWS asumiendo un rol. Por ejemplo:
   - ID Federation, donde los usuarios del active directory de una empresa puede asumir el rol. Por ejemplo, en una organización con más de 5.000 usuarios porque IAM tiene de límite 5.000 usuarios.
-  - En web identity federation, por ejemplo para que los usuarios de una app puedan utilizarla porque interactúa con base de datos en AWS. Los usuarios se logean con su cuenta de gamil, facebook, twitter, etc. en la app.
+  - En web identity federation, por ejemplo para que los usuarios de una app puedan utilizarla porque interactúa con base de datos en AWS. Los usuarios se logean con su cuenta de gmail, facebook, twitter, etc. en la app.
 - Para que identidades de una cuenta de AWS puedan realizar acciones en recursos de otra cuenta de AWS.
 
 Gracias a los roles tenemos las ventajas de:
