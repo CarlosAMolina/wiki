@@ -888,3 +888,7 @@ ASG vs launch configuration/templates:
 
 - ASG configura el WHEN, en qué casos provisionar, y WHERE, en qué subredes.
 - Launch configuration/templates indican el WHAT, qué instancias provisionar y con qué configuración.
+
+## Session Manager
+
+Permite conectarnos, desde la consola de AWS, a instancias EC2 que estén en una VPC privada.
