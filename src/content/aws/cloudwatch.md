@@ -7,7 +7,7 @@ Es un servicio público y regional, puede funcionar con software ajeno a AWS.
 CloudWatch permite:
 
 - Almacenar y acceder a logs. Dentro de CloudWatch tenemos disponible para ello a `CloudWatch Logs`.
-- Obtener métricas de otros servicios y software que use AWS. Ejemplo: uso CPU, peticiones REST, etc. Algunas métricas se generan por defecto (ejemplo, uso CPU en instancias EC2) pero otras requieren instalar el CloudWatch agent.
+- Obtener métricas de otros servicios y software que use AWS. Algunas métricas se generan por defecto,  pero otras requieren instalar el CloudWatch agent; se muestran ejemplos en la sección de `CloudWatch Agent`.
 - CloudWatch Logs: permite monitorizar logs y realizar acciones en base a ellos. Hay situaciones en las que hay que instalar el CloudWatch agent.
 - CloudWatch Events. Explicado en su sección.
 
@@ -21,6 +21,8 @@ Se está reemplazando por EventBridge.
 
 ## CloudWatch Agent
 
+CWAgent = CloudWatch Agent.
+
 Necesario para aplicaciones externas a AWS o para trabajar con logs propios de aplicaciones o de sistemas operativos.
 
 Por ejemplo, para tratar con los logs dentro de una instancia EC2; el CloudWatch Agent es un programa que funciona en el sistema operativo y envía los logs a CloudWatch. También permite ver el uso de la CPU, lecturas de disco, etc.
@@ -33,6 +35,16 @@ Se utiliza:
 - Log stream: dentro del log group, hay un log stream por cada instancia que genera logs.
 
 Otra opción en lugar del CloudWatch agent es utilizar los kits de desarrollo de AWS.
+
+Si una instancia no tiene CWAgent, podemos obtener métricas por ejemplo de:
+
+- Network IN and Out.
+- CPU Usage.
+- Disk Reads and Writes.
+
+Es necesario CWAgent por ejemplo para las siguientes métricas:
+
+- Memory utilization.
 
 ## Conceptos
 
