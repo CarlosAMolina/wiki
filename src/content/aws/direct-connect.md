@@ -28,7 +28,7 @@ Gracias a estas interfaces, nos conectamos a AWS sin pasar por los ISP. No sirve
 
 Ofrece baja y constante latencia, y altas velocidades. Tenemos 3 velocidades disponibles: 1, 10 o 100 Gbps.
 
-Puede tardar entre semanas o meses tener la conexión de nuestro router a AWS Direct Connect.
+Puede tardar días, incluso entre semanas o meses, tener la conexión de nuestro router a AWS Direct Connect.
 
 ## Resilencia
 

@@ -27,4 +27,4 @@ Clases de almacenamiento:
 - Standard: para datos que se acceden habitualmente. Es la opción por defecto.
 - Infrequent Access (IA): tiene menor coste, para datos que no se acceden normalmente.
 
-A estas clases de almacenamiento se les puede aplicar políticas lifeclicle para mover los datos entre los tipos de almacenamiento.
+A estas clases de almacenamiento se les puede aplicar políticas lifecycle para mover los datos entre los tipos de almacenamiento.

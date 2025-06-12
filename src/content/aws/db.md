@@ -57,6 +57,8 @@ Las instancias pueden estar en distintas AZ, y como veremos, algunas en otra reg
 
 Ejemplo de cuántas instancias RDS crear, una por cada RDS deployment, por ejemplo una por AZ.
 
+Utilizar multi AZ en instancias RDS mejora la availability, no el performance.
+
 #### Instancia primaria
 
 Es la principal, la que utilizamos de manera habitual.

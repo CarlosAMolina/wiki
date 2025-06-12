@@ -31,7 +31,7 @@ Limitaciones:
 
 Algunas configuraciones que tiene por defecto:
 
-- IGW: para tener comunicación in Internet.
+- IGW: para tener comunicación con Internet.
 - SG (Security Group) y NACL: para control del tráfico de entrada y de salida.
 - Todo lo que se despliegue en esta VPC recibe una IP Pública.
 

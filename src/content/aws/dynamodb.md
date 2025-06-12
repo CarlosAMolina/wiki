@@ -106,6 +106,8 @@ Para calcular la provisión, es necesario saber la media de los ítems a recibir
 1º. RCU por ítem = redondear enteros (tamaño ítem / 4 KB)
 2º. Multiplicar valor anterior por el número de lecturas por segundo. Este valor es para strongly consistency, de ser eventually consistency, dividimos el resultado entre dos.
 
+En caso de aumentar la carga de lecturas, podemos incrementar el RCU.
+
 #### Write operations
 
 Para determinar la provisión, necesitamos conocer la media de los items por segundo que serán escritos y la media de su tamaño, con esto el cálculo es:

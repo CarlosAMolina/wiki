@@ -30,7 +30,7 @@ ALB (Application Load Balancer):
 
 - Es v2.
 - Soporta HTTP, HTTPS y WebSocket.
-- Al trabajar con la layer 7 puede tatar con componentes de esta como content type, cookies, headers, health checks, etc.
+- Al trabajar con la layer 7 puede tratar con componentes de esta como content type, cookies, headers, health checks, etc.
 - La conexión SSL termina en el ALB, luego se genera una nueva del ALB a la aplicación; es decir la conexión SSL se interrumpe entre el cliente y la aplicación.
 - Debe tener certificados SSL para utilizar HTTPS.
 - Más lentos que NLB al haber más niveles de red que gestionar.
@@ -118,7 +118,7 @@ Podemos configurar la cookie para que expire entre 1 segundo y 7 días. Al expir
 
 Si la instancia falla, las conexiones irán a una nueva instancia.
 
-El problema con este método es que siempre se usará una instancia aunque el usuario genera mucha carga. Por lo que se recomienda que la sesión del usuario no se gestione en la instancia sino en algo externo, por ejemplo DynamoDB; así las instancias serán serverless y puede distribuirse la carga.
+El problema con este método es que siempre se usará una instancia aunque el usuario genere mucha carga. Por lo que se recomienda que la sesión del usuario no se gestione en la instancia sino en algo externo, por ejemplo DynamoDB; así las instancias serán serverless y puede distribuirse la carga.
 
 La opción `stickiness` se configura en la consola de AWS desde EC2 > Target Groups; se activa para las instancias que pertenezcan al target group.
 
