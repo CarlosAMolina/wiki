@@ -82,3 +82,33 @@ npm install http-server --save-dev
 npm exec http-server
 firefox http://127.0.0.1:8080
 ```
+
+### Node. Import and export
+
+#### Common JS
+
+Import in a common way is like that:
+
+```
+const _ = require('http')
+```
+
+#### es6
+
+Import in a es6 way is like that:
+
+```
+import {count} from './utils.js'
+```
+
+Export:
+
+```
+export const count = num => num
+```
+
+To enable that, in the package.json file add:
+
+```
+  "type": "module",
+```
