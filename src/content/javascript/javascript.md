@@ -66,7 +66,6 @@ To run with `npm`. Modify `package.jon` file:
      ...
 ```
 
-
 ## Modules
 
 ### Open js code with modules in the browser
@@ -93,9 +92,9 @@ Import in a common way is like that:
 const _ = require('http')
 ```
 
-#### es6
+#### ES6
 
-Import in a es6 way is like that:
+Import in a ES6 way is like that:
 
 ```
 import {count} from './utils.js'
