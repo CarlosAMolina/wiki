@@ -111,3 +111,22 @@ To enable that, in the package.json file add:
 ```
   "type": "module",
 ```
+
+#### Importar todo de una carpeta
+
+Imagina que tienes esta estructura:
+
+```bash
+index.js
+utils/
+|_ index.js
+|_ utils_1.js
+|_ utils_2.js
+```
+
+Si en el index.js de la carpeta superior haces `import * as thing from './utils'`, lo que hace el código es mirar en el archivo index.js de la carpeta utils; por eso en este archivo `utils/index.js` hay que importar y exportar lo del resto de archivos de la carpeta utils. Ejemplo:
+
+```
+export { foo } from 'utils_1.js'
+export { bar, bar_b } from 'utils_2.js'
+```
