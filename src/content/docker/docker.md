@@ -99,7 +99,7 @@ docker rm -f <the-container-id>
 
 ### Remove image
 
-Image with tag none:
+Image with tag none ([link](https://stackoverflow.com/a/33913711)):
 
 ```bash
 docker rmi $(docker images --filter "dangling=true" -q --no-trunc)
