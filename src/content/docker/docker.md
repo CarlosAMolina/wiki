@@ -52,6 +52,12 @@ docker ps -a
 
 ### Interact with a container
 
+Start an interactive shell:
+
+```bash
+docker exec -it $(DOCKER_CONTAINER_NAME) /bin/bash
+```
+
 Run command on a running container.
 
 ```bash
