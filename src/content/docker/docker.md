@@ -97,6 +97,14 @@ docker rm -f <the-container-id>
 
 [Link](https://docs.docker.com/get-started/03_updating_app/).
 
+### Remove image
+
+Image with tag none:
+
+```bash
+docker rmi $(docker images --filter "dangling=true" -q --no-trunc)
+```
+
 ### Volumes
 
 #### Create named volume
