@@ -11,4 +11,11 @@ Atajo de teclado      | Descripción
 `Control` + `b` + `o` | Swap windows en que se ha hecho split.
 `Control` + `b`, `,`  | Renombar window, pulsar enter para aceptar.
 `Control` + `b`, `c`  | Crear nuevo window.
-`Control` + `b`, `w`  | Navegar entre windows utilizando `j` y `k`. Para eliminar una ventana: `x`. Para renombrar: `Control` + `b`, `,`.
+`Control` + `b`, `w`  | Navegar entre windows utilizando `j` y `k`. Para cerrar una ventana: `x`. Para renombrar: `Control` + `b`, `,`.
+`Control` + `d`       | Cerrar ventana.
+
+## Comandos
+
+Comando               | Descripción
+----------------------|-----------------------------------------------------------
+`exit`                | Cerrar ventana.
