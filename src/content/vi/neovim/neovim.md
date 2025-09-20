@@ -95,8 +95,8 @@ ln -s .vim .nvim
 ## Comandos útiles
 
 - Control + 6: cambiar entre 2 archivos (el actual y el anterior).
-- Control + o: volver al anterior archivo que se abrió.
-- Control + i: volver al siguiente archivo que se abrió.
+- Control + o: volver a la anterior parte donde estuvo el cursor (puede ser entre archivos).
+- Control + i: volver a la siguiente parte donde estuvo el cursor (puede ser entre archivos).
 - `:jumps`: histórico de archivos abiertos. Se utilizará este orden al pulsar `control o` y `control + i`.
 - Control + d: mientras escribes un comando, esta opción muestra lista de comandos disponibles.
 - `%`: ejecutado sobre un elemento de apertura o cierre (ejemplo, `{`, tags html como `div`, etc) lleva a su correspondiente cierre o apertura, respectivamente.
