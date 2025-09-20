@@ -94,17 +94,19 @@ ln -s .vim .nvim
 
 ## Comandos útiles
 
-- Control + `6`: cambiar entre 2 archivos (el actual y el anterior).
-- Control + `o`: volver a la anterior parte donde estuvo el cursor (puede ser entre archivos).
-- Control + `i`: volver a la siguiente parte donde estuvo el cursor (puede ser entre archivos).
-- Control + `w`, `r`: swap partes en que se ha hecho split la pantalla.
-- `:jumps`: histórico de archivos abiertos. Se utilizará este orden al pulsar `control o` y `control + i`.
-- `:split`: split en filas de la pantalla.
-- `:vsplit`: split en columnas de la pantalla.
-- Control + `d`: mientras escribes un comando, esta opción muestra lista de comandos disponibles.
-- `%`: ejecutado sobre un elemento de apertura o cierre (ejemplo, `{`, tags html como `div`, etc) lleva a su correspondiente cierre o apertura, respectivamente.
-- `c`: como `d` pero tras cortar accedes a modo `insert` respectando la indentación.
-- `dap`: eliminar párrafo.
+Comando            | Explicación
+-------------------|------------------------------------------------------------------------
+Control + `6`      | Cambiar entre 2 archivos (el actual y el anterior).
+Control + `o`      | Volver a la anterior parte donde estuvo el cursor (puede ser entre archivos).
+Control + `i`      | Volver a la siguiente parte donde estuvo el cursor (puede ser entre archivos).
+Control + `w`, `r` | Swap partes en que se ha hecho split la pantalla.
+`:jumps`           | Histórico de archivos abiertos. Se utilizará este orden al pulsar `control o` y `control + i`.
+`:split`           | Split en filas de la pantalla.
+`:vsplit`          | Split en columnas de la pantalla.
+Control + `d`      | Mientras escribes un comando, esta opción muestra lista de comandos disponibles.
+`%`                | Ejecutado sobre un elemento de apertura o cierre (ejemplo, `{`, tags html como `div`, etc) lleva a su correspondiente cierre o apertura, respectivamente.
+`c`                | Como `d` pero tras cortar accedes a modo `insert` respectando la indentación.
+`dap`              | Eliminar párrafo.
 
 ## Plugins
 
