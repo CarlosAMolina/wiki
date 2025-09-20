@@ -11,8 +11,8 @@
   - [Corrección ortográfica](#corrección-ortográfica)
     - [Errores corrección ortográfica](#errores-corrección-ortográfica)
       - [No encuentra archivo](#no-encuentra-archivo)
-- [Plugins](#plugins)
 - [Comandos útiles](#comandos-útiles)
+- [Plugins](#plugins)
 - [Regex](#regex)
   - [Reemplazar](#reemplazar)
 - [Referencias](#referencias)
@@ -92,10 +92,6 @@ ln -s .vimrc .nvimrc
 ln -s .vim .nvim
 ```
 
-## Plugins
-
-Ver [plugins](plugins.html).
-
 ## Comandos útiles
 
 - Control + 6: cambiar entre 2 archivos (el actual y el anterior).
@@ -106,6 +102,10 @@ Ver [plugins](plugins.html).
 - `%`: ejecutado sobre un elemento de apertura o cierre (ejemplo, `{`, tags html como `div`, etc) lleva a su correspondiente cierre o apertura, respectivamente.
 - `c`: como `d` pero tras cortar accedes a modo `insert` respectando la indentación.
 - `dap`: eliminar párrafo.
+
+## Plugins
+
+Ver [plugins](plugins.html).
 
 ## Regex
 
