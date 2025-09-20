@@ -8,9 +8,11 @@ Acceso: menú `Applications` > `Settings` > `Settings Manager` > `Keyboard` > `A
 
 Ejemplo configuración:
 
-Command     | Shortcut
-------------|------------
-firefox     | Ctrl+Alt+F
+Command                   | Shortcut
+--------------------------|------------
+firefox                   | Ctrl+Alt+F
+xfce4-terminal --maximize | Super+Return
+xflock4                   | Ctrl+Alt+L
 
 ### Windows Manager
 
