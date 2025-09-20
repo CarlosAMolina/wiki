@@ -10,6 +10,40 @@ Crear usb bootable:
 
 [Link](https://wiki.debian.org/DebianInstaller/CreateUSBMedia).
 
+## Configuración inicial
+
+Primero, ejecutamos el siguiente comando para comprobar si nuestro usuario está en el grupo de `sudoers`:
+
+```bash
+sudo ls
+```
+
+Si la salida indica que el usuario no pertenece al grupo, lo añadimos del siguiente modo [link](https://itslinuxfoss.com/add-user-sudoers-debian-12/):
+
+```bash
+su
+sudo visudo
+# Añadir: $USER_NAME ALL=(ALL:ALL) ALL. Ejemplo: x ALL=(ALL:ALL) ALL
+exit
+```
+
+Comenzamos con la instalación de software:
+
+```bash
+sudo apt update
+sudo apt upgrade -y
+```
+
+Desde nuestro navegador web, descargamos este [proyecto](https://github.com/CarlosAMolina/dotfiles/tree/main) haciendo click en el botón `<> Code` > `Download ZIP`. Tras descomprimirlo, ejecutamos `./scripts/run` y seguimos las indicaciones que mostrará el script.
+
+Plugins para el menú:
+
+Nombre               | Descripción
+---------------------|---------------------------------------------------------------
+Power Manager Plugin | Permite mostrar porcentaje batería y controlar brillo pantalla; al pulsar sobre el icono aparece la barra `Diplay brightness`.
+
+Configuración Xfce: [link](../xfce/xfce.md).
+
 ## Evitar suspensión al cerrar tapa del portátil
 
 Los primeros pasos, como indican estos links (<https://unix.stackexchange.com/questions/563729/looking-for-the-settings-that-causes-debian-to-suspend-when-laptop-lid-is-closed>, <https://github.com/systemd/systemd/issues/11638>, <https://superuser.com/questions/1605504/etc-systemd-logind-conf-is-being-ignored>) son:
