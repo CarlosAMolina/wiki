@@ -36,7 +36,7 @@ sudo apt upgrade -y
 
 Desde nuestro navegador web, descargamos este [proyecto](https://github.com/CarlosAMolina/dotfiles/tree/main) haciendo click en el botón `<> Code` > `Download ZIP`. Tras descomprimirlo, ejecutamos `./scripts/run` y seguimos las indicaciones que mostrará el script.
 
-Plugins para el menú:
+## Plugins para el menú
 
 Nombre               | Descripción
 ---------------------|---------------------------------------------------------------
