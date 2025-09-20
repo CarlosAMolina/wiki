@@ -97,14 +97,14 @@ ln -s .vim .nvim
 Comando            | Explicación
 -------------------|------------------------------------------------------------------------
 Control + `6`      | Cambiar entre 2 archivos (el actual y el anterior).
-Control + `o`      | Volver a la anterior parte donde estuvo el cursor (puede ser entre archivos).
+Control + `d`      | Mientras escribes un comando, esta opción muestra lista de comandos disponibles.
 Control + `i`      | Volver a la siguiente parte donde estuvo el cursor (puede ser entre archivos).
+Control + `o`      | Volver a la anterior parte donde estuvo el cursor (puede ser entre archivos).
 Control + `w`, `r` | Swap partes en que se ha hecho split la pantalla.
+`%`                | Ejecutado sobre un elemento de apertura o cierre (ejemplo, `{`, tags html como `div`, etc) lleva a su correspondiente cierre o apertura, respectivamente.
 `:jumps`           | Histórico de archivos abiertos. Se utilizará este orden al pulsar `control o` y `control + i`.
 `:split`           | Split en filas de la pantalla.
 `:vsplit`          | Split en columnas de la pantalla.
-Control + `d`      | Mientras escribes un comando, esta opción muestra lista de comandos disponibles.
-`%`                | Ejecutado sobre un elemento de apertura o cierre (ejemplo, `{`, tags html como `div`, etc) lleva a su correspondiente cierre o apertura, respectivamente.
 `c`                | Como `d` pero tras cortar accedes a modo `insert` respectando la indentación.
 `dap`              | Eliminar párrafo.
 
