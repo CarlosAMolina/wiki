@@ -7,6 +7,7 @@ Ejemplos en este [dotfile](https://github.com/CarlosAMolina/dotfiles/blob/main/s
 Atajo de teclado      | Descripción
 ----------------------|-----------------------------------------------------------
 `Control` + `b` + `o` | Swap windows en que se ha hecho split.
+`Control` + `b`, `o`  | Ir a la siguiente ventana en que se ha hecho split.
 `Control` + `b`, `"`  | Split window en filas.
 `Control` + `b`, `%`  | Split window en columnas.
 `Control` + `b`, `,`  | Renombar window, pulsar enter para aceptar.
