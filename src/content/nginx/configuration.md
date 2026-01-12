@@ -44,6 +44,7 @@
 - [Ocultar versión Nginx en las cabeceras de respuesta](#ocultar-versión-nginx-en-las-cabeceras-de-respuesta)
 - [Denegar usar página en un frame](#denegar-usar-página-en-un-frame)
 - [Logs](#logs)
+- [Subdominio](#subdominio)
 
 ## Introducción
 
@@ -754,3 +755,12 @@ The loading of “https://localhost:8080/no-allowed-in-frame.html” in a frame 
 
 Ver apartado [logs](logs.html).
 
+## Subdominio
+
+Primero, en la web del proveedor donde compramos el dominio (por ejemplo [OVH](https://www.ovh.com/)), en la configuración de la zona DNS añadimos un registro de tipo A, indicando el nombre del subdominio y el destino (la dirección IP).
+
+En los archivos de configuración de Nginx, donde tenemos la configuración de nuestro dominio, por ejemplo `conf.d/cmoli.conf`, creamos un nuevo archivo, ejemplo `conf.d/wiki.cmoli.conf` y añadimos la información necesaria.
+
+Finalmente con Certbot, creamos un certificado para que el subdomino funcione por HTTPS.
+
+Verificamos que la configuración es correcta y reiniciamos Nginx.
