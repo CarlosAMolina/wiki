@@ -69,21 +69,19 @@ Como se explica en el apartado de reiniciar el servidor, esta comprobación pued
 
 ## Reiniciar servicio nginx
 
-Tras modificar archivos de configuración, para recargarlos y comprobar que no contienen errores, podemos ejecutar los siguientes comandos.
-
-Utilizando el ejecutable:
-
-```bash
-sudo nginx -s reload
-```
-
-Con `systemctl`:
+Tras modificar archivos de configuración, para recargarlos y comprobar que no contienen errores, ejecutamos el siguiente comando:
 
 ```bash
 sudo systemctl reload nginx.service
 ```
 
-La ventaja de utilizar `systemctl` es que es inmediato (no deja Nginx sin servicio) y de haber errores en la configuración, el comando fallará:
+Otra opción es lanzar el comando utilizando el ejecutable:
+
+```bash
+sudo nginx -s reload
+```
+
+La ventaja de emplear `systemctl` es que es inmediato (no deja Nginx sin servicio) y de haber errores en la configuración, el comando fallará.
 
 Si en lugar de utilizar `reload` empleamos `restart`, primero el servidor se para y no se iniciará de haber errores en la configuración.
 
