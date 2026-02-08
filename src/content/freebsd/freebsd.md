@@ -37,7 +37,7 @@ Importante. Al arrancar el PC con el USB insertado para instalar FreeBSD, desact
 
 #### Mounting failed with error 19
 
-Al probar la versión de FreeBSD-15.0-RELEASE-amd64-dvd1.iso, el USB tenía formato `iso...` en lugar de FAT32, al intentar instalarlo obtuve error de montaje con código 19, algo parecido al siguiente texto pero con otras rutas y opción `ro` en lugar de `rw` (obtenido de este [link](https://forums.freebsd.org/threads/mounting-from-ufs-dev-ad0s1a-failed-with-error-19.57135/)):
+Al probar la versión de FreeBSD-15.0-RELEASE-amd64-dvd1.iso.xz, el USB tenía formato `iso...` en lugar de FAT32, al intentar instalarlo obtuve error de montaje con código 19, algo parecido al siguiente texto pero con otras rutas y opción `ro` en lugar de `rw` (ejemplo de este [link](https://forums.freebsd.org/threads/mounting-from-ufs-dev-ad0s1a-failed-with-error-19.57135/)):
 
 ```bash
 Trying to mount root from ufs: /dev/ad0s1a [rw]
