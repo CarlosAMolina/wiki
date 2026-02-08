@@ -1,14 +1,18 @@
-## Introducción
+# Boot
+
+## Boot order
+
+### Introducción
 
 En esta sección resumo cómo cambiar el orden de arranque de distintos equipos.
 
-## HP Pavilion 500 sobremesa
+### HP Pavilion 500 sobremesa
 
 [Ejemplo imagen](https://support.hp.com/es-es/product/product-specs/hp-pavilion-500-200-desktop-pc-series/model/6846587).
 
 Para acceder al menú donde cambiar el orden de arranque, durante el inicio del PC, pulsar la tecla `F10`.
 
-## HP Pavilion 11-k101ns
+### HP Pavilion 11-k101ns
 
 [Ejemplo imagen](https://www.fnac.es/Convertible-2-en-1-HP-Pavilion-x360-11-k101ns-Ordenador-portatil-PC-Portatil/a1155195).
 
@@ -16,7 +20,7 @@ Para acceder al menú donde cambiar el orden de arranque, durante el inicio del 
 
 Acceder a System Configuration > Boot Options > UEFI Boot Order: OS boot Manager. Pulsar tecla enter para que aparezca lista donde seleccionar sistema operativo.
 
-## HP ZBook 14u G6
+### HP ZBook 14u G6
 
 [Ejemplo imagen](https://support.hp.com/mx-es/document/c06337099).
 
@@ -32,17 +36,17 @@ Puede configurarse el orden de arranque en:
 - Opción 1. Boot Menu (F9)
 - Opción 2. BIOS Setup (F10). Advanzed > Boot Options > UEFI Boot Order.
 
-### Instalar sistema operativo
+#### Instalar sistema operativo
 
 El Secure Boot debe estar desactivado, se hace desde el menú de la BIOS.
 
-## MacBook Pro (15 pulgadas, mediados de 2012)
+### MacBook Pro (15 pulgadas, mediados de 2012)
 
 [Ejemplo imagen](https://support.apple.com/es-es/HT201300). Buscar, Identificador del modelo: MacBookPro9,1.
 
 Mantener presionada la tecla opción (tecla `alt` abajo a la izquierda) y encender el portátil ([enlace explicación](https://support.apple.com/es-es/guide/mac-help/mchlp1034/14.0/mac/14.0)).
 
-### GRUB
+#### GRUB
 
 Si en lugar de la pantalla de configuración de la BIOS accedemos a la pantalla de GRUB, salimos de ella escribiendo `exit` y pulsando enter y durante el arranque, accedemos a la configuración de la BIOS pulsando la tecla F10 (no sé si es necesario que esté presionada/activa la tecla `fn`).
 
