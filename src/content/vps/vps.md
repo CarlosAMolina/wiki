@@ -47,8 +47,6 @@ Reiniciamos el servicio ssh.
 systemctl restart ssh
 ```
 
-Para acceder por ssh sin contraseña, ver explicación en [este enlace](../ssh/ssh.html).
-
 ## Referencias
 
 [Configuración inicial de un VPS](https://atareao.es/tutorial/servidor-virtual/primeros-pasos-con-tu-vps/)
