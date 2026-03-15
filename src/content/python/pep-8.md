@@ -22,9 +22,9 @@ Ejemplos:
 
 ### Clases
 
-Teoría [interfaces](<https://www.python.org/dev/peps/pep-0008/#public-and-internal-interfaces>):
+Teoría [interfaces](https://www.python.org/dev/peps/pep-0008/#public-and-internal-interfaces):
 
-> Even with \_\_all__ set appropriately, internal interfaces (packages, modules, classes, functions, attributes or other names) should still be prefixed with a single leading underscore.
+> Even with \_\_all\_\_ set appropriately, internal interfaces (packages, modules, classes, functions, attributes or other names) should still be prefixed with a single leading underscore.
 
 Ejemplos:
 
