@@ -13,7 +13,7 @@ sudo mkdir -p /var/www/letsencrypt/.well-known/acme-challenge
 sudo chown -R www-data:www-data /var/www/letsencrypt
 ```
 
-Nota, el path `/var/www/letsencrypt` lo obtenemos del valor que Certbot tendrá configurado para `webroot_path`, más adelante se explica cómo obtenerlo.
+Nota, el path `/var/www/letsencrypt` lo definimos a continuación al ejecutar `cerbot` con `--webroot`, este valor se guardará como `webroot_path`, más adelante se explica cómo ver este valor una vez configurado.
 
 El servidor web debe ofrecer el contenido de este path:
 
@@ -74,7 +74,7 @@ Certbot failed to authenticate some domains (authenticator: webroot). The Certif
   Detail: 1.2.3.4: Invalid response from http://www.example.com/.well-known/acme-challenge/AnKGW2pYvTgAGY6dIXcyPC9qcOcNfBZl3XFHI5BRQIo: 400
 ```
 
-Una causa puede ser que no estemos sirviendo la ruta que Certbot tiene configurada para `webroot_path`:
+Una causa puede ser que no estemos sirviendo la ruta que configuramos en Certbot para `webroot_path`:
 
 ```bash
 sudo cat /etc/letsencrypt/renewal/example.com.conf | grep webroot_path
