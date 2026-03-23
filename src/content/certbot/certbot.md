@@ -13,13 +13,15 @@ sudo mkdir -p /var/www/letsencrypt/.well-known/acme-challenge
 sudo chown -R www-data:www-data /var/www/letsencrypt
 ```
 
+Nota, el path `/var/www/letsencrypt` lo obtenemos del valor que Certbot tendrá configurado para `webroot_path`, más adelante se explica cómo obtenerlo.
+
 El servidor web debe ofrecer el contenido de este path:
 
 ```
 /var/www/letsencrypt/.well-known/acme-challenge/
 ```
 
-Es decir, debe funcionar la petición a:
+Es decir, se debe ofrece el contenido del anterior path cuando se reciban peticiones a:
 
 ```
 http://example.com/.well-known/acme-challenge/*
@@ -49,8 +51,43 @@ Para confiar que la autorenovación está programada, debe aparece información 
 systemctl list-timers | grep certbot
 ```
 
-Para probar la renovación, el siguiente comando debe funcionar sin error:
+Para comprobar que la renovación funciona, ejecutamos el siguiente comando (a continuación comentamos posibles errores) y debe funcionar sin error:
 
 ```bash
 sudo certbot renew --dry-run
+```
+
+En caso de error, por ejemplo si tenemos este resultado:
+
+```bash
+Certbot failed to authenticate some domains (authenticator: webroot). The Certificate Authority reported these problems:
+  Identifier: example.com
+  Type:   unauthorized
+  Detail: 1.2.3.4: Invalid response from http://example.com/.well-known/acme-challenge/Bb8Sf9Y5dvx7dcNlIiHjZFAPOTAA9nuct6LYG3zwfYg: 400
+
+  Identifier: wiki.example.com
+  Type:   unauthorized
+  Detail: 1.2.3.4: Invalid response from http://wiki.example.com/.well-known/acme-challenge/PRuNyiIpmP_MU1CyLwUfigz13MnTKEOUhgof_qfGOp8: 400
+
+  Identifier: www.example.com
+  Type:   unauthorized
+  Detail: 1.2.3.4: Invalid response from http://www.example.com/.well-known/acme-challenge/AnKGW2pYvTgAGY6dIXcyPC9qcOcNfBZl3XFHI5BRQIo: 400
+```
+
+Una causa puede ser que no estemos sirviendo la ruta que Certbot tiene configurada para `webroot_path`:
+
+```bash
+sudo cat /etc/letsencrypt/renewal/example.com.conf | grep webroot_path
+# webroot_path = /var/www/letsencrypt,
+```
+
+Es decir, cuando recibamos las peticiones de renovación a `example.com/.well-known/acme-challenge/*`, nuestro servidor debe ofrecer lo que hay en `webroot_path`, en el caso del ejemplo anterior, lo que hay en `/var/www/letsencrypt`.
+
+Los siguientes comandos ayudan para ver logs:
+
+```bash
+# Aumentar número de logs
+sudo certbot renew -v --dry-run
+# Ver logs
+sudo view less /var/log/letsencrypt/letsencrypt.log
 ```
