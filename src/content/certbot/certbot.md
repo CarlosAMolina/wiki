@@ -6,6 +6,15 @@ Explicado en la [configuración de Nginx](https://cmoli.es/wiki/content/nginx/ht
 
 ## Certificado renovado automáticamente
 
+La idea es:
+
+- Certbot (webroot). Renueva el certificado y configura la task para ejecutarse periódicamente.
+- systemd timer. Inicia la renovación periódicamente.
+- deploy hook. Copia el certificado a la ruta utilizada por el servidor web y reinicia el servidor.
+- Servidor web. Debe ofrecer el contenido web y responder al path del challenge de Let's Encrypt.
+
+### Renovar certificado automáticamente
+
 Primero, en el VPS creamos el directorio donde se almacenará el challenge y permitimos que el usuario que ejecuta el servidor web pueda acceder a él:
 
 ```bash
@@ -90,4 +99,56 @@ Los siguientes comandos ayudan para ver logs:
 sudo certbot renew -v --dry-run
 # Ver logs
 sudo view less /var/log/letsencrypt/letsencrypt.log
+```
+
+### Copiar certificados automáticamente
+
+El último paso es que nuestro servidor pueda acceder a los nuevos certificados; para ello empleamos hooks.
+
+```bash
+sudo mkdir -p /etc/letsencrypt/renewal-hooks/deploy
+sudo touch /etc/letsencrypt/renewal-hooks/deploy/web-server.sh
+# Make executable
+sudo chmod 750 /etc/letsencrypt/renewal-hooks/deploy/web-server.sh
+```
+
+El contenido de `web-server.sh` debe ser:
+
+```bash
+#!/bin/sh
+set -eu
+
+DOMAIN="example.com"
+SRC="/etc/letsencrypt/live/$DOMAIN"
+DST="/etc/web-server/tls"
+
+# Ensure destination exists
+install -d -o root -g www-data -m 750 "$DST"
+
+# Copy certs with correct permissions
+install -o root -g www-data -m 640 "$SRC/fullchain.pem" "$DST/fullchain.pem"
+install -o root -g www-data -m 640 "$SRC/privkey.pem" "$DST/privkey.pem"
+
+# Restart service
+systemctl restart web-server
+```
+
+Como se ve, el servidor web debe tomar los certificados de `/etc/web-server/tls`.
+
+Este script se ejecutará cada vez que se renueva el certificado en `/etc/letsencrypt/live/example.com/`.
+
+## Verificar funcionamiento completo
+
+Ejecutamos los comandos anteriores
+
+```bash
+sudo certbot certonly --webroot ... (ver lo explicado anteriormente)
+sudo certbot renew --dry-run
+```
+
+Comprobamos que se han creado los archivos:
+
+```bash
+sudo ls /etc/letsencrypt/live/example.com/
+sudo ls /etc/web-server/tls/
 ```
