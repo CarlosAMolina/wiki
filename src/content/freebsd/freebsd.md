@@ -50,3 +50,13 @@ Loader variables:
 ```
 
 La solución fue recrear el USB, con lo explicado en la sección de instalación exitosa.
+
+## Instalar XFCE
+
+### HP Pavilion 11-k101ns
+
+Si tras completar la [wiki oficial](https://docs.freebsd.org/en/books/handbook/x11/) no funciona, debo ejecutar [este comando](https://forums.freebsd.org/threads/thinkpad-e130-hd-4000-failed-to-load-module-intel.72048/):
+
+```bash
+pkg install xf86-video-intel
+```
