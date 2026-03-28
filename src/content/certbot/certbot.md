@@ -60,7 +60,7 @@ Para confiar que la autorenovación está programada, debe aparece información 
 systemctl list-timers | grep certbot
 ```
 
-Para comprobar que la renovación funciona, ejecutamos el siguiente comando (a continuación comentamos posibles errores) y debe funcionar sin error:
+Para comprobar que la renovación funciona, sin llevarla a cabo de manera efectiva, ejecutamos el siguiente comando (a continuación comentamos posibles errores) y debe funcionar sin error:
 
 ```bash
 sudo certbot renew --dry-run
@@ -112,7 +112,7 @@ sudo touch /etc/letsencrypt/renewal-hooks/deploy/web-server.sh
 sudo chmod 750 /etc/letsencrypt/renewal-hooks/deploy/web-server.sh
 ```
 
-El contenido de `web-server.sh` debe ser:
+El contenido de `web-server.sh` debe ser (actualizar valor de DOMAIN):
 
 ```bash
 #!/bin/sh
@@ -133,22 +133,6 @@ install -o root -g www-data -m 640 "$SRC/privkey.pem" "$DST/privkey.pem"
 systemctl restart web-server
 ```
 
-Como se ve, el servidor web debe tomar los certificados de `/etc/web-server/tls`.
+Como se ve, el servidor web tomará los certificados de `/etc/web-server/tls`.
 
 Este script se ejecutará cada vez que se renueva el certificado en `/etc/letsencrypt/live/example.com/`.
-
-## Verificar funcionamiento completo
-
-Ejecutamos los comandos anteriores
-
-```bash
-sudo certbot certonly --webroot ... (ver lo explicado anteriormente)
-sudo certbot renew --dry-run
-```
-
-Comprobamos que se han creado los archivos:
-
-```bash
-sudo ls /etc/letsencrypt/live/example.com/
-sudo ls /etc/web-server/tls/
-```
