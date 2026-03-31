@@ -14,7 +14,7 @@
 
 ## Instalar add-on
 
-Acceder en la barra de URLs del navegador Web a `about:debugging` > `Este Firefox` y elegir `Cargar complemento temporal...`, tras esto, seleccionar cualquier archivo de la carpeta del proyecto del add-on.
+Acceder en la barra de URLs del navegador Web a `about:debugging` > `Este Firefox` y elegir `Cargar complemento temporal...`, tras esto, seleccionar el archivo `manifest.json`.
 
 Aparecerá la extensión en la sección `Extensiones temporales`. Para recargar cambios, click en `Recargar`.
 
