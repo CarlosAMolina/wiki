@@ -1,3 +1,4 @@
 # IA
 
-[Diccionario](dictionary.html).
+- [Diccionario](dictionary.html).
+- [Ollama](ollama.html).
