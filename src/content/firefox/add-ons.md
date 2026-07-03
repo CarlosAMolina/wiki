@@ -34,9 +34,23 @@ web-ext run
 ```
 ### Desarrollar extensión para Android
 
-Para poder probar la extensión en el móvil, instalamos el software indicado en este [link](https://extensionworkshop.com/documentation/develop/developing-extensions-for-firefox-for-android/).
+[Link a la documentación](https://extensionworkshop.com/documentation/develop/developing-extensions-for-firefox-for-android/).
 
-No es necesario descargar el SDK Manager, con `adb` ya es suficiente, basta con descargar los platform-tools-latest-linux y tras descomprimirlo puede ejecutarse `adb`.
+Instalamos el software indicado en la anterior documentación. No es necesario descargar el SDK Manager, con `adb` ya es suficiente, basta con descargar los platform-tools-latest-linux y tras descomprimirlo puede ejecutarse `adb`.
+
+Ejemplo de configuración de `adb`:
+
+```bash
+cat ~/.bashrc | grep .local/bin  # Asegurar que ~/.local/bin está en nuestro PATH.
+ln -sf ~/Software/adb/platform-tools-latest-linux/platform-tools/adb ~/.local/bin/adb
+```
+
+La anterior documentación explica el comando para conectar con el móvil, un ejemplo de cómo queda el comando es el siguiente:
+
+```bash
+node_modules/web-ext/bin/web-ext.js run -t firefox-android --adb-bin ~/Software/adb/platform-tools-latest-linux/platform-tools/adb --firefox-apk org.mozilla.firefox --android-device=$(adb get-serialno)
+# Utilizamos `adb get-serialno` en lugar de `adb devices` para tener el ID del móvil de manera directa.
+```
 
 ## Archivos
 
