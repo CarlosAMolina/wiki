@@ -31,3 +31,15 @@ Tratan la composición de la clase, cómo se relaciona con su interfaz.
 ### Behavioral Patterns
 
 Diferentes maneras de solucionar problemas, cómo las clases interactúan y distribuyen responsabilidades.
+
+- [Chain of responsibility](behavioral/chain-of-responsibility/chain-of-responsibility.html)
+- [Command](behavioral/command/command.html)
+- [Interpreter](behavioral/interpreter/interpreter.html)
+- [Iterator](behavioral/iterator/iterator.html)
+- [Mediator](behavioral/mediator/mediator.html)
+- [Memento](behavioral/memento/memento.html)
+- [Observer](behavioral/observer/observer.html)
+- [State](behavioral/state/state.html)
+- [Strategy](behavioral/strategy/strategy.html)
+- [Template-method](behavioral/template-method/template-method.html)
+- [Visitor](behavioral/visitor/visitor.html)
