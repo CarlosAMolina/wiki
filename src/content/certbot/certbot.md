@@ -54,7 +54,7 @@ Con este comando:
 - Se ha generado un nuevo certificado para todos los dominios indicados.
 - Certbot ha configurado una task programada para que se renueve automáticamente. Ahora `certbot renew` funciona automáticamente.
 
-Para confiar que la autorenovación está programada, debe aparece información al ejecutar:
+Para confirmar que la autorenovación está programada, debe aparece información al ejecutar:
 
 ```bash
 systemctl list-timers | grep certbot
