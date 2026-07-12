@@ -3,6 +3,7 @@
 - [AWS CLI](aws-cli.html)
 - [Coste](cost.html)
 - [Cuenta AWS](aws-account.html)
+- [Ejemplos proyectos](examples.html)
 - [Examen](examen.html)
 - [SDK](sdk.html)
 - [Regiones, Edge Locations y Availability Zones](regions-edge-locations-and-az.html)
