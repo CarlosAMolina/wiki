@@ -1,6 +1,7 @@
 ## Contents
 
 - [Introduction](#introduction)
+- [Installation](#installation)
 - [Keyboard layout](#keyboard-layout)
 - [Check boot mode is efi](#check-boot-mode-is-efi)
 - [Partitions to use](#partitions-to-use)
@@ -22,6 +23,25 @@
 Installation steps: <https://wiki.archlinux.org/title/Installation_guide>
 
 The following sections show a summary of the required commands.
+
+## Installation
+
+In the [main installation web page](https://archlinux.org/download/), select a mirror, for example [Spain](https://mirror.es.cdn-perfprod.com/archlinux/iso/2026.07.01/) and download the `.iso` file, for example `archlinux-2026.07.01-x86_64.iso`.
+
+Verify the signature matches the one indicated in the [main installation web page](https://archlinux.org/download/):
+
+```bash
+sha256sum ~/Downloads/archlinux-2026.07.01-x86_64.iso
+```
+
+Lets [configure the usb](https://wiki.archlinux.org/title/Netboot#Boot_from_a_USB_flash_drive)
+
+1. [Create a partition](https://wiki.archlinux.org/title/Partitioning) table on /dev/sdX and a partition (/dev/sdXn) on the USB.
+2. Format the partition as FAT32:
+
+    ```bash
+    sudo mkfs.fat -F 32 /dev/sda
+    ```
 
 ## Keyboard layout
 
