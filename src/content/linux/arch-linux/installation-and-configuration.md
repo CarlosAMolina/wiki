@@ -34,14 +34,257 @@ Verify the signature matches the one indicated in the [main installation web pag
 sha256sum ~/Downloads/archlinux-2026.07.01-x86_64.iso
 ```
 
-Lets [configure the usb](https://wiki.archlinux.org/title/Netboot#Boot_from_a_USB_flash_drive)
+Lets [configure the USB](https://wiki.archlinux.org/title/Netboot#Boot_from_a_USB_flash_drive)
 
-1. [Create a partition](https://wiki.archlinux.org/title/Partitioning) table on /dev/sdX and a partition (/dev/sdXn) on the USB.
-2. Format the partition as FAT32:
+- Before plug the USB run `lsblk`, plug the USB and run `lsblk` again, the new name that appears is the USB, for example `sda`.
+- Unmount the USB: `sudo umount /dev/sda*`.
+- Write the ISO sector by sector, this does not require format the USB: `sudo dd if=~/Downloads/archlinux-2026.07.01-x86_64.iso of=/dev/sda bs=4M status=progress oflag=sync`.
+- When finished, run `sync` to ensure all writes to the USB have ended.
+- Eject the USB: `sudo eject /dev/sda`.
 
-    ```bash
-    sudo mkfs.fat -F 32 /dev/sda
-    ```
+### MacBook
+
+I am using a MacBook with an Ubuntu partition:
+
+```bash
+# Command executed in the Ubuntu partition.
+sudo dmidecode -s system-product-name
+# MacBookPro9,1 -> Mid 2012 15"
+```
+
+With the Mac off:
+
+- Insert Arch USB.
+- Hold Option (⌥) while powering on. Key at the left of the space bar.
+- Select EFI Boot. Two EFI options appear, i select the one with the USB icon.
+- Select Arch Linux install medium.
+
+I want to replace the Ubuntu partition with Arch and maintain the macOS partition.
+
+When we reach the prompt:
+
+```bash
+root@archiso ~#
+```
+
+If we want to connect via ssh:
+
+```bash
+# In Arch
+passwd # Write a password.
+systemctl start sshd
+ip a | grep 192  # Get the ip to connect to.
+
+# In another pc
+ssh root@192.168.1.40
+```
+
+I it's using an english layout, you can set it to spanish see the `Keyboard layout` section, if not, the `/` key in english is the key `-` and the `-` in english is the key `?` (don't press shift).
+
+Let's see files/directories we're booted in UEFI mode, we're in UEFI mode if the next command shows files/dirs:
+
+```bash
+ls /sys/firmware/efi
+```
+
+Verify the internet connection (I plugged the ethernet cable):
+
+```bash
+ip link
+ping 8.8.8.8
+```
+
+See current partition layout:
+
+```bash
+lsblk -f
+fdisk -l
+```
+
+The previous commands tell me:
+
+```bash
+/dev/sda1    EFI System Partition
+/dev/sda2    macOS
+/dev/sda3    macOS Recovery
+/dev/sda4    Ubuntu (we'll replace it with Arch)
+```
+
+Delete Ubuntu and mount a new Arch partition:
+
+```bash
+cfdisk /dev/sda
+# Select /dev/sda4, Delete and New.
+mkfs.ext4 /dev/sda4
+mount /dev/sda4 /mnt
+```
+
+We won't format the EFI partition, we will use the existing one:
+
+```bash
+mkdir -p /mnt/boot
+mount /dev/sda1 /mnt/boot
+```
+
+Lets start these packages:
+
+```bash
+# pacstrap: installs packages into a new Arch system located somewhere else (e.g. /mnt).
+pacstrap -K /mnt base linux linux-firmware intel-ucode base-devel networkmanager vim git
+```
+
+Generate /etc/fstab (file systems table) to tell Linux the fileystems to mount at boot:
+
+```bash
+genfstab -U /mnt >> /mnt/etc/fstab
+# We see / mounted on /dev/sda4 and /boot/ on existing /dev/sda1 EFI partition.
+cat /mnt/etc/fstab
+```
+
+Enter the new Arch system and we are not longer configuring the live USB:
+
+```bash
+arch-chroot /mnt  # `root@archiso ~ #` changes to [root@archiso /]#`
+```
+
+Configure the Arch system:
+
+```bash
+# I'm in Spain. Create a symbolic link that tells Linux your time zone.
+ln -sf /usr/share/zoneinfo/Europe/Madrid /etc/localtime
+# Copy the current system time into the hardware clock.
+hwclock --systohc
+# Language.
+vim /etc/locale.gen
+# Ucomment these two lines by removing the leading #:
+# - en_US.UTF-8 because most documentation, logs, and error messages are in English.
+# - es_ES.UTF-8 because it's useful if you want Spanish formatting or applications.
+# Generate the locales.
+locale-gen
+# Create the default locale file. We keep the system language in English to make troubleshooting easier because almost all Linux documentation and forum posts assume English messages.
+echo "LANG=en_US.UTF-8" > /etc/locale.conf
+# Keyboard layot.
+echo "KEYMAP=es" > /etc/vconsole.conf
+# Hostname.
+echo "macbook" > /etc/hostname
+# /etc/hosts
+cat > /etc/hosts <<EOF
+127.0.0.1   localhost
+::1         localhost
+127.0.1.1   macbook.localdomain macbook
+EOF
+# root password.
+passwd
+# Create user.
+useradd -m -G wheel -s /bin/bash x
+passwd x
+# Install sudo and configure.
+pacman -S sudo
+# Remove the `#` in `# %wheel ALL=(ALL:ALL) ALL`, to allow users in the wheel group to use sudo.
+# Enable networking at boot.
+systemctl enable NetworkManager
+```
+
+Make the Mac boot cleanly, we will use GRUB over systemd-boot because detects macOS automatically and is more flexible than systemd-boot for dual-booting.
+
+```bash
+pacman -S grub efibootmgr os-prober
+# grub: the bootloader.
+# efibootmgr: creates UEFI boot entries.
+# os-prober: finds macOS automatically.
+
+# Install GRUB into the EFI partition without touching macOS.
+grub-install \
+    --target=x86_64-efi \
+    --efi-directory=/boot \
+    --bootloader-id=GRUB
+```
+
+If we get this error: `cannot copy `/usr/share/locale/ca/LC_MESSAGES/grub.mo' to `/boot/grub/locale/ca.mo': No space left on device.` is because we mounted the EFI System Partition directly as /boot, but the EFI partition is only 200 MB; GRUB is trying to copy all its modules and translations into the EFI partition, and it runs out of space. Instead of /boot as the EFI partition, it should be:
+
+- /boot: directory on the Arch root filesystem (ext4). The Linux kernel and initramfs live on your large ext4 partition.
+- /boot/efi EFI System Partition (FAT32). Only the EFI boot files live on the 200 MB EFI partition.
+
+To fix it:
+
+```bash
+umount /boot
+mkdir -p /boot/efi
+mount /dev/sda1 /boot/efi
+# Check with:
+df -h /boot  # Mounted on the large Arch partition.
+df -h /boot/efi  # On the 200 MB partition.
+```
+
+Important, later we will must regenerate fstab: to mount the EFI partition at /boot/efi, not /boot (I didn't verify this step):
+
+```bash
+systemctl daemon-reload
+```
+
+Reinstall GRUB:
+
+```bash
+grub-install \
+  --target=x86_64-efi \
+  --efi-directory=/boot/efi \
+  --bootloader-id=GRUB
+```
+
+Enable macOS detection:
+
+```bash
+vim /etc/default/grub
+# Uncomment `#GRUB_DISABLE_OS_PROBER=false`
+```
+
+Generate the configuration
+
+```bash
+grub-mkconfig -o /boot/grub/grub.cfg
+```
+
+If we don't see line similar to `Found Mac OS X` or `Found Darwin`, maybe we need to hold the option key (⌥) at startup to select Mac when booting.
+
+The command `efibootmgr` must show Mac OS X.
+
+Lets finish the installation:
+
+```bash
+# Exit chroot.
+exit  # `[root@archiso /]#` should change to `root@archiso ~ #`
+# Reboot and remove the USB.
+umount -R /mnt/
+```
+
+If we enter in the GNU GRUB screen with iminimal bash-lie line editing support, is because GRUB started but couldn't find its configuration file, the UEFI is finding grubx64.efi but grubx64.efi this can't locate its modules or grub.cfg.
+
+The fastest way to recover is repeat the first steps:
+
+- Reboot.
+- Hold Option (⌥).
+- Boot from the Arch USB again.
+- Enter the Arch installation like we did in the first steps. Acess the arch-chroot.
+
+```bash
+mount /dev/sda4 /mnt
+mount /dev/sda1 /mnt/boot/efi
+arch-chroot /mnt
+grub-install --target=x86_64-efi \
+  --efi-directory=/boot/efi \
+  --bootloader-id=GRUB \
+  --recheck
+grub-mkconfig -o /boot/grub/grub.cfg
+vim /etc/fstab  # Change `... /boot vfat ...` to `... /boot/efi/ vfat ...`
+# Verify.
+grep -E '/boot| / ' /etc/fstab
+grub-probe /  # Should report ext2
+grub-probe /boot  # Should report ext2
+exit
+umount -R /mnt
+reboot
+```
+
 
 ## Keyboard layout
 
