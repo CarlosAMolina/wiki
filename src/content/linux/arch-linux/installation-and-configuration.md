@@ -131,6 +131,12 @@ Lets start these packages:
 ```bash
 # pacstrap: installs packages into a new Arch system located somewhere else (e.g. /mnt).
 pacstrap -K /mnt base linux linux-firmware intel-ucode base-devel networkmanager vim git
+# base: minimal Arch system.
+# linux: kernel.
+# linux-firmware: firmware for devices.
+# intel-ucode: CPU microcode updates for your Intel CPU.
+# base-devel: useful build tools.
+# networkmanager: easy network management.
 ```
 
 Generate /etc/fstab (file systems table) to tell Linux the fileystems to mount at boot:
@@ -285,6 +291,218 @@ umount -R /mnt
 reboot
 ```
 
+(We are in arch-chroot). If these command does not show these 3 files:
+
+```bash
+# ls -lh /boot
+total 158M
+drwxr-xr-x 5 root root  512 Jan  1  1970 efi
+drwxr-xr-x 6 root root 4.0K Aug  4 00:08 grub
+-rw------- 1 root root 128M Aug  4 00:18 initramfs-linux.img
+-rw-r--r-- 1 root root  15M May 12 19:27 intel-ucode.img
+-rw-r--r-- 1 root root  17M Aug  4 00:08 vmlinuz-linux
+```
+
+To get intel-ucode.img (image with microcode updates for Intel CPUs):
+
+```bash
+pacman -S intel-ucode
+```
+
+Continue:
+
+```bash
+grub-install \
+  --target=x86_64-efi \
+  --efi-directory=/boot/efi \
+  --bootloader-id=GRUB \
+  --recheck
+grub-mkconfig -o /boot/grub/grub.cfg
+reboot
+```
+
+Enable listen ssh:
+
+```bash
+sudo pacman -S openssh
+sudo systemctl start sshd
+vim /etc/ssh/sshd_config
+# Set:
+# PasswordAuthentication yes
+# PermitRootLogin yes  # If you didn't create a non root user previously.
+sudo systemctl restart sshd
+```
+
+Configure the system:
+
+```bash
+# Update the system.
+sudo pacman -Syu
+# Install graphics and utilities.
+sudo pacman -S mesa mesa-utils intel-ucode linux-firmware
+```
+
+Check if the pc is using NVIDIA GPU:
+
+```bash
+[root@macbook ~]# sudo cat /sys/kernel/debug/vgaswitcheroo/switch
+0:DIS:+:Pwr:0000:01:00.0  # DIS:+:Pwr -> NVIDIA is driving the display
+1:IGD: :Pwr:0000:00:02.0  # IGD:Pwr -> Intel GPU is powered, but not the display GPU.
+2:DIS-Audio: :DynOff:0000:01:00.1
+# 0 and 1 tell us that NVIDIA GPU is still the active display GPU.
+# See available displays.
+lspci -k | grep -A3 -E "VGA|3D"
+# 00:02.0 VGA compatible controller: Intel Corporation Ivy Bridge mobile GT2 [HD Graphics 4000] (rev 09)
+#         Subsystem: Apple Inc. Device 00fb
+#         Kernel driver in use: i915
+#         Kernel modules: i915
+# --
+# 01:00.0 VGA compatible controller: NVIDIA Corporation GK107M [GeForce GT 650M Mac Edition] (rev a1)
+#         Subsystem: Apple Inc. Device 00fc
+#         Kernel driver in use: nouveau
+#         Kernel modules: nouveau
+# Intal XFCE
+sudo pacman -S \
+    xorg \
+    xfce4 \
+    xfce4-goodies \
+    lightdm \
+    lightdm-gtk-greeter \
+    mesa \
+    mesa-utils
+# Press enter if asked something like: :: There are ... members in group xorg: ... Enter a selection (default=all):
+# Enable the display manager. On the next reboot, LightDM will present a graphical login, and after logging in you'll be in XFCE.
+sudo systemctl enable lightdm
+reboot
+# glxinfo -B # If shows `OpenGL renderer: NVE7` -> uses NVIDIA.
+# Determine whether MacBook is using:
+# - hardware gmux switching, or
+# - muxless Optimus.
+cat /sys/class/drm/card*/device/power_state
+# D0
+# D0
+# D0 -> both GPUs are in DO (powered on).
+lspci -nn | grep -E "VGA|3D"
+ls /sys/class/backlight
+# gmux_backlight -> I am using gmux graphics multiplexer, the gmux chip controls the backlight on this Mac This hardware multiplexer selects which GPU drives the internal display.
+echo IGD | sudo tee /sys/kernel/debug/vgaswitcheroo/switch
+# If no error -> we changed the GPU, the firmware does not lock the GPU selection, good news. Lets see if the changes was accepted.
+sudo cat /sys/kernel/debug/vgaswitcheroo/switch
+# It should say:
+# IGD:+:Pwr
+# DIS: :DynOff  # DynOff = Dynamic power management turned it off
+# If not, lets continue investigating.
+# Logs
+sudo dmesg | tail -50 | grep -i -E "gmux|vga|switch|nouveau|i915"
+# IGD should switch the display to the integrated GPU only if no userspace process is currently using the GPU
+sudo lsof /dev/dri/*
+sudo fuser -v /dev/dri/*
+sudo fuser -v /dev/snd/*
+# Delayed switch mode. DIGD means "switch to the integrated GPU the next time the graphics stack restarts."
+# Stop the graphical session.
+sudo systemctl isolate multi-user.target
+# Check again
+sudo cat /sys/kernel/debug/vgaswitcheroo/switch
+# 0:IGD:+:Pwr  # Integrated Graphics Device, the Intel HD 4000. + -> is driving the display. Pwr =  powered on.
+# 1:DIS: :Off  # Discrete Graphics, your NVIDIA GT 650M.
+# Solved! We switched to the Intel GPU.
+# Recover the GUI:
+sudo systemctl start lightdm  # or: sudo systemctl isolate graphical.target. If not works, reboot.
+```
+
+Note. I press the XFCE power off button and it fails, the screen was black but the computer didn't turn off, after debugging, the error was that NVIDIA didn't ends a process, a nouveau issue. Lets fix this by creating a service that changes to Intel.
+
+First, lets verify if swith before LightDM solvers this.
+
+```bash
+# Boot to multi-user.target
+sudo systemctl set-default multi-user.target
+sudo reboot
+# IMPORTANT revert this later:
+# sudo systemctl set-default graphical.target
+# sudo reboot
+
+echo IGD | sudo tee /sys/kernel/debug/vgaswitcheroo/switch
+# Verify.
+cat /sys/kernel/debug/vgaswitcheroo/switch
+# Should show:
+# IGD:+:Pwr
+# DIS: :Off
+# Then start LightDM manually.
+sudo systemctl start lightdm
+# If XFCE starts and glxinfo -B reports OpenGL renderer string: Mesa Intel HD Graphics 4000, the proven is ok.
+glxinfo -B | grep "OpenGL renderer"
+# Lets automate it.
+sudo vim /etc/systemd/system/gpu-switch-intel.service
+```
+
+Paste:
+
+```bash
+[Unit]
+Description=Switch Apple gmux to Intel GPU before graphical login
+After=systemd-modules-load.service
+Before=display-manager.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/sh -c 'for i in $(seq 1 20); do [ -e /sys/kernel/debug/vgaswitcheroo/switch ] && break; sleep 0.2; done; echo IGD > /sys/kernel/debug/vgaswitcheroo/switch'
+RemainAfterExit=yes
+
+[Install]
+WantedBy=graphical.target
+```
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable gpu-switch-intel.service
+# Check
+sudo systemctl is-enabled gpu-switch-intel.service  # Should show: enabled
+sudo systemctl show gpu-switch-intel.service -p Before -p WantedBy
+sudo systemctl cat gpu-switch-intel.service
+sudo systemctl list-dependencies --before lightdm.service | grep gpu-switch
+sudo systemctl show lightdm.service -p Requires -p After  # We should see gpu-switch-intel.service
+```
+
+If no output in the last command:
+
+```bash
+sudo systemctl edit lightdm.service
+```
+
+````bash
+[Unit]
+Requires=gpu-switch-intel.service
+After=gpu-switch-intel.service
+````
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl show lightdm.service -p Requires -p After  # now we should see gpu-switch-intel.service
+```
+
+Lets reboot not shudown to test the new systemd works.
+
+```bash
+# Boot to multi-user.target
+sudo systemctl set-default multi-user.target
+sudo reboot
+# IMPORTANT revert this later:
+# sudo systemctl set-default graphical.target
+# sudo reboot
+# The new service won't run in multi user mode, run it manually
+sudo systemctl start gpu-switch-intel.service
+sudo systemctl status gpu-switch-intel.service
+sudo cat /sys/kernel/debug/vgaswitcheroo/switch
+# should show
+# IGD:+:Pwr
+# DIS: :Off
+# If ok:
+sudo systemctl start lightdm
+glxinfo -B | grep "OpenGL renderer"  # should report Intel HD Graphics 4000
+```
+
+Power off with the XFCE button.
 
 ## Keyboard layout
 
