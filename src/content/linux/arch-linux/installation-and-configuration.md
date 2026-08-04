@@ -504,6 +504,70 @@ glxinfo -B | grep "OpenGL renderer"  # should report Intel HD Graphics 4000
 
 Power off with the XFCE button.
 
+To avoid errors when shutting down (sometimes nouveau can freeze the shut down), we will disable it. Steps:
+
+- Ensure i915 is loaded.
+- Wait for vgaswitcheroo.
+- Switch to Intel.
+- Wait until Intel is active.
+- Unload nouveau.
+- Allow LightDM to start. The kernel requires the switch to happen before processes such as Xorg or audio services open the GPU devices, which is why placing this before LightDM is appropriate.
+
+```bash
+sudo vim /etc/systemd/system/gpu-switch-intel.service
+```
+
+Set:
+
+```
+[Unit]
+Description=Switch Apple gmux to Intel and unload nouveau
+After=systemd-modules-load.service
+Before=display-manager.service
+
+[Service]
+Type=oneshot
+ExecStartPre=/usr/bin/modprobe i915
+ExecStart=/usr/bin/bash -c '\
+    for i in {1..50}; do \
+        test -e /sys/kernel/debug/vgaswitcheroo/switch && break; \
+        sleep 0.2; \
+    done; \
+    test -e /sys/kernel/debug/vgaswitcheroo/switch; \
+    echo IGD > /sys/kernel/debug/vgaswitcheroo/switch; \
+    for i in {1..50}; do \
+        grep -q "IGD:+:Pwr" /sys/kernel/debug/vgaswitcheroo/switch && exit 0; \
+        sleep 0.2; \
+    done; \
+    exit 1'
+ExecStartPost=/usr/bin/modprobe -r nouveau
+RemainAfterExit=yes
+
+[Install]
+WantedBy=graphical.target
+```
+
+We need the `lightdm.service` that we created. Without it, Before=display-manager.service in the service only defines ordering. It does not guarantee that your service will actually be started as part of the same boot transaction.
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable gpu-switch-intel.service
+# Deactivate XFCE to avoid black screen
+sudo systemctl isolate multi-user.target
+sudo systemctl restart gpu-switch-intel.service
+sudo systemctl start gpu-switch-intel.service
+# Verify
+# The following file will dissapear `sudo cat /sys/kernel/debug/vgaswitcheroo/switch` so we run this other command
+lspci -k -s 00:02.0  # Intel. Should show: Kernel driver in use: i915
+lspci -k -s 01:00.0  # NVIDIA. Should NOT show: Kernel driver in use: i915
+lsmod | grep nouveau  # No output should be produced.
+sudo systemctl status gpu-switch-intel.service
+# If the previous checks are ok:
+sudo systemctl start lightdm
+# After logging in, verify:
+glxinfo -B | grep "OpenGL renderer"  # Should show Intel.
+```
+
 ## Keyboard layout
 
 <https://wiki.archlinux.org/title/Installation_guide#Set_the_keyboard_layout>
