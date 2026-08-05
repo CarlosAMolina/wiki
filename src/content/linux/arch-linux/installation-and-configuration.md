@@ -2,6 +2,7 @@
 
 - [Introduction](#introduction)
 - [Installation](#installation)
+  - [MacBook](#macbook)
 - [Keyboard layout](#keyboard-layout)
 - [Check boot mode is efi](#check-boot-mode-is-efi)
 - [Partitions to use](#partitions-to-use)
@@ -566,6 +567,101 @@ sudo systemctl status gpu-switch-intel.service
 sudo systemctl start lightdm
 # After logging in, verify:
 glxinfo -B | grep "OpenGL renderer"  # Should show Intel.
+```
+
+Lets configure the Wifi.
+
+Identify the Broadcom chip:
+
+```bash
+lspci -nn | grep -i network
+# 03:00.0 Network controller [0280]: Broadcom Inc. and subsidiaries BCM4331 802.11a/b/g/n [14e4:4331] (rev 02)
+```
+
+We need to install the driver for the PCI ID `14e4:4331`, some options are `b43`and `brcmsmac` which is proprietary, so lets use `b43` and only change to `brcmsmac` if we have stability or performance problems.
+
+Check if `b43` is the driver in use:
+
+```bash
+$ lspci -k -s 03:00.0
+03:00.0 Network controller: Broadcom Inc. and subsidiaries BCM4331 802.11a/b/g/n (rev 02)
+        Subsystem: Apple Inc. AirPort Extreme
+        Kernel driver in use: bcma-pci-bridge
+        Kernel modules: bcma
+```
+
+We have `bcma`, this is not the Wi-Fi driver, is the Broadcom bus driver, that discovers the Broadcom chip and then another driver (like `b43`) should attach to the Wi-Fi core.
+
+Checking the system logs and using Artificial Intelligence to analyze them, I know that everyting is ok in my computer (hardware, PCI, driver and bus) and I only need to install the firmware:
+
+```bash
+sudo dmesg | grep -Ei 'b43|bcma|firmware|bcm'
+sudo journalctl -k -b | grep -Ei 'b43|bcma|firmware'
+```
+
+We find:
+
+```bash
+b43-phy0: Broadcom 4331 WLAN found
+...
+Firmware file "b43/ucode29_mimo.fw" not found
+```
+
+Lets see if we have the firmware:
+
+```bash
+$ pacman -Qs firmware
+...
+local/linux-firmware-broadcom 20260622-1
+    Firmware files for Linux - Firmware for Broadcom and Cypress network adapters
+...
+```
+
+The firmware `linux-firmware-broadcom` is installed but this package does not have the proprietary firmware needed by BCM4331, because Broadcom's old firmware wasn't released under a license that allowed redistribution.
+
+Lets install with AUR:
+
+```bash
+# base-devel has tools like: make, gcc, patch...
+sudo pacman -S --needed base-devel git
+# Utility to extract the firmware from the original Broadcom's driver.
+sudo pacman -S b43-fwcutter
+# Start installation.
+git clone https://aur.archlinux.org/b43-firmware.git
+makepkg -si
+# Verify the firmware exists.
+sudo ls /usr/lib/firmware/b43 | head
+sudo reboot
+ip link  # We should see something like wlp3s0
+nmcli device  # We should see something like (disconnected instead of unavailable): wlp3s0   wifi disconnected
+nmcli device wifi list  # Scan networks.
+# Connect to the SSID: nmcli device wifi connect "YOUR_WIFI_NAME" password "YOUR_PASSWORD"
+# The password is stored at sudo cat /etc/NetworkManager/system-connections/{WIFI_NAME}.nmconnection
+# Show sotred connection profiles
+nmcli connection show
+```
+
+If I try to connect to the WiFI using the XFCE WiFi graphical icon, I get the error `Failed to execute command "nm-connection-editor`. Lets fix it:
+
+```bash
+which nm-connection-editor  # No output -> no installed.
+sudo pacman -S network-manager-applet
+```
+
+Install web browser:
+
+```bash
+sudo pacman -S firefox
+# When asked for:
+# - The audio system: 1) jack2  2) pipewire-jack. Select 2) pipewire-jack, is modern and have good compatibility with other software.
+# - ttf-font. Select noto-fonts.
+```
+
+If we get `The requested URL returned error: 404` errors, usually mean your local package databases reference package versions that the mirrors have already replaced. Refresh repository databases and upgrade the system (the system must be full upgraded to install software) with:
+
+```bash
+sudo pacman -Syyu
+# Install Firefox again.
 ```
 
 ## Keyboard layout
