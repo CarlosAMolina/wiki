@@ -413,7 +413,7 @@ sudo systemctl start lightdm  # or: sudo systemctl isolate graphical.target. If 
 
 Note. I press the XFCE power off button and it fails, the screen was black but the computer didn't turn off, after debugging, the error was that NVIDIA didn't ends a process, a nouveau issue. Lets fix this by creating a service that changes to Intel.
 
-First, lets verify if swith before LightDM solvers this.
+First, lets verify if switch before LightDM solves this.
 
 ```bash
 # Boot to multi-user.target
@@ -568,6 +568,709 @@ sudo systemctl start lightdm
 # After logging in, verify:
 glxinfo -B | grep "OpenGL renderer"  # Should show Intel.
 ```
+
+To verify that this works ok, lets investigate the service after a reboot:
+
+```bash
+$ systemctl status gpu-switch-intel.service
+...
+Aug 08 21:39:49 macbook systemd[1]: Starting Switch Apple gmux to Intel and unload nouveau...
+Aug 08 21:40:20 macbook systemd[1]: Finished Switch Apple gmux to Intel and unload nouveau.
+```
+
+The previous last two lines show that ti takes 31 seconds that is a lot, something is not working correctly.
+
+Reviewing the logs we can see that nouveau tries to disable the GPU but it fails lots of times until is done, so this solution should be improved:
+
+```bash
+journalctl -b -k --since "01:39:45" --until "01:40:25" | grep -Ei 'vgaswitcheroo|gmux|nouveau|i915'
+```
+
+A solution is to prevent nouveau to be loaded at boot, but this can be dangerous i the system needs it. After an investigation about when nouveau is loaded, I determined that it can be disabled.
+
+See the current mkinitcpio hooks to know if modconf is available to carry a blacklist into the initramfs:
+
+```bash
+grep '^HOOKS=' /etc/mkinitcpio.conf
+```
+
+It shows:
+
+- kms. This pull modules as i915 and nouveau into the initramfs. We see that mkinitcpio detects them as relevant modules in this machine:
+- mdconf. Copies /etc/modprobe.d/*.conf into the initramfs. So will copy a blacklist file that we will create.
+
+```bash
+mkinitcpio -M | grep -E '^(i915|nouveau)$'
+```
+
+So we can:
+
+- Blacklist nouveau.
+- Rebuild initramfs.
+- Verify i915 is present and nouveau not.
+
+Process:
+
+```bash
+# Create the blacklist file:
+echo 'blacklist nouveau' | sudo tee /etc/modprobe.d/blacklist-nouveau.conf
+# Rebuild initramfs so that modconf copies the new blacklist into it.
+sudo mkinitcpio -P
+# Check the blaklist has been embedded in the initramfs.
+sudo lsinitcpio /boot/initramfs-linux.img | grep blacklist-nouveau
+```
+
+Test first reboot to be safe, reboot in text mode and inspect the GPU state without LightDM to make it simple:
+
+```bash
+sudo systemctl set-default multi-user.target
+sudo reboot
+lsmod | grep nouveau # Should not have output, so we check that the blacklist has been applied.
+lsmod | grep i915  # Should show output, so Intel has been initialized correctly without Nouveau.
+```
+
+Without Nouveau, the file `sudo cat /sys/kernel/debug/vgaswitcheroo/switch` may disappear, this file is created by vgaswitcheroo which coordinates GPU switching, and gmux delas with Apple's hardware multiplexer to change between the GPUs (Intel and NVIDIA).
+
+```bash
+$ sudo cat /sys/kernel/debug/vgaswitcheroo/switch
+cat: /sys/kernel/debug/vgaswitcheroo/switch: No such file or directory
+# So vgaswitcheroo/switch is abset and our gpu-switch-intel.service cannot work.
+```
+
+As Nouveau is not present, lets see if the Intel GPU is driving the console and not changes are required:
+
+```bash
+$ cat /sys/class/graphics/fb0/name
+simpledrmdrmfb  # Linux text console is currently drawing into a framebuffer that the firmware prepared during boot. Linux's simpledrm driver can use that already-created framebuffer without needing to use i915 or nouveau as the console framebuffer. We don't know if Intel is driving the physical display, despite we see that it is loaded in the kernel.
+$ lspci -k -s 00:02.0
+00:02.0 VGA compatible controller: Intel Corporation Ivy Bridge mobile GT2 [HD Graphics 4000] (rev 09)
+        Subsystem: Apple Inc. Device 00fb
+        Kernel driver in use: i915
+        Kernel modules: i915
+# That proves the Intel GPU is detected and i915 kernel driver is bound to it.
+```
+
+But i915 controlling the Intel GPU does not necessarily mean Apple gmux has routed the physical internal display to Intel. Check what state gmux selected when we booted without Nouveau.
+
+```bash
+$ journalctl -b -k | grep -i gmux
+Aug 08 22:40:33 macbook kernel: apple_gmux: Found gmux version 1.9.35 [classic]
+```
+
+The previous output ony shay that apple_gmux detected the hardware and initialized tits driver, not what GPU is routed to the display. Lets if X can start on Intel without our switch service, as we are in multi-user.target, run:
+
+```bash
+$ sudo systemctl start lightdm
+A dependency job for lightdm.service failed. See 'journalctl -xe' for details.
+```
+
+If the graphical login appears, the firmware/gmux path already leaves the internal panel usable with Intel when Nouveau never loads. In this case i had an error, the reason is the missing file that does not allow the gpu-switch-intel.service to run and is required by LightDM:
+
+```bash
+$ systemctl status gpu-switch-intel.service
+× gpu-switch-intel.service - Switch Apple gmux to Intel and unload nouveau
+     Loaded: loaded (/etc/systemd/system/gpu-switch-intel.service; enabled; preset: disabled)
+     Active: failed (Result: exit-code) since Sat 2026-08-08 03:08:03 CEST; 2min 38s ago
+ Invocation: 57f7d766f2154a5fa4b84e0bb89016a5
+    Process: 931 ExecStartPre=/usr/bin/modprobe i915 (code=exited, status=0/SUCCESS)
+    Process: 932 ExecStart=/usr/bin/bash -c      for i in {1..50}; do          test -e /sys/kernel/debug/vgaswitcheroo/switch && break;          sleep 0.2;      done;      test -e>
+   Main PID: 932 (code=exited, status=1/FAILURE)
+   Mem peak: 2.5M
+        CPU: 319ms
+
+Aug 08 23:08:02 macbook bash[1080]: grep: /sys/kernel/debug/vgaswitcheroo/switch: No such file or directory
+Aug 08 23:08:02 macbook bash[1082]: grep: /sys/kernel/debug/vgaswitcheroo/switch: No such file or directory
+Aug 08 23:08:03 macbook systemd[1]: gpu-switch-intel.service: Main process exited, code=exited, status=1/FAILURE
+Aug 08 23:08:03 macbook systemd[1]: gpu-switch-intel.service: Failed with result 'exit-code'.
+Aug 08 23:08:03 macbook systemd[1]: Failed to start Switch Apple gmux to Intel and unload nouveau.
+```
+
+Lets see if LightDM can start on Intel without the gpu-switch service:
+
+```bash
+sudo systemctl disable gpu-switch-intel.service
+# Modify LightDM to not need the gpu-switch service.
+sudo rm /etc/systemd/system/lightdm.service.d/override.conf
+sudo systemctl daemon-reload
+# Start LightDM manually.
+sudo systemctl start lightdm
+```
+
+Once it works, let's verify that the graphical session really is rendering through Intel rather than merely appearing successfully. Run this in the graphical session:
+
+```bash
+$ glxinfo -B | grep "OpenGL renderer"
+OpenGL renderer string: llvmpipe (LLVM 22.1.8, 256 bits)
+```
+
+We have graphical desktop, but without Intel hardware acceleration. Because llvmpipe means Mesa is rendering everything on the CPU in software.
+
+We can see why Xorg did not use i915:
+
+```bash
+grep -Ei 'i915|modeset|glamor|dri|drm|\(EE\)|failed' /var/log/Xorg.0.log
+```
+
+The logs show that simpledrm is being the primary Xorg device instead of Intel. Lets see the DRM devices:
+
+```bash
+$ ls -l /dev/dri/by-path/
+total 0
+lrwxrwxrwx 1 root root  8 Aug  8 02:40 pci-0000:00:02.0-card -> ../card1
+lrwxrwxrwx 1 root root 13 Aug  8 02:40 pci-0000:00:02.0-render -> ../renderD128
+lrwxrwxrwx 1 root root  8 Aug  8 02:40 pci-0000:01:00.0-platform-simple-framebuffer.0-card -> ../card0
+```
+
+We had:
+
+- PCI 00:02.0 -> Intel HD 4000 → /dev/dri/card1
+- PCI 01:00.0 -> simple framebuffer → /dev/dri/card0
+
+Lets configure Xorg to use card1:
+
+```bash
+sudo mkdir -p /etc/X11/xorg.conf.d
+
+sudo tee /etc/X11/xorg.conf.d/20-intel.conf >/dev/null <<'EOF'
+Section "Device"
+    Identifier "Intel Graphics"
+    Driver "modesetting"
+    BusID "PCI:0:2:0"
+    Option "PrimaryGPU" "yes"
+EndSection
+EOF
+```
+
+Restart LightDM and re-check glxinfo before reboot:
+
+```bash
+sudo systemctl restart lightdm
+```
+
+Ups, black screen, lets investigate:
+
+```bash
+$ sudo rm /etc/X11/xorg.conf.d/20-intel.conf
+$ sudo systemctl restart lightdm
+$ grep -Ei 'Intel Graphics|modeset|LVDS|connected|no screens|failed|\(EE\)' /var/log/Xorg.0.log.old  # .old should contain our black-screen attempt.
+```
+
+```bash
+glxinfo -B | grep "OpenGL renderer"  # It should show something like Mesa Intel(R) HD Graphics 4000 (IVB GT2)
+```
+
+It seems the problem is outside Xorg. Let's see if we can switch gmux directly to INtel.
+
+```bash
+ls /sys/firmware/efi/efivars/ | grep -i gpu-power-prefs
+```
+
+The kernel documentation explains that on these dual-GPU MacBook Pros, apple_gmux can choose the initial GPU from an EFI variable named gpu-power-prefs-fa4ce28d-b62f-4c99-9cc3-6815686e30f9, its 5th byte selects the initial GPU: 1 = IGD (Intel), 0 = DIS (NVIDIA). The firmware then switches gmux and allocates the framebuffer for that GPU before Linux starts.
+
+```bash
+ls /sys/firmware/efi/efivars/ | grep -i gpu-power-prefs  # Should have no output. This means the EFI variable is not currently set, so the firmware is falling back to its default GPU choice.
+ mount | grep efivarfs  # Should see efivarfs and rw. So Linux has access to EFI variable storage.
+journalctl -b -k | grep -Ei 'efi.*(error|fail|warn)|efivar.*(error|fail|warn)'  # To check no EFI problems before write to NVRAM.
+sudo journalctl -b -k | grep -iE '\bEFI\b|efivar|efifb' | head -n 30  # Kernel EFI architecture/environment. Check Mac booted in native Apple EFI mode: 'efi: EFI v1.1 by Apple', 'efivars: Registered efivars operations'
+sudo ls -l /sys/firmware/efi/efivars > ~/efivars-before.txt  # back up the existing EFI variables directory metadata/list.
+command -v efivar  # If shows something like /usr/bin/efivar, we can use efivar to write the value.
+# Create a 4-byte Intel payload. Until 4º byte: EFI attributes. 5º byte is 01 -> Use Intel.
+printf '\x01\x00\x00\x00' > /tmp/gpu-power-prefs-data.bin
+# Verify
+od -An -tx1 /tmp/gpu-power-prefs-data.bin  # Must be: 01 00 00 00
+# Write the payload.
+# fa4ce28d-b62f-4c99-9cc3-6815686e30f9: obtained from the documented Apple gmux interface in the kernel.
+sudo efivar --write \
+  --name 'fa4ce28d-b62f-4c99-9cc3-6815686e30f9-gpu-power-prefs' \
+  --datafile /tmp/gpu-power-prefs-data.bin \
+  --attributes 7
+# The following command shows 4 bytes, should be 8, so this solution is not correct.
+sudo ls -l /sys/firmware/efi/efivars/gpu-power-prefs-*
+# Undo the changes
+sudo chattr -i /sys/firmware/efi/efivars/gpu-power-prefs-fa4ce28d-b62f-4c99-9cc3-6815686e30f9 2>/dev/null; sudo rm -f /sys/firmware/efi/efivars/gpu-power-prefs-fa4ce28d-b62f-4c99-9cc3-6815686e30f9
+```
+
+So forgot about modify the EFI NVRAM and lets try with improve the vgaswitcheroo service, lets check if vgaswitcheroo can switch/power down NVIDIA without immediately unloading Nouveau.
+
+The part that takes 30 seconds is `sudo modprobe nouveau`, lets see if we can omit this part. First, enable again nouveau:
+
+```bash
+sudo modprobe nouveau
+```
+
+But this don't create the missing file:
+
+
+```bash
+$ sudo cat /sys/kernel/debug/vgaswitcheroo/switch
+cat: /sys/kernel/debug/vgaswitcheroo/switch: No such file or directory
+```
+
+The modification should be at boot time commen the line `ExecStartPost=/usr/bin/modprobe -r nouveau` (use #):
+
+```bash
+sudo systemctl edit --full gpu-switch-intel.service
+reboot
+```
+
+With that change we confirm that nouveau can be active but the NVIDIA GPU wont be used and the pc won't be hot:
+
+```bash
+$ sudo cat /sys/kernel/debug/vgaswitcheroo/switch
+[sudo] password for x:
+0:DIS: :Off:0000:01:00.0
+1:IGD:+:Pwr:0000:00:02.0
+2:DIS-Audio: :DynOff:0000:01:00.1
+```
+
+If we run `sensors` command, we check that the fans are ok (near 2.000 RPM), and the temperature is not high.
+
+So this is our final config:
+
+```bash
+BOOT
+ │
+ ├─ i915 initializes Intel
+ ├─ nouveau initializes NVIDIA
+ ├─ apple_gmux registers
+ │
+ └─ vgaswitcheroo becomes available
+          │
+          ▼
+ gpu-switch-intel.service
+          │
+          ├─ select IGD
+          ▼
+ Apple gmux → Intel
+          │
+          ├─ Intel → Pwr + selected
+          ├─ NVIDIA → Off
+          └─ NVIDIA Audio → DynOff
+          │
+          ▼
+       LightDM
+          │
+          ▼
+ XFCE + Intel/crocus acceleration
+```
+
+Lets create a cleaner final service:
+
+```bash
+sudo systemctl edit --full gpu-switch-intel.service
+```
+
+```bash
+[Unit]
+Description=Switch Apple gmux to Intel graphics
+After=systemd-modules-load.service
+Before=display-manager.service
+
+[Service]
+Type=oneshot
+ExecStartPre=/usr/bin/modprobe i915
+ExecStart=/usr/bin/bash -c '\
+    for i in {1..50}; do \
+        test -e /sys/kernel/debug/vgaswitcheroo/switch && break; \
+        sleep 0.2; \
+    done; \
+    test -e /sys/kernel/debug/vgaswitcheroo/switch; \
+    echo IGD > /sys/kernel/debug/vgaswitcheroo/switch; \
+    for i in {1..50}; do \
+        grep -q "IGD:+:Pwr" /sys/kernel/debug/vgaswitcheroo/switch && exit 0; \
+        sleep 0.2; \
+    done; \
+    exit 1'
+RemainAfterExit=yes
+
+[Install]
+WantedBy=graphical.target
+```
+
+```bash
+sudo systemctl daemon-reload
+```
+
+Lets improve the service
+
+```bash
+sudo cp /etc/systemd/system/gpu-switch-intel.service \
+        /etc/systemd/system/gpu-switch-intel.service.working
+```
+
+```bash
+sudo tee /usr/local/sbin/gpu-switch-intel >/dev/null <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+
+# This is NOT a normal file stored on disk.
+# It is a virtual control/status interface exposed by the Linux kernel
+# through debugfs for the vgaswitcheroo subsystem.
+# Reading from it asks the kernel for the current GPU state:
+#   cat "$SWITCH"
+# Writing a command to it asks the kernel to perform an operation:
+#   echo IGD > "$SWITCH"
+# Therefore ">" here does NOT mean that we are replacing some persistent
+# file containing the GPU status. The kernel receives "IGD" as a command.
+SWITCH=/sys/kernel/debug/vgaswitcheroo/switch
+
+# Wait up to approximately 10 seconds for vgaswitcheroo to become available.
+# During boot, i915, nouveau and apple_gmux need some time to initialize
+# and register with vgaswitcheroo.
+for _ in {1..50}; do
+    [[ -e "$SWITCH" ]] && break
+    sleep 0.2
+done
+
+# If the kernel interface still does not exist after waiting, fail the
+# service instead of continuing with an invalid GPU configuration.
+[[ -e "$SWITCH" ]]
+
+# Ask the kernel's vgaswitcheroo subsystem to switch the graphics mux
+# to IGD (Integrated Graphics Device), which is our Intel HD 4000.
+# Again: "$SWITCH" is a kernel control interface, not an ordinary file.
+# The shell sends the characters "IGD\n" to the kernel through that
+# interface. The kernel interprets IGD as the GPU-switching command.
+# Conceptually:
+#   echo IGD > "$SWITCH"
+# means:
+#   "vgaswitcheroo: switch the display to the integrated GPU"
+# It does NOT mean:
+#   "replace the GPU status file with the text IGD"
+echo IGD > "$SWITCH"
+
+# Wait until the kernel reports that Intel is both:
+#   +    selected/active
+#   Pwr  powered
+for _ in {1..50}; do
+    grep -q 'IGD:+:Pwr' "$SWITCH" && exit 0
+    sleep 0.2
+done
+
+# Intel never reached the expected state, so report failure to systemd.
+exit 1
+EOF
+```
+
+```bash
+sudo chmod 755 /usr/local/sbin/gpu-switch-intel
+```
+
+```bash
+sudo systemctl edit --full gpu-switch-intel.service
+```
+
+Set:
+
+```bash
+[Unit]
+Description=Switch Apple gmux to Intel graphics
+After=systemd-modules-load.service
+Before=display-manager.service
+
+[Service]
+Type=oneshot
+ExecStartPre=/usr/bin/modprobe i915
+ExecStart=/usr/local/sbin/gpu-switch-intel
+RemainAfterExit=yes
+
+[Install]
+WantedBy=graphical.target
+```
+
+```bash
+sudo systemctl daemon-reload
+```
+
+Validate the syntax:
+
+```bash
+# No output should be shown.
+sudo systemd-analyze verify /etc/systemd/system/gpu-switch-intel.service
+```
+
+So, we have:
+
+```bash
+BOOT
+ │
+ ├─ nouveau initializes NVIDIA
+ ├─ apple_gmux registers
+ ├─ i915 becomes available
+ │
+ └─ vgaswitcheroo becomes available
+          │
+          ▼
+ systemd starts gpu-switch-intel.service
+          │
+          ├─ ExecStartPre:
+          │      modprobe i915
+          │
+          └─ ExecStart:
+                 /usr/local/sbin/gpu-switch-intel
+                         │
+                         ├─ wait for vgaswitcheroo
+                         ├─ write IGD to switch interface
+                         └─ verify IGD:+:Pwr
+                                  │
+                                  ▼
+                          Apple gmux → Intel
+                                  │
+                                  ├─ Intel → selected + Pwr
+                                  ├─ NVIDIA → Off
+                                  └─ NVIDIA Audio → DynOff
+                                  │
+                                  ▼
+                               LightDM
+                                  │
+                                  ▼
+                       XFCE + Intel/crocus acceleration
+```
+
+Reboot does not work :(, lets investigate, force power off by pressing the power button, after that:
+
+```bash
+journalctl -b -1
+```
+
+Nouveau causes a problem when shutting the pc down, shutdown makes fbcon interact with Nouveau while DIS is already Off.
+
+Verify that we can turn on and off the GPU while using Intel:
+
+```bash
+$ sudo sh -c 'echo ON > /sys/kernel/debug/vgaswitcheroo/switch'
+# Verify it turns On.
+$ sudo cat /sys/kernel/debug/vgaswitcheroo/switch
+DIS       : Pwr     → NVIDIA GPU powered on
+IGD     + : Pwr     → Intel still selected and powered
+DIS-Audio : DynPwr  → NVIDIA audio powered dynamically
+Check nouveau can see NVIDIA after power it on, it should show realistic info instead of N/A:
+$ sensors | sed -n '/nouveau-pci-0100/,+8p'
+$ echo OFF > /sys/kernel/debug/vgaswitcheroo/switch
+$ sudo sh -c 'echo OFF > /sys/kernel/debug/vgaswitcheroo/switch'
+# Verify it turns Off.
+$ sudo cat /sys/kernel/debug/vgaswitcheroo/switch
+0:DIS: :Off:0000:01:00.0
+1:IGD:+:Pwr:0000:00:02.0
+2:DIS-Audio: :DynOff:0000:01:00.1
+```
+
+Modify the service:
+
+```bash
+sudo systemctl edit --full gpu-switch-intel.service
+# This service is at  /etc/systemd/system/gpu-switch-intel.service
+```
+
+```bash
+[Unit]
+Description=Switch Apple gmux to Intel graphics
+After=systemd-modules-load.service
+Before=display-manager.service
+
+[Service]
+Type=oneshot
+ExecStartPre=/usr/bin/modprobe i915
+ExecStart=/usr/local/sbin/gpu-switch-intel
+RemainAfterExit=yes
+
+[Install]
+WantedBy=graphical.target
+```
+
+```bash
+sudo systemctl daemon-reload
+sudo systemd-analyze verify /etc/systemd/system/gpu-switch-intel.service
+```
+
+Before restart, lets test the ExecStop behavior manually while we can still inspect the resulting GPU state:
+
+```bash
+$ sudo systemctl stop gpu-switch-intel.service
+$ sudo cat /sys/kernel/debug/vgaswitcheroo/switch
+0:DIS: :Pwr:0000:01:00.0
+1:IGD:+:Pwr:0000:00:02.0
+`2:DIS-Audio: :DynPwr:0000:01:00.1` or `2:DIS-Audio: :DynOff:0000:01:00.1`
+
+$ sudo systemctl start gpu-switch-intel.service
+$ sudo cat /sys/kernel/debug/vgaswitcheroo/switch
+0:DIS: :Pwr:0000:01:00.0
+1:IGD:+:Pwr:0000:00:02.0
+2:DIS-Audio: :DynOff:0000:01:00.1
+```
+
+As we see, our service does not turn off DCIS, lets fix this, as we can turn it off with `sudo sh -c 'echo OFF > /sys/kernel/debug/vgaswitcheroo/switch'`, lets add it:
+
+```bash
+sudo vim /usr/local/sbin/gpu-switch-intel
+```
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+# This is NOT a normal file stored on disk.
+# It is a virtual control/status interface exposed by the Linux kernel
+# through debugfs for the vgaswitcheroo subsystem.
+# Reading from it asks the kernel for the current GPU state:
+#   cat "$SWITCH"
+# Writing a command to it asks the kernel to perform an operation:
+#   echo IGD > "$SWITCH"
+# Therefore ">" here does NOT mean that we are replacing some persistent
+# file containing the GPU status. The kernel receives "IGD" as a command.
+SWITCH=/sys/kernel/debug/vgaswitcheroo/switch
+
+# Wait up to approximately 10 seconds for vgaswitcheroo to become available.
+# During boot, i915, nouveau and apple_gmux need some time to initialize
+# and register with vgaswitcheroo.
+for _ in {1..50}; do
+    [[ -e "$SWITCH" ]] && break
+    sleep 0.2
+done
+
+# If the kernel interface still does not exist after waiting, fail the
+# service instead of continuing with an invalid GPU configuration.
+[[ -e "$SWITCH" ]]
+
+# Ask the kernel's vgaswitcheroo subsystem to switch the graphics mux
+# to IGD (Integrated Graphics Device), which is our Intel HD 4000.
+# Again: "$SWITCH" is a kernel control interface, not an ordinary file.
+# The shell sends the characters "IGD\n" to the kernel through that
+# interface. The kernel interprets IGD as the GPU-switching command.
+# Conceptually:
+#   echo IGD > "$SWITCH"
+# means:
+#   "vgaswitcheroo: switch the display to the integrated GPU"
+# It does NOT mean:
+#   "replace the GPU status file with the text IGD"
+echo IGD > "$SWITCH"
+
+# Wait until the kernel reports that Intel is both:
+#   +    selected/active
+#   Pwr  powered
+for _ in {1..50}; do
+    grep -q 'IGD:+:Pwr' "$SWITCH" && break
+    sleep 0.2
+done
+
+# Exit if Intel is not ready (a failed grep will exit thanks
+# to `set -euo pipefail` at the top of the script).
+grep -q 'IGD:+:Pwr' "$SWITCH"
+
+# Power off the unused discrete GPU.
+# This keeps Intel selected, but powers down the NVIDIA GPU.
+# On this MacBook, the expected state afterwards is:
+#   DIS: :Off
+#   IGD:+:Pwr
+echo OFF > "$SWITCH"
+
+# Verify that the NVIDIA GPU actually reached the Off state.
+for _ in {1..50}; do
+    grep -q 'DIS: :Off' "$SWITCH" && exit 0
+    sleep 0.2
+done
+
+# NVIDIA did not reach the expected Off state, so report failure to systemd.
+exit 1
+```
+
+```bash
+$ sudo systemctl restart gpu-switch-intel.service
+$ sudo cat /sys/kernel/debug/vgaswitcheroo/switch
+0:DIS: :Off:0000:01:00.0
+1:IGD:+:Pwr:0000:00:02.0
+2:DIS-Audio: :DynOff:0000:01:00.1
+```
+
+This solution was not correct, after reboot, it works but with kernel warnings. Our next solution should be designed around never asking Nouveau to wake the GPU again, rather than trying to repair the shutdown by turning NVIDIA back on.
+
+My boot log says Nouveau creates nouveaudrmfb and makes it the primary fbcon device. If we detach the console from that framebuffer after Intel/Xorg is established, then during reboot there should be no fbcon ->nouveaudrmfb -> dead NVIDIA path to trigger the failure we saw.
+
+Lets force fbcon to use Intel’s fb1 instead of Nouveau’s fb0. The numbers can be checked with:
+
+```bash
+$ cat /proc/fb
+0 nouveaudrmfb
+1 i915drmfb
+```
+
+```bash
+BOOT
+ │
+ ├─ nouveau → fb0
+ ├─ i915    → fb1
+ │
+ ├─ fbcon configured → map to fb1 (Intel)
+ │
+ └─ gpu-switch-intel.service
+          │
+          ├─ select IGD
+          ├─ power NVIDIA OFF
+          └─ verify state
+                   │
+                   ▼
+               LightDM/XFCE
+                   │
+                   ▼
+                 Intel
+
+SHUTDOWN
+ │
+ ├─ LightDM stops
+ │
+ ├─ fbcon needs to take over
+ │
+ └─ fbcon → fb1/i915 ✅
+             │
+             └─ does NOT touch dead nouveau fb0
+```
+
+Verify no `fbcon=` config in :
+
+```bash
+cat /proc/cmdline
+```
+
+Before editing anything, let’s confirm which bootloader generated that command line. Run:
+
+```bash
+if [ -f /boot/grub/grub.cfg ]; then
+    echo "GRUB detected"
+fi
+
+bootctl status 2>/dev/null | head -n 12
+```
+
+If it says `GRUB detected`, we’ll add `fbcon=map:1` to GRUB_CMDLINE_LINUX_DEFAULT, regenerate grub.cfg, and then reboot for the real test.
+
+```bash
+$ sudo vim /etc/default/grub
+# Replace `GRUB_CMDLINE_LINUX_DEFAULT="loglevel=3 quiet"` with `GRUB_CMDLINE_LINUX_DEFAULT="loglevel=3 quiet fbcon=map:1"`.
+# Regenerate GRUB.
+$ sudo grub-mkconfig -o /boot/grub/grub.cfg
+# Verify before reboot:
+$ sudo grep -n 'fbcon=map:1' /boot/grub/grub.cfg
+```
+
+Verify:
+
+```bash
+$ sudo reboot
+$ cat /proc/cmdline  # Should show ...fbcon=map:1
+$ systemctl status gpu-switch-intel.service  # Must show shor process (low CPU ms value) and correct (active (exited)).
+$ sudo cat /sys/kernel/debug/vgaswitcheroo/switch
+0:DIS: :Off:0000:01:00.0
+1:IGD:+:Pwr:0000:00:02.0
+2:DIS-Audio: :DynOff:0000:01:00.1
+
+$ sudo journalctl -b -1 -k | grep -iE 'fbcon|nouveau.*(timeout|stalled|inaccessible)|g84_bar_flush|gf119_disp|VGA switcheroo'
+# We see: 19:45:58 VGA switcheroo: switched nouveau off.
+# If we see `fbcon: nouveaudrmfb (fb0) is primary device` doesn't by itself mean fbcon=map:1 failed. That's reporting Nouveau's framebuffer as the primary framebuffer during initialization; what matters for our shutdown problem is that we no longer see the late fbcon: Taking over console followed by Nouveau failures.
+```
+
+Idea: Nouveau is loaded and NVIDIA GPU is off.
+
+#### MacBook. Wifi
 
 Lets configure the Wifi.
 
