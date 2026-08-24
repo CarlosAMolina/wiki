@@ -723,8 +723,8 @@ lrwxrwxrwx 1 root root  8 Aug  8 02:40 pci-0000:01:00.0-platform-simple-framebuf
 
 We had:
 
-- PCI 00:02.0 -> Intel HD 4000 → /dev/dri/card1
-- PCI 01:00.0 -> simple framebuffer → /dev/dri/card0
+- PCI 00:02.0 -> Intel HD 4000 -> /dev/dri/card1
+- PCI 01:00.0 -> simple framebuffer -> /dev/dri/card0
 
 Lets configure Xorg to use card1:
 
@@ -841,11 +841,11 @@ BOOT
           │
           ├─ select IGD
           ▼
- Apple gmux → Intel
+ Apple gmux -> Intel
           │
-          ├─ Intel → Pwr + selected
-          ├─ NVIDIA → Off
-          └─ NVIDIA Audio → DynOff
+          ├─ Intel -> Pwr + selected
+          ├─ NVIDIA -> Off
+          └─ NVIDIA Audio -> DynOff
           │
           ▼
        LightDM
@@ -1014,11 +1014,11 @@ BOOT
                          └─ verify IGD:+:Pwr
                                   │
                                   ▼
-                          Apple gmux → Intel
+                          Apple gmux -> Intel
                                   │
-                                  ├─ Intel → selected + Pwr
-                                  ├─ NVIDIA → Off
-                                  └─ NVIDIA Audio → DynOff
+                                  ├─ Intel -> selected + Pwr
+                                  ├─ NVIDIA -> Off
+                                  └─ NVIDIA Audio -> DynOff
                                   │
                                   ▼
                                LightDM
@@ -1041,9 +1041,9 @@ Verify that we can turn on and off the GPU while using Intel:
 $ sudo sh -c 'echo ON > /sys/kernel/debug/vgaswitcheroo/switch'
 # Verify it turns On.
 $ sudo cat /sys/kernel/debug/vgaswitcheroo/switch
-DIS       : Pwr     → NVIDIA GPU powered on
-IGD     + : Pwr     → Intel still selected and powered
-DIS-Audio : DynPwr  → NVIDIA audio powered dynamically
+DIS       : Pwr     -> NVIDIA GPU powered on
+IGD     + : Pwr     -> Intel still selected and powered
+DIS-Audio : DynPwr  -> NVIDIA audio powered dynamically
 Check nouveau can see NVIDIA after power it on, it should show realistic info instead of N/A:
 $ sensors | sed -n '/nouveau-pci-0100/,+8p'
 $ echo OFF > /sys/kernel/debug/vgaswitcheroo/switch
@@ -1197,10 +1197,10 @@ $ cat /proc/fb
 ```bash
 BOOT
  │
- ├─ nouveau → fb0
- ├─ i915    → fb1
+ ├─ nouveau -> fb0
+ ├─ i915    -> fb1
  │
- ├─ fbcon configured → map to fb1 (Intel)
+ ├─ fbcon configured -> map to fb1 (Intel)
  │
  └─ gpu-switch-intel.service
           │
@@ -1220,7 +1220,7 @@ SHUTDOWN
  │
  ├─ fbcon needs to take over
  │
- └─ fbcon → fb1/i915 ✅
+ └─ fbcon -> fb1/i915 ✅
              │
              └─ does NOT touch dead nouveau fb0
 ```
@@ -1366,6 +1366,167 @@ If we get `The requested URL returned error: 404` errors, usually mean your loca
 sudo pacman -Syyu
 # Install Firefox again.
 ```
+
+#### Audio
+
+We will avoid use NVIDIA GPU, currently:
+
+```bash
+$ cat /sys/kernel/debug/vgaswitcheroo/switch
+DIS:       Off      ← NVIDIA GPU off
+IGD:       +:Pwr    ← Intel active
+DIS-Audio: DynOff   ← NVIDIA audio runtime-suspended
+```
+
+The DIS-Audio suspended, not consuming power while waiting, so is not necessary to turn it off. We will configure audio to not use it.
+
+Concepts:
+
+- PipeWire. The audio engine/server. Moves audio between applications and hardware.
+- WirePlumber. The manager for PipeWire. Decides which speakers/microphones to use, routing, etc.
+- pipewire-pulse. A PulseAudio compatibility layer. Lets programs designed for PulseAudio (pactl, older applications, etc.) talk to PipeWire.
+- PulseAudio. An older audio server. It allowed multiple applications to share audio, control volumes independently, switch outputs, route audio, etc. PipeWire has largely replaced it on modern Linux desktops.
+- ALSA (Advanced Linux Sound Architecture). The low-level Linux audio system. Provides kernel drivers and interfaces for communicating with sound hardware.
+- pactl. Command to issue control commands to PulseAudio.
+- wpctl - WirePlumber Control CLI.
+- RTKit (RealtimeKit). A system service that safely grants real-time CPU scheduling priority to applications such as PipeWire, helping prevent audio glitches/dropouts. It does not process or route audio.
+
+Audio flow in
+
+- New apps: App -> PipeWire (managed/configured by WirePlumber) -> ALSA -> hardware
+- Old apps: PulseAudio compatible App -> pipewire-pulse -> PipeWire (managed/configured by WirePlumber) -> ALSA -> hardware
+
+Some applications can use the old path and other the new, so we will configure both. With pipewire-pulse the PipeWire system is compatible with apps expecting a PulseAudio server.
+
+Lets check the computer hardware and software to configure the audio.
+
+Hardware (the output contains only a summary of the desired info):
+
+```bash
+$ lspci -nnk | grep -A4 -i audio
+
+00:1b.0 Intel HDA. Kernel driver: snd_hda_intel
+01:00.1 NVIDIA Corporation GK107 HDMI Audio Controller. Kernel driver: snd_hda_intel
+```
+
+We see PulseAudio is not working because pactl speaks the PulseAudio protocol and it fails:
+
+```bash
+$ pactl info 2>&1 | head -n 20
+
+Connection failure: Connection refused
+pa_context_connect() failed: Connection refused
+```
+
+This error is because pipewire-pulse is not running:
+
+```bash
+$ systemctl --user --no-pager status pipewire pipewire-pulse wireplumber
+
+- pipewire: running.
+- pipewire-pulse: not found.
+- wireplumber: running.
+- interesing messages:
+ - ALSA/WirePlumber discovers PCI 01:00.1, but the NVIDIA side is powered down:
+     - ... macbook wireplumber[1530]: spa.alsa: Card can't get card\_name from c…ex 1
+     - ... macbook wireplumber[1530]: pa.alsa: Error opening low-level control…tory
+  - PipeWire cannot obtain the preferred realtime scheduling privileges through RTKit. Audio may still work, but I'd clean that up as part of a proper Arch audio setup:
+    - RTKit error: org.freedesktop.DBus.Error.ServiceUnknown
+```
+
+With the following command, we can see the:
+
+- Default sink and source (marked with *) used by WirePlumber.
+- wpctl connects to PipeWire (does not depend on PulseAudio) and discovers audio hardware, that means that these pieces are communicating: wpctl -> PipeWire (WirePlumber) -> ALSA devices discovered -> Built-in Audio.
+
+```bash
+$ wpctl status
+...
+W 21:40:22.440607             mod.rt ../pipewire/src/modules/module-rt.c:331:translate_error: RTKit error: org.freedesktop.DBus.Error.ServiceUnknown
+...
+PipeWire 'pipewire-0' [1.6.8, x@macbook, cookie:3355530220]
+ └─ Clients:
+        33. WirePlumber
+        41. WirePlumber [export]
+        62. wpctl
+...
+Audio
+├─ Devices:
+│    42. GK107 HDMI Audio Controller
+│    43. Built-in Audio
+│
+├─ Sinks:
+│  * 50. Built-in Audio Analog Stereo
+│
+└─ Sources:
+   * 51. Built-in Audio Analog Stereo
+```
+
+To verify that them belongs to the PCI 00:1c.0 (Intel), look for properties such as `alsa.card_name`:
+
+```bash
+$ wpctl inspect 50
+$ wpctl inspect 51
+```
+
+Check installed packages and we see that pipewire-pulse and rtkit are missing:
+
+```bash
+pacman -Q pipewire wireplumber pipewire-audio pipewire-pulse rtkit 2>&1
+```
+
+Install them:
+
+```bash
+sudo pacman -S pipewire-pulse rtkit
+```
+
+Restart audio stack to allow it to request the new installed software:
+
+```bash
+systemctl --user restart pipewire wireplumber
+```
+
+Check it works:
+
+```bash
+pactl info
+```
+
+If it doesn't work, check the socket is `inactive`:
+
+```bash
+systemctl --user --no-pager status pipewire-pulse.socket
+```
+
+Activate it (run previous command again to verify that it has been activated):
+
+```bash
+systemctl --user start pipewire-pulse.socket
+```
+
+Not it should work:
+
+```bash
+pactl info
+```
+
+To check RTKit:
+
+```bash
+# See that is working.
+systemctl --no-pager status rtkit-daemon
+# See no ServiceUnknown warnings after our systemctl restart.
+journalctl --user -b -u pipewire -u wireplumber --no-pager | grep -i rtkit
+```
+```bash
+```
+```bash
+```
+
+
+TODO. Later we can tell WirePlumber to ignore NVIDIA device entirely.
+
 
 ## Keyboard layout
 
