@@ -1099,7 +1099,7 @@ $ sudo cat /sys/kernel/debug/vgaswitcheroo/switch
 2:DIS-Audio: :DynOff:0000:01:00.1
 ```
 
-As we see, our service does not turn off DCIS, lets fix this, as we can turn it off with `sudo sh -c 'echo OFF > /sys/kernel/debug/vgaswitcheroo/switch'`, lets add it:
+As we see, our service does not turn off DIS, lets fix this, as we can turn it off with `sudo sh -c 'echo OFF > /sys/kernel/debug/vgaswitcheroo/switch'`, lets add it:
 
 ```bash
 sudo vim /usr/local/sbin/gpu-switch-intel
@@ -1390,6 +1390,7 @@ Concepts:
 - pactl. Command to issue control commands to PulseAudio.
 - wpctl - WirePlumber Control CLI.
 - RTKit (RealtimeKit). A system service that safely grants real-time CPU scheduling priority to applications such as PipeWire, helping prevent audio glitches/dropouts. It does not process or route audio.
+- Cirrus codec. An audio chip made by Cirrus Logic that converts audio between digital and analog signals.
 
 Audio flow in
 
@@ -1519,13 +1520,57 @@ systemctl --no-pager status rtkit-daemon
 # See no ServiceUnknown warnings after our systemctl restart.
 journalctl --user -b -u pipewire -u wireplumber --no-pager | grep -i rtkit
 ```
+
+Check the speakers work:
+
 ```bash
+# Verifty Intel is used.
+wpctl status | grep "Built-in Audio Analog Stereo"
+# Show volume.
+wpctl get-volume @DEFAULT_AUDIO_SINK@
+# Test.
+sudo pacman -S alsa-utils
+speaker-test -D pipewire -c 2 -t wav
+```
+
+Check the laptop microphone works:
+
+```bash
+# See what alsa exposes (for me shows Intel PCH + Cirrus CS4206).
+arecord -l
+# Test the microphone through PipeWire. Speak to the macbook during 5 seconds after running:
+# 48,000 samples/sec × 5 sec = 240,000 samples
+pw-record --sample-count=240000 /tmp/mic-test.wav
+pw-play /tmp/mic-test.wav
+```
+
+Connect headphone with jack an repeat the tests:
+
+```bash
+speaker-test -D pipewire -c 2 -t wav
+pw-record --sample-count=240000 /tmp/mic-test.wav
+pw-play /tmp/mic-test.wav
+```
+
+Lets see if `RTKit error: org.freedesktop.DBus.Error.ServiceUnknown` because we installed rtkit:
+
+```bash
+# Should be 'active (running)'. If inactive, don't manually enable it, is better to inspect its D-Bus activation because normally it should be started on demand:
+systemctl --no-pager status rtkit-daemon
+# No new RTKit ServiceUnknown warnings:
+journalctl --user -b -u pipewire -u wireplumber --since "10 minutes ago" --no-pager | grep -i rtkit
+```
+
+We have `DIS-Audio: DynOff`, which means that it is runtime suspended, if we connectsomething that required NVIDIA HDMI audio, Linux could attempt to wake it, but as I had problems trying to power NVIDIA up, lets tell WirePlumber to ignore NVIDIA device entirely.
+
+First, verify that nothing depends on `01:00.1`
+
+```bash
+TODO
 ```
 ```bash
 ```
 
-
-TODO. Later we can tell WirePlumber to ignore NVIDIA device entirely.
 
 
 ## Keyboard layout
