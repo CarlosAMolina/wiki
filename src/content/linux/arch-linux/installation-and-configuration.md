@@ -346,7 +346,7 @@ sudo pacman -S mesa mesa-utils intel-ucode linux-firmware
 Check if the pc is using NVIDIA GPU:
 
 ```bash
-[root@macbook ~]# sudo cat /sys/kernel/debug/vgaswitcheroo/switch
+$ sudo cat /sys/kernel/debug/vgaswitcheroo/switch
 0:DIS:+:Pwr:0000:01:00.0  # DIS:+:Pwr -> NVIDIA is driving the display
 1:IGD: :Pwr:0000:00:02.0  # IGD:Pwr -> Intel GPU is powered, but not the display GPU.
 2:DIS-Audio: :DynOff:0000:01:00.1
@@ -1506,10 +1506,13 @@ Activate it (run previous command again to verify that it has been activated):
 systemctl --user start pipewire-pulse.socket
 ```
 
-Not it should work:
+Not it should work (check this after a reboot to ensure that is activated automatically):
 
 ```bash
-pactl info
+$ pactl info
+...
+Server Name: PulseAudio (on PipeWire 1.6.8)
+...
 ```
 
 To check RTKit:
@@ -1558,20 +1561,238 @@ Lets see if `RTKit error: org.freedesktop.DBus.Error.ServiceUnknown` because we 
 # Should be 'active (running)'. If inactive, don't manually enable it, is better to inspect its D-Bus activation because normally it should be started on demand:
 systemctl --no-pager status rtkit-daemon
 # No new RTKit ServiceUnknown warnings:
+# Loaded: ... disabled -> Is ok, because RTKit is designed to be activated on demand through D-Bus, so we don't need to enable it manually.
 journalctl --user -b -u pipewire -u wireplumber --since "10 minutes ago" --no-pager | grep -i rtkit
 ```
 
-We have `DIS-Audio: DynOff`, which means that it is runtime suspended, if we connectsomething that required NVIDIA HDMI audio, Linux could attempt to wake it, but as I had problems trying to power NVIDIA up, lets tell WirePlumber to ignore NVIDIA device entirely.
+We have `DIS-Audio: DynOff`, which means that it is runtime suspended, if we connect something that required NVIDIA HDMI audio, Linux could attempt to wake it, but as I had problems trying to power NVIDIA up (and when it was up the computer temperature increased and the fans were too loud), lets tell WirePlumber to ignore NVIDIA device entirely. After disabling, we won't be able to send audio through the NVIDIA GPU.
 
-First, verify that nothing depends on `01:00.1`
+First, verify that nothing depends on it.
+
+Its number is `01:00.1`:
 
 ```bash
-TODO
+$ sudo cat /sys/kernel/debug/vgaswitcheroo/switch
+...
+2:DIS-Audio: :DynOff:0000:01:00.1
 ```
+
+Check its ID and that is not the default used now, the ID change change since reboot/login:
+
 ```bash
+$ wpctl status | grep GK107
+ │      49. GK107 HDMI Audio Controller         [alsa]
 ```
 
+See what  PipeWire exposes to verify ID 49 is NVIDIA `01:00.1`:
 
+```bash
+$ wpctl inspect 49
+# Some output values can confirm it, for example:
+# device.name = "alsa_card.pci-0000_01_00.1"
+```
+
+See how ALSA has registered the cards as 0 for Intel and 1 for NVIDIA:
+
+```bash
+$ cat /proc/asound/cards
+ 0 [PCH            ]: HDA-Intel - HDA Intel PCH
+ ...
+ 1 [NVidia         ]: HDA-Intel - HDA NVidia
+ ...
+```
+
+Let's make sure nothing currently has the NVIDIA audio device open:
+
+```bash
+$ sudo fuser -v /dev/snd/*
+                     USER        PID ACCESS COMMAND
+/dev/snd/controlC0:  x           870 F.... wireplumber
+/dev/snd/seq:        x           869 F.... pipewire
+```
+
+The previous output tell that 2 devices are open:
+
+- `controlC0`. This is the ALSA control interface for sound card 0, that is Intel. The NVIDIA interface is controlC1.
+- `seq`. Not related with Intel or NVIDIA, is the global ALSA sequencer interface, opened by Pipewire.
+
+So nothing is using NVIDIA.
+
+Check if the NVIDIA audio PCI function itself is currently runtime-suspended:
+```bash
+$ cat /sys/bus/pci/devices/0000:01:00.1/power/runtime_status
+unsupported
+# So it isn't providing a normal active/suspended state on this machine and we cannot use runtime_status to prove that function is suspended.
+```
+
+At the end, we won't create extra configuration to ignore NVIDIA because now we see that WirePlumber discovers NVIDIA but that doesn't produce any sink or source:
+
+```bash
+$ wpctl status
+...
+Audio
+ ├─ Devices:
+ │      49. GK107 HDMI Audio Controller         [alsa]
+ │      50. Built-in Audio                      [alsa]
+ ├─ Sinks:
+ │  *   58. Built-in Audio Analog Stereo        [vol: 0.55]
+ │
+ ├─ Sources:
+ │  *   59. Built-in Audio Analog Stereo        [vol: 1.00]
+ │
+ ├─ Filters:
+ │
+ └─ Streams:
+...
+```
+
+#### Power management
+
+As our GPU setup is special, we'll inspect the current configuration before installing or changing anything.
+
+Which CPU frequency driver Linux is actually using:
+
+```bash
+$ cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_driver
+
+intel_cpufreq
+```
+
+This output means that Linux exposes the intel_cpufreq scaling driver and a governor makes the frequency decisions.
+
+To see the governor:
+
+```bash
+$ cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+schedutil
+```
+
+Schedutil dynamically reacts to actual CPU workload.
+
+This is a correct configuration.
+
+Check the frequency range Linux allows the CPU to use:
+
+```bash
+$ cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_{min,max}_freq
+1200000
+3600000
+```
+
+Previous values are in kHz so we have 1.2 GHz minimum and 3.6 GHz maximum. But the 1.2 GHz minimum does not mean the CPU continuously consumes power as though it were actively running at 1.2 GHz. Modern CPUs can enter deep idle C-states where large parts of the core are effectively sleeping. We'll investigate that separately.
+
+What frequencies the CPU is actually reporting right now while the machine is mostly idle:
+
+```bash
+$ grep -H . /sys/devices/system/cpu/cpu*/cpufreq/scaling_cur_freq
+
+/sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq:3375105
+/sys/devices/system/cpu/cpu1/cpufreq/scaling_cur_freq:3355970
+/sys/devices/system/cpu/cpu2/cpufreq/scaling_cur_freq:1200000
+/sys/devices/system/cpu/cpu3/cpufreq/scaling_cur_freq:1200000
+/sys/devices/system/cpu/cpu4/cpufreq/scaling_cur_freq:1200000
+/sys/devices/system/cpu/cpu5/cpufreq/scaling_cur_freq:1730484
+/sys/devices/system/cpu/cpu6/cpufreq/scaling_cur_freq:2471035
+/sys/devices/system/cpu/cpu7/cpufreq/scaling_cur_freq:2974727
+```
+
+A few cores are at the minimum 1.2 GHz, but several are currently much higher, up to ~3.3 GHz. That does not automatically mean there's a power problem. scaling_cur_freq can jump around very quickly, and simply running commands over SSH can wake cores and boost them briefly.
+
+What matters is whether the machine is actually idle and whether the CPU spends most of its time in deep sleep states. Let's check whether anything is actually using CPU right now:
+
+```bash
+$ top -b -n1 | head -n 15
+
+$ top -b -n1 | head -n 15
+top - 20:58:56 up 30 min,  1 user,  load average: 0.00, 0.02, 0.03
+Tasks: 194 total, 2 running, 192 sleep, 0 d-sleep, 0 stopped, 0 zombie
+%Cpu(s):  0.5 us,  0.5 sy,  0.0 ni, 96.7 id,  2.3 wa,  0.0 hi,  0.0 si,  0.0 st
+MiB Mem :   7870.3 total,   6895.3 free,    675.6 used,    704.2 buff/cache
+MiB Swap:      0.0 total,      0.0 free,      0.0 used.   7194.8 avail Mem
+```
+
+In summary we see:
+
+- Load average:  0.00, 0.02, 0.03
+- CPU idle:      96.7%
+- user CPU:       0.5%
+- system CPU:     0.5%
+
+This is ok. Now we will investigate something more important for battery life than instantaneous MHz: CPU idle C-states.
+
+```bash
+$ cat /sys/devices/system/cpu/cpu0/cpuidle/state*/name
+POLL
+C1
+C1E
+C3
+C6
+C7
+```
+
+The CPU exposes all the useful deep idle states:
+
+- POLL: CPU essentially keeps checking for work (highest idle power)
+- C1: light sleep
+- C1E: enhanced light sleep
+- C3: deeper sleep
+- C6: very deep sleep
+- C7: deepest available here (lowest idle power)
+
+Difference between:
+
+- Frequency scaling: schedutil chooses frequency from 1.2 GHz to 3.6 GHz
+- C-states: cpuidle is the Linux kernel subsystem that chooses C-state from C1 to C7
+
+So seeing a core briefly report 3.3 GHz isn't necessarily bad for battery life. If it completes the work quickly and then spends a long time in C6/C7, power consumption can still be excellent. We need to know now whether the CPU is reaching C6/C7, rather than merely supporting them. To see each state's name and how many times CPU0 has entered it:
+
+```bash
+$ grep -H . /sys/devices/system/cpu/cpu0/cpuidle/state*/{name,usage}
+/sys/devices/system/cpu/cpu0/cpuidle/state0/name:POLL
+/sys/devices/system/cpu/cpu0/cpuidle/state1/name:C1
+/sys/devices/system/cpu/cpu0/cpuidle/state2/name:C1E
+/sys/devices/system/cpu/cpu0/cpuidle/state3/name:C3
+/sys/devices/system/cpu/cpu0/cpuidle/state4/name:C6
+/sys/devices/system/cpu/cpu0/cpuidle/state5/name:C7
+/sys/devices/system/cpu/cpu0/cpuidle/state0/usage:291
+/sys/devices/system/cpu/cpu0/cpuidle/state1/usage:10233
+/sys/devices/system/cpu/cpu0/cpuidle/state2/usage:1420
+/sys/devices/system/cpu/cpu0/cpuidle/state3/usage:2069
+/sys/devices/system/cpu/cpu0/cpuidle/state4/usage:0
+/sys/devices/system/cpu/cpu0/cpuidle/state5/usage:67345
+```
+
+We have a hight value for C7 comparing to the others, so although we previously saw occasional frequencies around 3 GHz, when the CPU becomes idle it is frequently entering the deepest available C7 state. That's much more relevant to idle power consumption. C6 = 0 means that the CPU uses C7 directly, no problem.
+
+The previous command shows entries, so next let's examine accumulated time in each C-state:
+
+```bash
+$ grep -H . /sys/devices/system/cpu/cpu0/cpuidle/state*/{name,time}
+/sys/devices/system/cpu/cpu0/cpuidle/state0/name:POLL
+/sys/devices/system/cpu/cpu0/cpuidle/state1/name:C1
+/sys/devices/system/cpu/cpu0/cpuidle/state2/name:C1E
+/sys/devices/system/cpu/cpu0/cpuidle/state3/name:C3
+/sys/devices/system/cpu/cpu0/cpuidle/state4/name:C6
+/sys/devices/system/cpu/cpu0/cpuidle/state5/name:C7
+/sys/devices/system/cpu/cpu0/cpuidle/state0/time:5987
+/sys/devices/system/cpu/cpu0/cpuidle/state1/time:221707
+/sys/devices/system/cpu/cpu0/cpuidle/state2/time:158176
+/sys/devices/system/cpu/cpu0/cpuidle/state3/time:598376
+/sys/devices/system/cpu/cpu0/cpuidle/state4/time:0
+/sys/devices/system/cpu/cpu0/cpuidle/state5/time:2965784901
+```
+
+CPU0 is spending essentially all of its recorded idle time in C7, the deepest available idle state, 2,965,784,901 microseconds (near 2,966 seconds or 49.4 minutes). The other states' duration is low so the GHz consumption was made by work that ends quickly.
+
+We don't need to tune CPU frequency or C-states at all.
+
+Next, we'll check whether some other power-management daemon is already installed/configuring the machine, because we don't want two tools fighting each other:
+
+```bash
+systemctl --no-pager --type=service --state=running | grep -Ei 'tlp|power-profiles|thermald|auto-cpufreq|tuned'
+```
+
+TODO continue
 
 ## Keyboard layout
 
