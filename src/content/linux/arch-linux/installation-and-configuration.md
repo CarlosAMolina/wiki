@@ -1786,13 +1786,81 @@ CPU0 is spending essentially all of its recorded idle time in C7, the deepest av
 
 We don't need to tune CPU frequency or C-states at all.
 
-Next, we'll check whether some other power-management daemon is already installed/configuring the machine, because we don't want two tools fighting each other:
+Next, we'll check whether some other power-management daemon is already installed/configuring the machine, to avoid two tools fighting each other:
 
 ```bash
-systemctl --no-pager --type=service --state=running | grep -Ei 'tlp|power-profiles|thermald|auto-cpufreq|tuned'
+$ systemctl --no-pager --type=service --state=running | grep -Ei 'tlp|power-profiles|thermald|auto-cpufreq|tuned'
 ```
 
-TODO continue
+I didn't have output so I don't have a power-management daemon that changes the CPU settings. I don't need one as we've seen that the CPU changes to C7 perfectly.
+
+Let's inspect the battery/AC power state through the kernel's power-supply interface.
+
+```bash
+$ upower -i "$(upower -e | grep BAT | head -n1)"
+```
+
+The interesing values are:
+
+- state: discharging.
+- percentage: 95.4%.
+- energy-rate: 9.20895 W. How the laptop is drawing from the battery. As NVIDIA is off and the CPU is reaching C7 very effectively, this gives a good baseline to compare against later optimizations.
+- time to empty:  7.2 hours.
+- temperature: 29.8 degrees .
+- energy-full: 69.3901 Wh. We'll talk about this in the 'capacity' attribute.
+- energy-full-design: 75.555 Wh. We'll talk about this in the 'capacity' attribute.
+- capacity: 91.8%. Its current full capacity is 69.3901 Wh (energy-full output) versus 75.555 Wh (energy-full-design output) design capacity, this is 91.8%. That's quite healthy, it has lost only about 8.2% of its original capacity.
+- charge-cycles: 393. The battery has accumulated the equivalent of 393 complete charge/discharge cycles during its lifetime. Note, one cycle does not mean “plugged in once and unplugged once.” A cycle represents cumulative usage equal to 100% of the battery's capacity, example day 1 use 30% and recharge, day 2 used 70 and recharge, this is one cycle.
+
+One curiosity about how to check the remaining battery:
+
+```bash
+$ upower -i "$(upower -e | grep BAT | head -n1)" | grep percentage
+percentage:          91.3524%
+
+$ cat /sys/class/power_supply/BAT0/capacity
+84
+
+# Why different?
+
+$ grep -E '^(POWER_SUPPLY_)?(CAPACITY|CHARGE|ENERGY|VOLTAGE|STATUS|PRESENT)' /sys/class/power_supply/BAT0/uevent
+POWER_SUPPLY_STATUS=Discharging
+POWER_SUPPLY_PRESENT=1
+POWER_SUPPLY_VOLTAGE_MIN_DESIGN=10950000
+POWER_SUPPLY_VOLTAGE_NOW=12084000
+POWER_SUPPLY_CHARGE_FULL_DESIGN=6900000
+POWER_SUPPLY_CHARGE_FULL=6337000
+POWER_SUPPLY_CHARGE_NOW=5754000
+POWER_SUPPLY_CAPACITY=84
+```
+
+The upower calculates this value relative to the battery's present full-charge capacity: POWER_SUPPLY_CHARGE_NOW / POWER_SUPPLY_CHARGE_FULL = 5754000 / 6337000 = 90.8%
+
+The kernel calculates it relative to the design capacity: POWER_SUPPLY_CHARGE_NOW / POWER_SUPPLY_CHARGE_FULL_DESIGN = 5754000 / 6900000 = 83.39 %
+
+Now we'll see see whether the discharge rate settles lower when the machine is simply sitting idle. After leaving the MacBook alone for about a minute:
+
+```bash
+$ upower -i "$(upower -e | grep BAT | head -n1)" | grep -E 'energy-rate|time to empty'
+    energy-rate:         8.92425 W
+    time to empty:       6.9 hours
+```
+
+So comparing that with the 9.2 W baseline:
+
+- First sample:   9.21 W
+- Idle sample:    8.92 W
+- Difference:    -0.29 W
+
+So the computer has a stable idle draw around ~9 W rather than some temporary background task inflating the first measurement. The estimated 6.9 hours will vary with battery charge and UPower's rolling estimate, so for tuning we'll pay more attention to energy-rate.
+
+TODO. Now we are going to identify the major consumers. The display backlight is often one of the biggest ones on a laptop:
+
+```bash
+cat /sys/class/backlight/gmux_backlight/{brightness,max_brightness}
+```
+
+Then we'll see what percentage of maximum brightness you're currently using and decide what to inspect next.
 
 ## Keyboard layout
 
