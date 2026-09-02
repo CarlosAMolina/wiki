@@ -411,6 +411,24 @@ sudo cat /sys/kernel/debug/vgaswitcheroo/switch
 sudo systemctl start lightdm  # or: sudo systemctl isolate graphical.target. If not works, reboot.
 ```
 
+The login screen of the display manager probably uses English keyboard. The XFCE's keyboard configuration applies after login, is different. To configure to Spnaish:
+
+```bash
+$ localectl status
+System Locale: LANG=en_US.UTF-8
+    VC Keymap: es
+   X11 Layout: (unset)
+# Verify we use LightDM:
+$ systemctl status display-manager
+# For LightDM, to set the system-wide X11 keyboard layout to Spanish:
+sudo localectl set-x11-keymap es
+$ localectl status
+System Locale: LANG=en_US.UTF-8
+    VC Keymap: es
+   X11 Layout: es
+$ sudo systemctl restart lightdm
+```
+
 Note. I press the XFCE power off button and it fails, the screen was black but the computer didn't turn off, after debugging, the error was that NVIDIA didn't ends a process, a nouveau issue. Lets fix this by creating a service that changes to Intel.
 
 First, lets verify if switch before LightDM solves this.
@@ -1854,13 +1872,60 @@ So comparing that with the 9.2 W baseline:
 
 So the computer has a stable idle draw around ~9 W rather than some temporary background task inflating the first measurement. The estimated 6.9 hours will vary with battery charge and UPower's rolling estimate, so for tuning we'll pay more attention to energy-rate.
 
-TODO. Now we are going to identify the major consumers. The display backlight is often one of the biggest ones on a laptop:
+Idle draw means how much electrical power the whole laptop consumes while it's basically doing nothing. As I have near 69 Wh, 69 / 9 = 7.7 hours of battery duration.
+
+Now we are going to identify the major consumers. The display backlight is often one of the biggest ones on a laptop, see the percentage of maximum brightness I'm using:
 
 ```bash
-cat /sys/class/backlight/gmux_backlight/{brightness,max_brightness}
+$ cat /sys/class/backlight/gmux_backlight/{brightness,max_brightness}
+
+12391
+82311
 ```
 
-Then we'll see what percentage of maximum brightness you're currently using and decide what to inspect next.
+Brightness is BRIGHTNESS / MAXIMUM = 12391 / 82311 = 15 % of maximum value, not a high consumption.
+
+Let's investigate PCI runtime power management to see if devices as Wi-Fi, Ethernet, USB controllers, camera... are powered while idle:
+
+```bash
+$ for d in /sys/bus/pci/devices/*; do printf '%s  %-12s  ' "$(basename "$d")" "$(cat "$d/power/control" 2>/dev/null)"; cat "$d/power/runtime_status" 2>/dev/null; done
+# Only some outputs:
+...
+0000:01:00.0  on            active
+...
+0000:01:00.1  auto          unsupported
+...
+0000:00:1f.3  auto          suspended
+...
+```
+
+Meaning of the columns:
+
+- First column. The PCI Device.
+- Second column values. Policy to use by Linux for runtime power management:
+  - on. Runtime power management is effectively disabled for this device. Linux should keep it powered/active rather than automatically runtime-suspending it.
+  - auto. Runtime power management is allowed. Linux may suspend the device when it's idle and resume it when needed.
+- Third column. The runtime power management (runtime PM) state:
+  - active. The device is currently active from the runtime PM subsystem's perspective.
+  - suspended. The device is currently runtime-suspended to save power.
+  - unsupported. Runtime PM status isn't supported/available for that device through this interface, this particular generic PCI runtime-PM interface cannot give us a normal active/suspended status. It does not necessarily mean Linux cannot control the hardware's power by some other mechanism.
+
+Combinations:
+
+- on + active. Means that runtime power management is disabled for that device, so the kernel keeps it active. But for example, we can have `on active` for 01:00.0 the NVIDIA GPU and gmux/vgaswitcheroo state can say DIS:Off even while the generic PCI runtime-PM interface still says active. So these layers don't map 1:1 on this MacBook.
+- auto + unsupported. The device is configured for automatic power management, but that PCI function doesn't support/report runtime PM through this interface, despite that, vgaswitcheroo reported `DIS-Audio: DynOff` so unsupported does not mean "definitely powered on" or "Linux cannot power it down". This is NVIDIA audio 01:00.1.
+- auto + suspended. The kernel is allowed to runtime-suspend that PCI device, and it currently has. It is what we'd expect from an idle device that supports runtime PM.
+- auto + active. It isn't necessarily bad. It can simply mean the device is currently needed
+
+TODO. Let's map the device 00:1f.3 to an actual device name:
+
+```bash
+lspci -s 00:1f.3
+```
+
+Then we'll understand what kind of device is already suspending correctly before moving to the next one.
+
+
 
 ## Keyboard layout
 
