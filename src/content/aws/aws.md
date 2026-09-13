@@ -61,6 +61,7 @@
   - [Snow](snow.html)
   - [SNS](sns.html)
   - [SQS. Simple Queue Service](sqs.html)
+  - [SNS VS SQS VS EventBridge VS Kinesis](sns-vs-sqs-vs-eventbridge-vs-kinesis.html)
   - [Step Function](sf.html)
   - [Storage Gateway](storage-gateway.html)
   - [Textract](textract.html)
