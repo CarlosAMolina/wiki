@@ -27,21 +27,78 @@ The following sections show a summary of the required commands.
 
 ## Installation
 
-In the [main installation web page](https://archlinux.org/download/), select a mirror, for example [Spain](https://mirror.es.cdn-perfprod.com/archlinux/iso/2026.07.01/) and download the `.iso` file, for example `archlinux-2026.07.01-x86_64.iso`.
+### Download
 
-Verify the signature matches the one indicated in the [main installation web page](https://archlinux.org/download/):
+In the [main installation web page](https://archlinux.org/download/), select a mirror, for example [Spain](https://mirror.es.cdn-perfprod.com/archlinux/iso/2026.09.01/) and download the `.iso` file:
 
 ```bash
-sha256sum ~/Downloads/archlinux-2026.07.01-x86_64.iso
+VERSION=2026.09.01
+curl -LO "https://mirror.es.cdn-perfprod.com/archlinux/iso/$VERSION/archlinux-$VERSION-x86_64.iso"
 ```
 
-Lets [configure the USB](https://wiki.archlinux.org/title/Netboot#Boot_from_a_USB_flash_drive)
+### Verify
 
-- Before plug the USB run `lsblk`, plug the USB and run `lsblk` again, the new name that appears is the USB, for example `sda`.
-- Unmount the USB: `sudo umount /dev/sda*`.
-- Write the ISO sector by sector, this does not require format the USB: `sudo dd if=~/Downloads/archlinux-2026.07.01-x86_64.iso of=/dev/sda bs=4M status=progress oflag=sync`.
-- When finished, run `sync` to ensure all writes to the USB have ended.
-- Eject the USB: `sudo eject /dev/sda`.
+To verify that the ISO was downloaded correctly and has not been altered:
+
+```bash
+curl -LO "https://mirror.es.cdn-perfprod.com/archlinux/iso/$VERSION/b2sums.txt"
+b2sum -c b2sums.txt
+```
+
+The important line is the one that validates the .iso, for example `archlinux-2026.09.01-x86_64.iso: OK`.
+
+Verify the file was signed by the expected Arch release key:
+
+```bash
+curl -LO "https://mirror.es.cdn-perfprod.com/archlinux/iso/$VERSION/archlinux-$VERSION-x86_64.iso.sig"
+# Download the signing key:
+gpg --auto-key-locate clear,wkd -v --locate-external-key pierre@archlinux.org
+gpg --verify "archlinux-$VERSION-x86_64.iso.sig" "archlinux-$VERSION-x86_64.iso"
+```
+
+The output may show a warning but the important part that confirms the verification was successful is `gpg: Good signature from "Pierre Schmitz <pierre@archlinux.org>" [unknown]`.
+
+### Configure the USB
+
+Let's [configure the USB](https://wiki.archlinux.org/title/Netboot#Boot_from_a_USB_flash_drive)
+
+Before plug the USB run `lsblk` to identify the device:
+
+```bash
+lsblk
+```
+
+Plug the USB and run `lsblk` again, the new name that appears is the USB device, for example `sda`.
+
+```bash
+DEVICE=sda
+```
+
+Unmount the USB:
+
+```bash
+sudo umount /dev/"${DEVICE}"*
+```
+
+Write the ISO sector by sector, this does not require format the USB:
+
+```bash
+sudo dd if="/tmp/archlinux-$VERSION-x86_64.iso" of="/dev/$DEVICE" bs=4M status=progress oflag=sync
+```
+
+When finished, ensure all writes to the USB have ended. To tell the operating system to finish writing any data still held in memory buffers to the USB:
+
+```bash
+sync
+```
+
+No output means it completed successfully.
+
+Eject the USB:
+
+```bash
+sudo eject /dev/${DEVICE}
+```
 
 ### MacBook
 
@@ -127,7 +184,7 @@ mkdir -p /mnt/boot
 mount /dev/sda1 /mnt/boot
 ```
 
-Lets start these packages:
+Let's start these packages:
 
 ```bash
 # pacstrap: installs packages into a new Arch system located somewhere else (e.g. /mnt).
@@ -255,7 +312,7 @@ If we don't see line similar to `Found Mac OS X` or `Found Darwin`, maybe we nee
 
 The command `efibootmgr` must show Mac OS X.
 
-Lets finish the installation:
+Let's finish the installation:
 
 ```bash
 # Exit chroot.
@@ -387,12 +444,12 @@ lspci -nn | grep -E "VGA|3D"
 ls /sys/class/backlight
 # gmux_backlight -> I am using gmux graphics multiplexer, the gmux chip controls the backlight on this Mac This hardware multiplexer selects which GPU drives the internal display.
 echo IGD | sudo tee /sys/kernel/debug/vgaswitcheroo/switch
-# If no error -> we changed the GPU, the firmware does not lock the GPU selection, good news. Lets see if the changes was accepted.
+# If no error -> we changed the GPU, the firmware does not lock the GPU selection, good news. Let's see if the changes was accepted.
 sudo cat /sys/kernel/debug/vgaswitcheroo/switch
 # It should say:
 # IGD:+:Pwr
 # DIS: :DynOff  # DynOff = Dynamic power management turned it off
-# If not, lets continue investigating.
+# If not, let's continue investigating.
 # Logs
 sudo dmesg | tail -50 | grep -i -E "gmux|vga|switch|nouveau|i915"
 # IGD should switch the display to the integrated GPU only if no userspace process is currently using the GPU
@@ -429,9 +486,9 @@ System Locale: LANG=en_US.UTF-8
 $ sudo systemctl restart lightdm
 ```
 
-Note. I press the XFCE power off button and it fails, the screen was black but the computer didn't turn off, after debugging, the error was that NVIDIA didn't ends a process, a nouveau issue. Lets fix this by creating a service that changes to Intel.
+Note. I press the XFCE power off button and it fails, the screen was black but the computer didn't turn off, after debugging, the error was that NVIDIA didn't ends a process, a nouveau issue. Let's fix this by creating a service that changes to Intel.
 
-First, lets verify if switch before LightDM solves this.
+First, let's verify if switch before LightDM solves this.
 
 ```bash
 # Boot to multi-user.target
@@ -451,7 +508,7 @@ cat /sys/kernel/debug/vgaswitcheroo/switch
 sudo systemctl start lightdm
 # If XFCE starts and glxinfo -B reports OpenGL renderer string: Mesa Intel HD Graphics 4000, the proven is ok.
 glxinfo -B | grep "OpenGL renderer"
-# Lets automate it.
+# Let's automate it.
 sudo vim /etc/systemd/system/gpu-switch-intel.service
 ```
 
@@ -500,7 +557,7 @@ sudo systemctl daemon-reload
 sudo systemctl show lightdm.service -p Requires -p After  # now we should see gpu-switch-intel.service
 ```
 
-Lets reboot not shudown to test the new systemd works.
+Let's reboot not shudown to test the new systemd works.
 
 ```bash
 # Boot to multi-user.target
@@ -587,7 +644,7 @@ sudo systemctl start lightdm
 glxinfo -B | grep "OpenGL renderer"  # Should show Intel.
 ```
 
-To verify that this works ok, lets investigate the service after a reboot:
+To verify that this works ok, let's investigate the service after a reboot:
 
 ```bash
 $ systemctl status gpu-switch-intel.service
@@ -655,7 +712,7 @@ cat: /sys/kernel/debug/vgaswitcheroo/switch: No such file or directory
 # So vgaswitcheroo/switch is abset and our gpu-switch-intel.service cannot work.
 ```
 
-As Nouveau is not present, lets see if the Intel GPU is driving the console and not changes are required:
+As Nouveau is not present, let's see if the Intel GPU is driving the console and not changes are required:
 
 ```bash
 $ cat /sys/class/graphics/fb0/name
@@ -675,7 +732,7 @@ $ journalctl -b -k | grep -i gmux
 Aug 08 22:40:33 macbook kernel: apple_gmux: Found gmux version 1.9.35 [classic]
 ```
 
-The previous output ony shay that apple_gmux detected the hardware and initialized tits driver, not what GPU is routed to the display. Lets if X can start on Intel without our switch service, as we are in multi-user.target, run:
+The previous output ony shay that apple_gmux detected the hardware and initialized tits driver, not what GPU is routed to the display. Let's if X can start on Intel without our switch service, as we are in multi-user.target, run:
 
 ```bash
 $ sudo systemctl start lightdm
@@ -703,7 +760,7 @@ Aug 08 23:08:03 macbook systemd[1]: gpu-switch-intel.service: Failed with result
 Aug 08 23:08:03 macbook systemd[1]: Failed to start Switch Apple gmux to Intel and unload nouveau.
 ```
 
-Lets see if LightDM can start on Intel without the gpu-switch service:
+Let's see if LightDM can start on Intel without the gpu-switch service:
 
 ```bash
 sudo systemctl disable gpu-switch-intel.service
@@ -729,7 +786,7 @@ We can see why Xorg did not use i915:
 grep -Ei 'i915|modeset|glamor|dri|drm|\(EE\)|failed' /var/log/Xorg.0.log
 ```
 
-The logs show that simpledrm is being the primary Xorg device instead of Intel. Lets see the DRM devices:
+The logs show that simpledrm is being the primary Xorg device instead of Intel. Let's see the DRM devices:
 
 ```bash
 $ ls -l /dev/dri/by-path/
@@ -744,7 +801,7 @@ We had:
 - PCI 00:02.0 -> Intel HD 4000 -> /dev/dri/card1
 - PCI 01:00.0 -> simple framebuffer -> /dev/dri/card0
 
-Lets configure Xorg to use card1:
+Let's configure Xorg to use card1:
 
 ```bash
 sudo mkdir -p /etc/X11/xorg.conf.d
@@ -765,7 +822,7 @@ Restart LightDM and re-check glxinfo before reboot:
 sudo systemctl restart lightdm
 ```
 
-Ups, black screen, lets investigate:
+Ups, black screen, let's investigate:
 
 ```bash
 $ sudo rm /etc/X11/xorg.conf.d/20-intel.conf
@@ -808,9 +865,9 @@ sudo ls -l /sys/firmware/efi/efivars/gpu-power-prefs-*
 sudo chattr -i /sys/firmware/efi/efivars/gpu-power-prefs-fa4ce28d-b62f-4c99-9cc3-6815686e30f9 2>/dev/null; sudo rm -f /sys/firmware/efi/efivars/gpu-power-prefs-fa4ce28d-b62f-4c99-9cc3-6815686e30f9
 ```
 
-So forgot about modify the EFI NVRAM and lets try with improve the vgaswitcheroo service, lets check if vgaswitcheroo can switch/power down NVIDIA without immediately unloading Nouveau.
+So forgot about modify the EFI NVRAM and let's try with improve the vgaswitcheroo service, let's check if vgaswitcheroo can switch/power down NVIDIA without immediately unloading Nouveau.
 
-The part that takes 30 seconds is `sudo modprobe nouveau`, lets see if we can omit this part. First, enable again nouveau:
+The part that takes 30 seconds is `sudo modprobe nouveau`, let's see if we can omit this part. First, enable again nouveau:
 
 ```bash
 sudo modprobe nouveau
@@ -872,7 +929,7 @@ BOOT
  XFCE + Intel/crocus acceleration
 ```
 
-Lets create a cleaner final service:
+Let's create a cleaner final service:
 
 ```bash
 sudo systemctl edit --full gpu-switch-intel.service
@@ -909,7 +966,7 @@ WantedBy=graphical.target
 sudo systemctl daemon-reload
 ```
 
-Lets improve the service
+Let's improve the service
 
 ```bash
 sudo cp /etc/systemd/system/gpu-switch-intel.service \
@@ -948,7 +1005,7 @@ done
 # to IGD (Integrated Graphics Device), which is our Intel HD 4000.
 # Again: "$SWITCH" is a kernel control interface, not an ordinary file.
 # The shell sends the characters "IGD\n" to the kernel through that
-# interface. The kernel interprets IGD as the GPU-switching command.
+# interface. The kernel interpret's IGD as the GPU-switching command.
 # Conceptually:
 #   echo IGD > "$SWITCH"
 # means:
@@ -1045,7 +1102,7 @@ BOOT
                        XFCE + Intel/crocus acceleration
 ```
 
-Reboot does not work :(, lets investigate, force power off by pressing the power button, after that:
+Reboot does not work :(, let's investigate, force power off by pressing the power button, after that:
 
 ```bash
 journalctl -b -1
@@ -1101,7 +1158,7 @@ sudo systemctl daemon-reload
 sudo systemd-analyze verify /etc/systemd/system/gpu-switch-intel.service
 ```
 
-Before restart, lets test the ExecStop behavior manually while we can still inspect the resulting GPU state:
+Before restart, let's test the ExecStop behavior manually while we can still inspect the resulting GPU state:
 
 ```bash
 $ sudo systemctl stop gpu-switch-intel.service
@@ -1117,7 +1174,7 @@ $ sudo cat /sys/kernel/debug/vgaswitcheroo/switch
 2:DIS-Audio: :DynOff:0000:01:00.1
 ```
 
-As we see, our service does not turn off DIS, lets fix this, as we can turn it off with `sudo sh -c 'echo OFF > /sys/kernel/debug/vgaswitcheroo/switch'`, lets add it:
+As we see, our service does not turn off DIS, let's fix this, as we can turn it off with `sudo sh -c 'echo OFF > /sys/kernel/debug/vgaswitcheroo/switch'`, let's add it:
 
 ```bash
 sudo vim /usr/local/sbin/gpu-switch-intel
@@ -1154,7 +1211,7 @@ done
 # to IGD (Integrated Graphics Device), which is our Intel HD 4000.
 # Again: "$SWITCH" is a kernel control interface, not an ordinary file.
 # The shell sends the characters "IGD\n" to the kernel through that
-# interface. The kernel interprets IGD as the GPU-switching command.
+# interface. The kernel interpret's IGD as the GPU-switching command.
 # Conceptually:
 #   echo IGD > "$SWITCH"
 # means:
@@ -1204,7 +1261,7 @@ This solution was not correct, after reboot, it works but with kernel warnings. 
 
 My boot log says Nouveau creates nouveaudrmfb and makes it the primary fbcon device. If we detach the console from that framebuffer after Intel/Xorg is established, then during reboot there should be no fbcon ->nouveaudrmfb -> dead NVIDIA path to trigger the failure we saw.
 
-Lets force fbcon to use Intel’s fb1 instead of Nouveau’s fb0. The numbers can be checked with:
+Let's force fbcon to use Intel’s fb1 instead of Nouveau’s fb0. The numbers can be checked with:
 
 ```bash
 $ cat /proc/fb
@@ -1290,7 +1347,7 @@ Idea: Nouveau is loaded and NVIDIA GPU is off.
 
 #### MacBook. Wifi
 
-Lets configure the Wifi.
+Let's configure the Wifi.
 
 Identify the Broadcom chip:
 
@@ -1299,7 +1356,7 @@ lspci -nn | grep -i network
 # 03:00.0 Network controller [0280]: Broadcom Inc. and subsidiaries BCM4331 802.11a/b/g/n [14e4:4331] (rev 02)
 ```
 
-We need to install the driver for the PCI ID `14e4:4331`, some options are `b43`and `brcmsmac` which is proprietary, so lets use `b43` and only change to `brcmsmac` if we have stability or performance problems.
+We need to install the driver for the PCI ID `14e4:4331`, some options are `b43`and `brcmsmac` which is proprietary, so let's use `b43` and only change to `brcmsmac` if we have stability or performance problems.
 
 Check if `b43` is the driver in use:
 
@@ -1328,7 +1385,7 @@ b43-phy0: Broadcom 4331 WLAN found
 Firmware file "b43/ucode29_mimo.fw" not found
 ```
 
-Lets see if we have the firmware:
+Let's see if we have the firmware:
 
 ```bash
 $ pacman -Qs firmware
@@ -1340,7 +1397,7 @@ local/linux-firmware-broadcom 20260622-1
 
 The firmware `linux-firmware-broadcom` is installed but this package does not have the proprietary firmware needed by BCM4331, because Broadcom's old firmware wasn't released under a license that allowed redistribution.
 
-Lets install with AUR:
+Let's install with AUR:
 
 ```bash
 # base-devel has tools like: make, gcc, patch...
@@ -1362,7 +1419,7 @@ nmcli device wifi list  # Scan networks.
 nmcli connection show
 ```
 
-If I try to connect to the WiFI using the XFCE WiFi graphical icon, I get the error `Failed to execute command "nm-connection-editor`. Lets fix it:
+If I try to connect to the WiFI using the XFCE WiFi graphical icon, I get the error `Failed to execute command "nm-connection-editor`. Let's fix it:
 
 ```bash
 which nm-connection-editor  # No output -> no installed.
@@ -1402,7 +1459,7 @@ Concepts:
 
 - PipeWire. The audio engine/server. Moves audio between applications and hardware.
 - WirePlumber. The manager for PipeWire. Decides which speakers/microphones to use, routing, etc.
-- pipewire-pulse. A PulseAudio compatibility layer. Lets programs designed for PulseAudio (pactl, older applications, etc.) talk to PipeWire.
+- pipewire-pulse. A PulseAudio compatibility layer. Let's programs designed for PulseAudio (pactl, older applications, etc.) talk to PipeWire.
 - PulseAudio. An older audio server. It allowed multiple applications to share audio, control volumes independently, switch outputs, route audio, etc. PipeWire has largely replaced it on modern Linux desktops.
 - ALSA (Advanced Linux Sound Architecture). The low-level Linux audio system. Provides kernel drivers and interfaces for communicating with sound hardware.
 - pactl. Command to issue control commands to PulseAudio.
@@ -1417,7 +1474,7 @@ Audio flow in
 
 Some applications can use the old path and other the new, so we will configure both. With pipewire-pulse the PipeWire system is compatible with apps expecting a PulseAudio server.
 
-Lets check the computer hardware and software to configure the audio.
+Let's check the computer hardware and software to configure the audio.
 
 Hardware (the output contains only a summary of the desired info):
 
@@ -1573,7 +1630,7 @@ pw-record --sample-count=240000 /tmp/mic-test.wav
 pw-play /tmp/mic-test.wav
 ```
 
-Lets see if `RTKit error: org.freedesktop.DBus.Error.ServiceUnknown` because we installed rtkit:
+Let's see if `RTKit error: org.freedesktop.DBus.Error.ServiceUnknown` because we installed rtkit:
 
 ```bash
 # Should be 'active (running)'. If inactive, don't manually enable it, is better to inspect its D-Bus activation because normally it should be started on demand:
@@ -1583,7 +1640,7 @@ systemctl --no-pager status rtkit-daemon
 journalctl --user -b -u pipewire -u wireplumber --since "10 minutes ago" --no-pager | grep -i rtkit
 ```
 
-We have `DIS-Audio: DynOff`, which means that it is runtime suspended, if we connect something that required NVIDIA HDMI audio, Linux could attempt to wake it, but as I had problems trying to power NVIDIA up (and when it was up the computer temperature increased and the fans were too loud), lets tell WirePlumber to ignore NVIDIA device entirely. After disabling, we won't be able to send audio through the NVIDIA GPU.
+We have `DIS-Audio: DynOff`, which means that it is runtime suspended, if we connect something that required NVIDIA HDMI audio, Linux could attempt to wake it, but as I had problems trying to power NVIDIA up (and when it was up the computer temperature increased and the fans were too loud), let's tell WirePlumber to ignore NVIDIA device entirely. After disabling, we won't be able to send audio through the NVIDIA GPU.
 
 First, verify that nothing depends on it.
 
