@@ -125,31 +125,46 @@ When we reach the prompt:
 root@archiso ~#
 ```
 
-If we want to connect via ssh:
+If we want to connect via SSH, first I plug the Ethernet cable and:
 
 ```bash
-# In Arch
+# Verify the internet connection.
+ip link
+ping 8.8.8.8
+
 passwd # Write a password.
 systemctl start sshd
-ip a | grep 192  # Get the ip to connect to.
+ # Get the ip to connect to.
+ip a | grep 192
+```
 
-# In another pc
+Now, from another PC we can connect to that IP, for example:
+
+```bash
 ssh root@192.168.1.40
 ```
 
-I it's using an english layout, you can set it to spanish see the `Keyboard layout` section, if not, the `/` key in english is the key `-` and the `-` in english is the key `?` (don't press shift).
+Type the `/` and `-`  keys, if different keys are printed, you don't have an spanish layout, check its language with:
+
+```bash
+localectl status
+```
+
+For an english layout, to write:
+
+- `/`:  press `-`.
+- `-`: press `?` (don't press shift).
+
+To set the layout to spanish:
+
+```bash
+loadkeys es
+```
 
 Let's see files/directories we're booted in UEFI mode, we're in UEFI mode if the next command shows files/dirs:
 
 ```bash
 ls /sys/firmware/efi
-```
-
-Verify the internet connection (I plugged the ethernet cable):
-
-```bash
-ip link
-ping 8.8.8.8
 ```
 
 See current partition layout:
@@ -184,45 +199,54 @@ mkdir -p /mnt/boot
 mount /dev/sda1 /mnt/boot
 ```
 
-Let's start these packages:
+Let's install some packages like:
+
+- base: minimal Arch system.
+- linux: kernel.
+- linux-firmware: firmware for devices.
+- intel-ucode: CPU microcode updates for your Intel CPU.
+- base-devel: useful build tools.
+- networkmanager: easy network management.
+- Others like vim or git.
+
+At this point, the Arch ISO is running from the USB drive. The live USB does have its own temporary filesystem, but changes made there are not the installed system and may disappear after reboot. Installing packages with `pacstrap` into `/mnt`, where we mounted the new `/dev/sda4` partition, places them on the internal disk.
 
 ```bash
-# pacstrap: installs packages into a new Arch system located somewhere else (e.g. /mnt).
 pacstrap -K /mnt base linux linux-firmware intel-ucode base-devel networkmanager vim git
-# base: minimal Arch system.
-# linux: kernel.
-# linux-firmware: firmware for devices.
-# intel-ucode: CPU microcode updates for your Intel CPU.
-# base-devel: useful build tools.
-# networkmanager: easy network management.
 ```
 
 Generate /etc/fstab (file systems table) to tell Linux the fileystems to mount at boot:
 
 ```bash
 genfstab -U /mnt >> /mnt/etc/fstab
-# We see / mounted on /dev/sda4 and /boot/ on existing /dev/sda1 EFI partition.
+```
+
+We can check that `/` is mounted on `/dev/sda4` and `/boot/` on existing `/dev/sda1` EFI partition:
+
+```bash
 cat /mnt/etc/fstab
 ```
 
 Enter the new Arch system and we are not longer configuring the live USB:
 
 ```bash
-arch-chroot /mnt  # `root@archiso ~ #` changes to [root@archiso /]#`
+arch-chroot /mnt
 ```
 
-Configure the Arch system:
+With previous command we see that `root@archiso ~ #` changes to [root@archiso /]#`.
+
+Time to configure the Arch system!
 
 ```bash
-# I'm in Spain. Create a symbolic link that tells Linux your time zone.
+# I'm in Spain. Create a symbolic link that tells Linux the time zone.
 ln -sf /usr/share/zoneinfo/Europe/Madrid /etc/localtime
 # Copy the current system time into the hardware clock.
 hwclock --systohc
 # Language.
 vim /etc/locale.gen
 # Ucomment these two lines by removing the leading #:
-# - en_US.UTF-8 because most documentation, logs, and error messages are in English.
-# - es_ES.UTF-8 because it's useful if you want Spanish formatting or applications.
+# - en_US.UTF-8. Because most documentation, logs, and error messages are in English.
+# - es_ES.UTF-8. Because it's useful if you want Spanish formatting or applications.
 # Generate the locales.
 locale-gen
 # Create the default locale file. We keep the system language in English to make troubleshooting easier because almost all Linux documentation and forum posts assume English messages.
@@ -237,10 +261,11 @@ cat > /etc/hosts <<EOF
 ::1         localhost
 127.0.1.1   macbook.localdomain macbook
 EOF
-# root password.
+# Set the root password.
 passwd
 # Create user.
 useradd -m -G wheel -s /bin/bash x
+# Set a password for the user.
 passwd x
 # Install sudo and configure.
 pacman -S sudo
