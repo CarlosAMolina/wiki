@@ -1355,9 +1355,9 @@ Idea: Nouveau is loaded and NVIDIA GPU is off.
 
 #### MacBook. Wifi
 
-Let's configure the Wifi.
+Let's configure the Wifi to avoid plug the Ethernet cable.
 
-Identify the Broadcom chip:
+I am using a Broadcom chip:
 
 ```bash
 lspci -nn | grep -i network
@@ -1378,14 +1378,14 @@ $ lspci -k -s 03:00.0
 
 We have `bcma`, this is not the Wi-Fi driver, is the Broadcom bus driver, that discovers the Broadcom chip and then another driver (like `b43`) should attach to the Wi-Fi core.
 
-Checking the system logs and using Artificial Intelligence to analyze them, I know that everyting is ok in my computer (hardware, PCI, driver and bus) and I only need to install the firmware:
+Checking the following system logs and using Artificial Intelligence to analyze them, I know that everyting is ok in my computer (hardware, PCI, driver and bus) and I only need to install the firmware:
 
 ```bash
 sudo dmesg | grep -Ei 'b43|bcma|firmware|bcm'
 sudo journalctl -k -b | grep -Ei 'b43|bcma|firmware'
 ```
 
-We find:
+In the previos logs I could see that:
 
 ```bash
 b43-phy0: Broadcom 4331 WLAN found
@@ -1423,7 +1423,7 @@ nmcli device  # We should see something like (disconnected instead of unavailabl
 nmcli device wifi list  # Scan networks.
 # Connect to the SSID: nmcli device wifi connect "YOUR_WIFI_NAME" password "YOUR_PASSWORD"
 # The password is stored at sudo cat /etc/NetworkManager/system-connections/{WIFI_NAME}.nmconnection
-# Show sotred connection profiles
+# Show stored connection profiles
 nmcli connection show
 ```
 
@@ -1443,7 +1443,7 @@ sudo pacman -S firefox
 # - ttf-font. Select noto-fonts.
 ```
 
-If we get `The requested URL returned error: 404` errors, usually mean your local package databases reference package versions that the mirrors have already replaced. Refresh repository databases and upgrade the system (the system must be full upgraded to install software) with:
+If we get `The requested URL returned error: 404` errors, usually means the local package databases reference package versions that the mirrors have already replaced. Refresh repository databases and upgrade the system (the system must be full upgraded to install software) with:
 
 ```bash
 sudo pacman -Syyu
