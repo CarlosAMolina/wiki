@@ -399,6 +399,8 @@ sudo systemctl restart sshd
 
 #### Configure Graphics
 
+TODO. Write 'graphics-mac.md' correctly and replace this 'Configure Graphics' section with the content of that file, after that drop that file.
+
 Let's configure the graphics of the system:
 
 ```bash
