@@ -161,6 +161,8 @@ To set the layout to spanish:
 loadkeys es
 ```
 
+#### Configure boot partitions
+
 Let's see files/directories we're booted in UEFI mode, we're in UEFI mode if the next command shows files/dirs:
 
 ```bash
@@ -177,11 +179,13 @@ fdisk -l
 The previous commands tell me:
 
 ```bash
-/dev/sda1    EFI System Partition
-/dev/sda2    macOS
-/dev/sda3    macOS Recovery
-/dev/sda4    Ubuntu (we'll replace it with Arch)
+/dev/sda1   200M     EFI System Partition
+/dev/sda2   93.1G    macOS
+/dev/sda3   619.9M   macOS Recovery
+/dev/sda4   371.8G   Ubuntu (we'll replace it with Arch)
 ```
+
+##### TODO modify this section to use only correct commands
 
 Delete Ubuntu and mount a new Arch partition:
 
@@ -192,7 +196,204 @@ mkfs.ext4 /dev/sda4
 mount /dev/sda4 /mnt
 ```
 
-We won't format the EFI partition, we will use the existing one:
+We won't format the EFI partition (/dev/sda1), we will use the existing one.
+
+To configure the EFI partition, we must take into account that it has only 200 MB; GRUB will copy all its modules and translations into the EFI partition, and if it runs out of space we will have an error like `cannot copy '/usr/share/locale/ca/LC_MESSAGES/grub.mo' to '/boot/grub/locale/ca.mo': No space left on device.`.
+
+To avoid this error, we can't mount the EFI System Partition directly as /boot, it should be:
+
+- /boot: directory on the Arch root filesystem (ext4). The Linux kernel and initramfs live on this large ext4 partition.
+- /boot/efi EFI System Partition (FAT32). Only the EFI boot files live on the 200 MB EFI partition.
+
+What is initramfs (initial RAM filesystem)? It is a temporary filesystem loaded into memory during the early stage of booting. It contains the essential tools, kernel modules, and configuration needed to detect hardware, unlock encrypted disks, assemble storage devices, and mount the real root filesystem. Once the root filesystem is available, control is handed over to the normal userspace.
+
+Let's configure the EFI partition:
+
+```bash
+mkdir -p /mnt/boot/efi
+mount /dev/sda1 /mnt/boot/efi
+# Check with:
+df -h  # See that `boot` is mounted on the large Arch partition and `efi` on the 200 MB partition.
+```
+
+Let's install some packages like:
+
+- base: minimal Arch system.
+- linux: kernel.
+- linux-firmware: firmware for devices.
+- intel-ucode: installs intel-ucode.img, an image with microcode updates for Intel CPUs.
+- base-devel: useful build tools.
+- networkmanager: easy network management.
+- Others like vim or git.
+
+CPU microcode is low-level instruction data that the processor uses internally to implement or correct certain CPU operations. Manufacturers can update it to fix processor bugs, improve stability, or address security issues. Linux loads the update early during boot, before the rest of the system starts.
+
+At this point, the Arch ISO is running from the USB drive. The live USB does have its own temporary filesystem, but changes made there are not the installed system and may disappear after reboot. Installing packages with `pacstrap` into `/mnt`, where we mounted the new `/dev/sda4` partition, places them on the internal disk.
+
+A filesystem is the structure and rules an operating system uses to store, organize, and access files on a storage device or partition. It determines how files, directories, metadata, and free space are managed. Example:
+
+- ext4. Common on Linux; supports Linux permissions, ownership, symbolic links, journaling, and files larger than 4 GiB.
+- FAT32. Widely supported by operating systems and firmware; lacks Unix permissions and journaling, and has a maximum individual file size of about 4 GiB.
+
+For example, Linux is typically installed on ext4, while an EFI System Partition is commonly formatted as FAT32 because system firmware can read it directly.
+
+Then the installation is done with:
+
+```bash
+pacstrap -K /mnt base linux linux-firmware intel-ucode base-devel networkmanager vim git
+```
+
+Generate /etc/fstab (file systems table) to tell Linux the fileystems to mount at boot:
+
+```bash
+genfstab -U /mnt >> /mnt/etc/fstab
+```
+
+We can check that `/` is mounted on `/dev/sda4` and `/boot/efi` on existing `/dev/sda1` EFI partition:
+
+```bash
+cat /mnt/etc/fstab
+```
+
+Enter the new Arch system and we are not longer configuring the live USB:
+
+```bash
+arch-chroot /mnt
+```
+
+With previous command we see that `root@archiso ~ #` changes to [root@archiso /]#`.
+
+Time to configure the Arch system!
+
+```bash
+# I'm in Spain. Create a symbolic link that tells Linux the time zone.
+ln -sf /usr/share/zoneinfo/Europe/Madrid /etc/localtime
+# Copy the current system time into the hardware clock.
+hwclock --systohc
+# Language.
+vim /etc/locale.gen
+# Ucomment these two lines by removing the leading #:
+# - en_US.UTF-8. Because most documentation, logs, and error messages are in English.
+# - es_ES.UTF-8. Because it's useful if you want Spanish formatting or applications.
+# Generate the locales.
+locale-gen
+# Create the default locale file. We keep the system language in English to make troubleshooting easier because almost all Linux documentation and forum posts assume English messages.
+echo "LANG=en_US.UTF-8" > /etc/locale.conf
+# Keyboard layot.
+echo "KEYMAP=es" > /etc/vconsole.conf
+# Hostname.
+echo "macbook" > /etc/hostname
+# /etc/hosts
+cat > /etc/hosts <<EOF
+127.0.0.1   localhost
+::1         localhost
+127.0.1.1   macbook.localdomain macbook
+EOF
+# Set the root password.
+passwd
+# Create user.
+useradd -m -G wheel -s /bin/bash x
+# Set a password for the user.
+passwd x
+# Install sudo and configure.
+pacman -S sudo
+# Remove the `#` in `# %wheel ALL=(ALL:ALL) ALL`, to allow users in the wheel group to use sudo.
+# Enable networking at boot.
+systemctl enable NetworkManager
+```
+
+Now we will configure the Mac boot with GRUB because it detects macOS automatically and is more flexible than systemd-boot for dual-booting.
+
+```bash
+pacman -S grub efibootmgr os-prober
+# grub: the bootloader.
+# efibootmgr: creates UEFI boot entries.
+# os-prober: finds macOS automatically.
+# Install GRUB into the EFI partition without touching macOS.
+grub-install \
+    --target=x86_64-efi \
+    --efi-directory=/boot/efi \
+    --bootloader-id=GRUB
+    --recheck
+# Enable macOS detection.
+vim /etc/default/grub
+# Uncomment `#GRUB_DISABLE_OS_PROBER=false`
+# Generate the configuration.
+grub-mkconfig -o /boot/grub/grub.cfg
+# If we don't see line similar to `Found Mac OS X` or `Found Darwin`, maybe we need to hold the option key (⌥) at startup to select Mac when booting.
+efibootmgr  # This command must show Mac OS X.
+# if this command does not show these 3 .img files:
+ls -lh /boot
+# total 158M
+# drwxr-xr-x 5 root root  512 Jan  1  1970 efi
+# drwxr-xr-x 6 root root 4.0K Aug  4 00:08 grub
+# -rw------- 1 root root 128M Aug  4 00:18 initramfs-linux.img
+# -rw-r--r-- 1 root root  15M May 12 19:27 intel-ucode.img
+# -rw-r--r-- 1 root root  17M Aug  4 00:08 vmlinuz-linux
+# We can get intel-ucode.img running again:
+pacman -S intel-ucode
+# I don't need to repeat grub-install, it installs or repairs GRUB’s EFI files and boot entry; installing intel-ucode does not change those.
+# grub-mkconfig is needed so GRUB adds the microcode image to its boot configuration.
+grub-mkconfig -o /boot/grub/grub.cfg
+# Later we will reboot for the CPU microcode update to take effect.
+# Exit chroot.
+exit  # `[root@archiso /]#` should change to `root@archiso ~ #`
+umount -R /mnt/
+# Reboot and remove the USB.
+reboot
+```
+
+##### GRUB Error
+
+If we enter in the GNU GRUB screen with minimal bash-lie line editing support, is because GRUB started but couldn't find its configuration file, the UEFI is finding grubx64.efi but grubx64.efi can't locate its modules or grub.cfg.
+
+The fastest way to recover is repeat the first steps:
+
+- Reboot.
+- Hold Option (⌥).
+- Boot from the Arch USB again.
+- Enter the Arch installation like we did in the first steps. Acess the arch-chroot.
+
+The GRUB Error happened to me because I didn't configure correctly the /boot partition and I needed to change it to /boot/efi, in the following command we can see how to make this change:
+
+```bash
+mount /dev/sda4 /mnt
+mount /dev/sda1 /mnt/boot/efi
+# Enter the new Arch system and we are not longer configuring the live USB.
+arch-chroot /mnt
+# With previous command we see that `root@archiso ~ #` changes to [root@archiso /]#`.
+# Install GRUB into the EFI partition without touching macOS.
+grub-install --target=x86_64-efi \
+  --efi-directory=/boot/efi \
+  --bootloader-id=GRUB \
+  --recheck
+grub-mkconfig -o /boot/grub/grub.cfg
+vim /etc/fstab  # Change `... /boot vfat ...` to `... /boot/efi/ vfat ...`
+# Verify:
+grep -E '/boot| / ' /etc/fstab  # You should see /boot/efi.
+grub-probe /  # Should report ext2, GRUB uses this module for some fileystems, ext2 is not a fileystem.
+grub-probe /boot/efi  # Should report fat.
+# Exit chroot.
+exit  # `[root@archiso /]#` should change to `root@archiso ~ #`
+umount -R /mnt
+# Reboot and remove the USB.
+reboot
+```
+
+##### TODO remove this old wrong section when the previous one is done (this is set for now only as a backup while the correct section is finished)
+
+[SECTION TO REMOVE: START]
+
+Delete Ubuntu and mount a new Arch partition:
+
+```bash
+cfdisk /dev/sda
+# Select /dev/sda4, Delete and New.
+mkfs.ext4 /dev/sda4
+mount /dev/sda4 /mnt
+```
+
+We won't format the EFI partition (/dev/sda1), we will use the existing one:
 
 ```bash
 mkdir -p /mnt/boot
@@ -210,6 +411,15 @@ Let's install some packages like:
 - Others like vim or git.
 
 At this point, the Arch ISO is running from the USB drive. The live USB does have its own temporary filesystem, but changes made there are not the installed system and may disappear after reboot. Installing packages with `pacstrap` into `/mnt`, where we mounted the new `/dev/sda4` partition, places them on the internal disk.
+
+A filesystem is the structure and rules an operating system uses to store, organize, and access files on a storage device or partition. It determines how files, directories, metadata, and free space are managed. Example:
+
+- ext4. Common on Linux; supports Linux permissions, ownership, symbolic links, journaling, and files larger than 4 GiB.
+- FAT32. Widely supported by operating systems and firmware; lacks Unix permissions and journaling, and has a maximum individual file size of about 4 GiB.
+
+For example, Linux is typically installed on ext4, while an EFI System Partition is commonly formatted as FAT32 because system firmware can read it directly.
+
+Then the installation is done with:
 
 ```bash
 pacstrap -K /mnt base linux linux-firmware intel-ucode base-devel networkmanager vim git
@@ -274,7 +484,7 @@ pacman -S sudo
 systemctl enable NetworkManager
 ```
 
-Make the Mac boot cleanly, we will use GRUB over systemd-boot because detects macOS automatically and is more flexible than systemd-boot for dual-booting.
+Now we will configure the Mac boot with GRUB because it detects macOS automatically and is more flexible than systemd-boot for dual-booting.
 
 ```bash
 pacman -S grub efibootmgr os-prober
@@ -289,10 +499,12 @@ grub-install \
     --bootloader-id=GRUB
 ```
 
-If we get this error: `cannot copy `/usr/share/locale/ca/LC_MESSAGES/grub.mo' to `/boot/grub/locale/ca.mo': No space left on device.` is because we mounted the EFI System Partition directly as /boot, but the EFI partition is only 200 MB; GRUB is trying to copy all its modules and translations into the EFI partition, and it runs out of space. Instead of /boot as the EFI partition, it should be:
+If we get this error: `cannot copy '/usr/share/locale/ca/LC_MESSAGES/grub.mo' to '/boot/grub/locale/ca.mo': No space left on device.` is because we mounted the EFI System Partition directly as /boot, but the EFI partition is only 200 MB; GRUB is trying to copy all its modules and translations into the EFI partition, and it runs out of space. Instead of /boot as the EFI partition, it should be:
 
 - /boot: directory on the Arch root filesystem (ext4). The Linux kernel and initramfs live on your large ext4 partition.
 - /boot/efi EFI System Partition (FAT32). Only the EFI boot files live on the 200 MB EFI partition.
+
+What is initramfs (initial RAM filesystem)? It is a temporary filesystem loaded into memory during the early stage of booting. It contains the essential tools, kernel modules, and configuration needed to detect hardware, unlock encrypted disks, assemble storage devices, and mount the real root filesystem. Once the root filesystem is available, control is handed over to the normal userspace.
 
 To fix it:
 
@@ -302,7 +514,7 @@ mkdir -p /boot/efi
 mount /dev/sda1 /boot/efi
 # Check with:
 df -h /boot  # Mounted on the large Arch partition.
-df -h /boot/efi  # On the 200 MB partition.
+df -h /boot/efi  # Mounted on the 200 MB partition.
 ```
 
 Important, later we will must regenerate fstab: to mount the EFI partition at /boot/efi, not /boot (I didn't verify this step):
@@ -403,6 +615,8 @@ grub-install \
 grub-mkconfig -o /boot/grub/grub.cfg
 reboot
 ```
+
+[SECTION TO REMOVE: END]
 
 Enable listen ssh:
 
