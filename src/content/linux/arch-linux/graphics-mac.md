@@ -6,9 +6,11 @@ Let's configure the graphics of the system.
 
 ##### Initial installations
 
-First, install graphics and utilities:
+First, we need to know that OpenGL is a software interface (API) that programs use to render 2D and 3D graphics using the GPU.
 
-- mesa. Provides graphics drivers.
+Let's install some graphic utilities:
+
+- mesa. Provides graphics drivers. Mesa is one implementation of OpenGL, mainly used by Intel, AMD, and open-source NVIDIA drivers. It provides the OpenGL libraries and GPU drivers for those devices. If you use NVIDIA’s proprietary driver, OpenGL is provided by NVIDIA’s driver instead of mesa.
 - mesa-utils. Provides graphics-testing tools.
 - intel-ucode. Provides Intel CPU microcode updates.
 - linux-firmware. Provides firmware for hardware devices.
@@ -19,7 +21,7 @@ sudo pacman -Syu
 sudo pacman -S mesa mesa-utils intel-ucode linux-firmware
 ```
 
-Intal XFCE Desktop environment:
+Instal XFCE Desktop environment:
 
 ```bash
 sudo pacman -S \
@@ -27,7 +29,7 @@ sudo pacman -S \
     xfce4 \
     xfce4-goodies \
     lightdm \
-    lightdm-gtk-greeter 
+    lightdm-gtk-greeter
 # Press enter if asked something like: There are ... members in group xorg: ... Enter a selection (default=all)
 ```
 
@@ -58,26 +60,9 @@ $ sudo systemctl restart lightdm
 
 ##### Configure the Graphics Processing Units (GPUs)
 
-Lets review the PC GPUs:
+###### Get information of the current situation
 
-```bash
-$ sudo cat /sys/kernel/debug/vgaswitcheroo/switch
-0:DIS:+:Pwr:0000:01:00.0
-1:IGD: :Pwr:0000:00:02.0
-2:DIS-Audio: :DynOff:0000:01:00.1
-```
-
-The meaning is:
-
-- `0:DIS:+`. Entry 0 is the NVIDIA GPU. The `+`  marks the GPU currently selected as the active display device.
-- `1:IGD: `: Entry 1 is the Intel GPU. The blank space instead of `+` means the device is not the active display device.
-- `:Pwr`. The device is powered, so Intel is powered but is not the active display GPU.
-- `DynOff`. Runtime power management has dynamically powered that device off.
-- `0000:01:00.0`, `0000:00:02.0` and `0000:01:00.1`. The PCI addresses.
-
-PCIs stands for Peripheral Component Interconnect, which is a standard for connecting peripheral devices to a computer's motherboard in Linux and other operating systems. It allows for the integration of various hardware components, such as graphics cards and network cards, into the system.
-
-See available displays:
+To see available displays:
 
 ```bash
 $ lspci -k | grep -A3 -E "VGA|3D"
@@ -92,22 +77,47 @@ $ lspci -k | grep -A3 -E "VGA|3D"
         Kernel modules: nouveau
 ```
 
+The Mac's GMUX is a hardware graphics multiplexer. It switches the internal display's connection between the Intel and NVIDIA GPUs.
+
+Linux can control or query this multiplexer through the `vgaswitcheroo` Linux control interface. GMUX is hardware and `vgaswitcheroo` is software.
+
+First, we will check the power and switch state of the GPUs as understood by `vgaswitcheroo`:
+
+```bash
+$ sudo cat /sys/kernel/debug/vgaswitcheroo/switch
+0:DIS:+:Pwr:0000:01:00.0
+1:IGD: :Pwr:0000:00:02.0
+2:DIS-Audio: :DynOff:0000:01:00.1
+```
+
+The meaning is:
+
+- `0:DIS:+`. Entry 0 is DIS = Discrete Graphics. The `+` is defined below.
+- `1:IGD: `: Entry 1 is the IGD = Integrated Graphics Device. It has a blank space instead of `+` (defined below).
+- `+`. Indicates the GPU selected by the Mac’s display multiplexer as the active display device to drive the display. But the renderer used by the current OpenGL session can be different (normally they match) due to GPU offloading. In GPU offloading one GPU may remain the display GPU while an individual application renders on the another GPU and passes its frames back to the first one. In that case, `vgaswitcheroo` might show the `+` in one GPU and the `glxinfo` command (explained below) shows the other one.
+- `:Pwr`. The device is powered, so Intel is powered but is not the active display GPU.
+- `DynOff`. Runtime power management has dynamically powered that device off.
+- `0000:01:00.0`, `0000:00:02.0` and `0000:01:00.1`. The PCI addresses. They allow us to know the relation between the address and the name of the GPU given previously by the `lspci -k` command. So 01:00.0 = the NVIDIA GPU and 00:02.0 = the Intel GPU.
+
+PCIs stands for Peripheral Component Interconnect, which is a standard for connecting peripheral devices to a computer's motherboard in Linux and other operating systems. It allows for the integration of various hardware components, such as graphics cards and network cards, into the system.
+
+###### Use Intel GPU instead of NVIDIA
+
 If the MacBook uses the NVIDIA GPU, the temperature of the computer will increase a lot and the fans will make noise due to their speed. We can see the temperature and the fans RPM with the `sensors` command.
 
 I need to use Intel instead of NVIDIA.
 
-There are multiple possibilities to configure the compute to work with Intel instead of NVIDIA. I needed to try different options until get one that works because some were not available on my computer and others raised errors. I will show the final solution now and later a section with the different attemps until get to the correct solution; is a long section but i keep it here for future reference.
+There are multiple possibilities to configure the computer to work with Intel instead of NVIDIA. I needed to try different options until get one that works because some were not available on my computer and others raised errors. I will show the final solution now and later a section with the different attempts until get to the correct solution; is a long section but i keep it here for future reference.
 
-###### History of attemps to configure Intel GPU instead of NVIDIA
+####### History of attempts to configure Intel GPU instead of NVIDIA
 
-As is said, this is a long section. It contains my failed attemps to make the configuration until it works. As it contains information about the computer, I keep it here for future reference.
+As is said, this is a long section. It contains my failed configuration attempts until one works. As it has information about the computer, I keep it here for future reference.
 
 (TODO continue here)
 
-Continue with the analysis:
-
 ```bash
-# glxinfo -B # If shows `OpenGL renderer: NVE7` -> uses NVIDIA.
+# Show the GPU used by the current OpenGL session. The `glxinfo -B` command uses OpenGL information to report which GPU is performing the graphics rendering.
+glxinfo -B # If shows `OpenGL renderer: NVE7` -> uses NVIDIA OpenGL driver, not Mesa.
 # Determine whether MacBook is using:
 # - hardware gmux switching, or
 # - muxless Optimus.
@@ -116,14 +126,15 @@ cat /sys/class/drm/card*/device/power_state
 # D0
 # D0 -> both GPUs are in DO (powered on).
 lspci -nn | grep -E "VGA|3D"
+# Show available backlight interfaces exposed by the kernel. A backlight interface is a software control through which Linux adjusts the brightness of a display. It controls brightness, not which GPU renders graphics or drives the display. It does not identify the active renderer or prove which GPU is driving the display.
 ls /sys/class/backlight
-# gmux_backlight -> I am using gmux graphics multiplexer, the gmux chip controls the backlight on this Mac This hardware multiplexer selects which GPU drives the internal display.
+# gmux_backlight -> This tells that the GMUX graphics multiplexer is being used to control the backlight on this Mac. As we see previously, this GMUX hardware multiplexer is not only controls the backligth, it selects too which GPU drives the internal display.
 echo IGD | sudo tee /sys/kernel/debug/vgaswitcheroo/switch
 # If no error -> we changed the GPU, the firmware does not lock the GPU selection, good news. Let's see if the changes was accepted.
 sudo cat /sys/kernel/debug/vgaswitcheroo/switch
 # It should say:
 # IGD:+:Pwr
-# DIS: :DynOff  # DynOff = Dynamic power management turned it off
+# DIS: :DynOff
 # If not, let's continue investigating.
 # Logs
 sudo dmesg | tail -50 | grep -i -E "gmux|vga|switch|nouveau|i915"
@@ -136,8 +147,8 @@ sudo fuser -v /dev/snd/*
 sudo systemctl isolate multi-user.target
 # Check again
 sudo cat /sys/kernel/debug/vgaswitcheroo/switch
-# 0:IGD:+:Pwr  # Integrated Graphics Device, the Intel HD 4000. + -> is driving the display. Pwr =  powered on.
-# 1:DIS: :Off  # Discrete Graphics, your NVIDIA GT 650M.
+# 0:IGD:+:Pwr
+# 1:DIS: :Off
 # Solved! We switched to the Intel GPU.
 # Recover the GUI:
 sudo systemctl start lightdm  # or: sudo systemctl isolate graphical.target. If not works, reboot.

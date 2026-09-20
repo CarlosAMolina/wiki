@@ -144,7 +144,7 @@ Now, from another PC we can connect to that IP, for example:
 ssh root@192.168.1.40
 ```
 
-Type the `/` and `-`  keys, if different keys are printed, you don't have an spanish layout, check its language with:
+Type the `/` and `-`  keys, if different keys are printed, you don't have an Spanish layout, check its language with:
 
 ```bash
 localectl status
@@ -155,7 +155,7 @@ For an english layout, to write:
 - `/`:  press `-`.
 - `-`: press `?` (don't press shift).
 
-To set the layout to spanish:
+To set the layout to Spanish:
 
 ```bash
 loadkeys es
