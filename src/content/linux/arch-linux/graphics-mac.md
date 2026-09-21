@@ -77,7 +77,39 @@ $ lspci -k | grep -A3 -E "VGA|3D"
         Kernel modules: nouveau
 ```
 
-The Mac's GMUX is a hardware graphics multiplexer. It switches the internal display's connection between the Intel and NVIDIA GPUs.
+Both of the following designs can have two GPUs:
+
+- Hardware-mux system: a multiplexer switches which GPU drives the internal display.
+- Muxless/Optimus system: the internal display is permanently connected to one GPU, usually the integrated GPU, while the discrete GPU renders frames that are copied to the integrated GPU. A traditional muxless Optimus system has no hardware display multiplexer between the GPUs.
+
+See available backlight interfaces exposed by the kernel:
+
+```bash
+$ ls /sys/class/backlight
+gmux_backlight
+```
+
+The `gmux_backlight` output tells that the GMUX graphics multiplexer is being used to control the backlight on this Mac. But a backlight interface is a software control through which Linux adjusts the brightness of a display; it controls brightness, not which GPU renders graphics or drives the display. It does not identify the active renderer or prove which GPU is driving the display.
+
+GMUX is a hardware graphics multiplexer. It can switch the internal display's connection between the Intel and NVIDIA GPUs; and control the backlight as we just have seen.
+
+To confirm that the computer uses GMUX, first we check that the apple_gmux module is being loaded in the kernel:
+
+```bash
+$ lsmod | grep -i gmux
+#module                size   dependent modules
+apple_gmux             28672  0
+video                  81920  3 apple_gmux,i915,nouveau
+```
+
+We check too that the kernel detected an Apple GMUX device hardware, version 1.9.35:
+
+```bash
+$ journalctl -k | grep -iE 'gmux|apple_gmux'
+Sep 21 20:41:45 macbook kernel: apple_gmux: Found gmux version 1.9.35 [classic]
+```
+
+With this information we know that the MacBook has hardware graphics switching rather than a conventional muxless Optimus-only display arrangement.
 
 Linux can control or query this multiplexer through the `vgaswitcheroo` Linux control interface. GMUX is hardware and `vgaswitcheroo` is software.
 
@@ -101,6 +133,28 @@ The meaning is:
 
 PCIs stands for Peripheral Component Interconnect, which is a standard for connecting peripheral devices to a computer's motherboard in Linux and other operating systems. It allows for the integration of various hardware components, such as graphics cards and network cards, into the system.
 
+Now we'll check the GPU used by the current OpenGL session. The `glxinfo -B` command uses OpenGL information to report which GPU is performing the graphics rendering:
+
+```bash
+glxinfo -B
+```
+
+The output `OpenGL renderer: NVE7` indicates that NVIDIA OpenGL driver is being used, not Mesa.
+
+To display the PCI power-management state of each detected GPU:
+
+```bash
+$ cat /sys/class/drm/card*/device/power_state
+D0
+D0
+```
+
+Both GPUs are in D0 state, the meaning of each state is:
+
+- D0: fully powered and operational. But 'powered on' does not necessarily mean that both GPUs are actively rendering or under heavy load. It means they have not entered a device-level low-power state.
+- D1/D2: intermediate low-power states, if supported.
+- D3: low-power or powered-off state; D3hot still has some power, while D3cold may be nearly or completely powered off.
+
 ###### Use Intel GPU instead of NVIDIA
 
 If the MacBook uses the NVIDIA GPU, the temperature of the computer will increase a lot and the fans will make noise due to their speed. We can see the temperature and the fans RPM with the `sensors` command.
@@ -116,19 +170,6 @@ As is said, this is a long section. It contains my failed configuration attempts
 (TODO continue here)
 
 ```bash
-# Show the GPU used by the current OpenGL session. The `glxinfo -B` command uses OpenGL information to report which GPU is performing the graphics rendering.
-glxinfo -B # If shows `OpenGL renderer: NVE7` -> uses NVIDIA OpenGL driver, not Mesa.
-# Determine whether MacBook is using:
-# - hardware gmux switching, or
-# - muxless Optimus.
-cat /sys/class/drm/card*/device/power_state
-# D0
-# D0
-# D0 -> both GPUs are in DO (powered on).
-lspci -nn | grep -E "VGA|3D"
-# Show available backlight interfaces exposed by the kernel. A backlight interface is a software control through which Linux adjusts the brightness of a display. It controls brightness, not which GPU renders graphics or drives the display. It does not identify the active renderer or prove which GPU is driving the display.
-ls /sys/class/backlight
-# gmux_backlight -> This tells that the GMUX graphics multiplexer is being used to control the backlight on this Mac. As we see previously, this GMUX hardware multiplexer is not only controls the backligth, it selects too which GPU drives the internal display.
 echo IGD | sudo tee /sys/kernel/debug/vgaswitcheroo/switch
 # If no error -> we changed the GPU, the firmware does not lock the GPU selection, good news. Let's see if the changes was accepted.
 sudo cat /sys/kernel/debug/vgaswitcheroo/switch
