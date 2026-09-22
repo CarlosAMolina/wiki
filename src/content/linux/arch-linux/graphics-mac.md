@@ -79,8 +79,13 @@ $ lspci -k | grep -A3 -E "VGA|3D"
 
 Both of the following designs can have two GPUs:
 
-- Hardware-mux system: a multiplexer switches which GPU drives the internal display.
-- Muxless/Optimus system: the internal display is permanently connected to one GPU, usually the integrated GPU, while the discrete GPU renders frames that are copied to the integrated GPU. A traditional muxless Optimus system has no hardware display multiplexer between the GPUs.
+- Hardware-mux system: a multiplexer switches which GPU drives the internal display. The mux can connect the display to either GPU.
+- Muxless/Optimus system: the internal display is permanently connected to one GPU, usually the integrated GPU, while the discrete GPU renders frames that are copied to the integrated GPU and it sends the frame to the screen. A traditional muxless system has no hardware display multiplexer between the GPUs. Muxless means there is no such display multiplexer and Optimus is NVIDIA's hybrid-graphics technology for using an integrated GPU together with an NVIDIA discrete GPU.
+
+Integrated vs discrete GPU:
+
+- Integrated GPU: built into the CPU or system-on-chip and usually shares system RAM.
+- Discrete means a separate, dedicated GPU, usually with its own graphics processor and memory. It does not necessarily mean the device can be plugged in or removed, it may be soldered permanently to the motherboard.
 
 See available backlight interfaces exposed by the kernel:
 
@@ -167,15 +172,36 @@ There are multiple possibilities to configure the computer to work with Intel in
 
 As is said, this is a long section. It contains my failed configuration attempts until one works. As it has information about the computer, I keep it here for future reference.
 
-(TODO continue here)
+######## Attempt 1
+
+We will work with `/sys/kernel/debug/vgaswitcheroo/switch`, it is not a common file, is a debugfs control interface implemented by the Linux kernel; like a kernel command endpoint that:
+
+- Read from it -> kernel generates current GPU status.
+- Write to it -> kernel parses your command and performs an action.
+
+`debugfs` is a virtual filesystem provided by the Linux kernel for exposing debugging information and kernel control interfaces to user space. It is normally mounted at `/sys/kernel/debug`. The files are created dynamically by kernel code and generally have no corresponding data on your disk.
+
+An clarification about terminology:
+
+- VGA Switcheroo is a Linux kernel subsystem, implemented primarily in drivers/gpu/vga/vga_switcheroo.c, that coordinates hybrid-GPU switching and power management. It exposes a debugfs control interface at /sys/kernel/debug/vgaswitcheroo/switch. On hardware with a physical display multiplexer such as GMUX, the subsystem may also control that hardware through platform-specific code. A subsystem can consist of multiple source files, headers, platform drivers, and graphics-driver integrations. In this case, vga_switcheroo.c is the central implementation file, but the complete feature also involves related code elsewhere.
+- vga_switcheroo is a kernel source identifier/name used in functions, structures, and APIs. It is not the .c file mentioned in the previous paragraph.
+- vgaswitcheroo is the debugfs interface exposed by the VGA Switcheroo subsystem.
+
+Thank to `tee`, we send a command to the control interface, IGD, and the integrated GPU is selected and the discrete GPU is requested to be powered off:
 
 ```bash
 echo IGD | sudo tee /sys/kernel/debug/vgaswitcheroo/switch
-# If no error -> we changed the GPU, the firmware does not lock the GPU selection, good news. Let's see if the changes was accepted.
+```
+
+The previous operation can fail if user-space programs have the GPU or audio devices open. If the command doesn't output error, the firmware does not lock the GPU selection, good news. Let's see if the changes was accepted.
+
+(TODO continue here)
+
+```bash
 sudo cat /sys/kernel/debug/vgaswitcheroo/switch
 # It should say:
-# IGD:+:Pwr
-# DIS: :DynOff
+# IGD:+:Pwr ...
+# DIS: :DynOff ...
 # If not, let's continue investigating.
 # Logs
 sudo dmesg | tail -50 | grep -i -E "gmux|vga|switch|nouveau|i915"
