@@ -172,7 +172,7 @@ There are multiple possibilities to configure the computer to work with Intel in
 
 As is said, this is a long section. It contains my failed configuration attempts until one works. As it has information about the computer, I keep it here for future reference.
 
-######## Attempt 1
+######## Attempt 1. Send command IGD to vgaswitcheroo
 
 We will work with `/sys/kernel/debug/vgaswitcheroo/switch`, it is not a common file, is a debugfs control interface implemented by the Linux kernel; like a kernel command endpoint that:
 
@@ -193,35 +193,95 @@ Thank to `tee`, we send a command to the control interface, IGD, and the integra
 echo IGD | sudo tee /sys/kernel/debug/vgaswitcheroo/switch
 ```
 
-The previous operation can fail if user-space programs have the GPU or audio devices open. If the command doesn't output error, the firmware does not lock the GPU selection, good news. Let's see if the changes was accepted.
+About the command we send to the vgaswitcheroo control file, `IGD` requests an inmediate swith to the integrated GPU. If we used `DIGD` instead, we delayed switch to the integrated GPU, the switch is deferred until the graphics stack or relevant device users release the GPU.
 
-(TODO continue here)
+If the command doesn't output error, the firmware does not lock the GPU selection, good news. Let's see if the changes were accepted:
 
 ```bash
-sudo cat /sys/kernel/debug/vgaswitcheroo/switch
-# It should say:
-# IGD:+:Pwr ...
-# DIS: :DynOff ...
-# If not, let's continue investigating.
-# Logs
-sudo dmesg | tail -50 | grep -i -E "gmux|vga|switch|nouveau|i915"
-# IGD should switch the display to the integrated GPU only if no userspace process is currently using the GPU
-sudo lsof /dev/dri/*
-sudo fuser -v /dev/dri/*
-sudo fuser -v /dev/snd/*
-# Delayed switch mode. DIGD means "switch to the integrated GPU the next time the graphics stack restarts."
-# Stop the graphical session.
-sudo systemctl isolate multi-user.target
-# Check again
-sudo cat /sys/kernel/debug/vgaswitcheroo/switch
-# 0:IGD:+:Pwr
-# 1:DIS: :Off
-# Solved! We switched to the Intel GPU.
-# Recover the GUI:
-sudo systemctl start lightdm  # or: sudo systemctl isolate graphical.target. If not works, reboot.
+$ sudo cat /sys/kernel/debug/vgaswitcheroo/switch
+...
+0:IGD:+:Pwr ...
+1:DIS: :DynOff ...
+...
 ```
 
-Note. I press the XFCE power off button and it fails, the screen was black but the computer didn't turn off, after debugging, the error was that NVIDIA didn't ends a process, a nouveau issue. Let's fix this by creating a service that changes to Intel.
+The IGD is selected and powered on, while the DIS is in DynOff rather than fully Off. This may indicate that a user-space process still has the discrete GPU or its audio function open. And DynOff indicates that it has been dynamically powerd off, not necessarily that shutdown failed.
+
+About what is user-space, Linux is commonly divided into two areas:
+
+- User space. Applications and services with restricted access. They request operations from the kernel through system calls. Example Firefox.
+- Kernel space. The kernel and drivers, which directly control hardware and manage resources. Example i915, nouveau, and nvidia are kernel graphics drivers.
+
+Let's investigate why DIS is in DynOff state.
+
+First, we inspect related logs:
+
+```bash
+sudo dmesg | tail -50 | grep -i -E "gmux|vga|switch|nouveau|i915"
+```
+
+Now, we need to know these terms:
+
+- DRM (Direct Rendering Manager). The Linux kernel subsystem and GPU drivers that manage graphics hardware. It registers devices with the kernel and creates device nodes at /dev/dri/.
+- DRI (Direct Rendering Infrastructure). The interface and related userspace components that allow applications and graphics libraries to use those DRM devices for direct rendering.
+- Devices nodes. Files in /dev/dri/, remember that on Linux, devices are represented as files under /dev/. The device nodes are provided by DRM and used by userspace programs through the DRI/DRM interfaces.
+
+As devices are files, we will use `lsof` (list open files) to list processes with open handles to the DRI:
+
+```bash
+sudo lsof /dev/dri/*
+```
+
+Typical entries in /dev/dri/ include:
+
+- DRM primary nodes. Used for graphics-card management, display modesetting, and sometimes rendering. Example card0 and card1.
+- DRM render nodes. Used by applications for rendering without display-management privileges. Example renderD128, renderD129.
+- Older DRM control nodes; they are uncommon on modern systems. Example controlD*.
+
+In the previous command, the ACCESS column describes how the process has the device open. The value `F` generally means it has the file open.
+
+To see the information in a more compact way and with other information:
+
+```bash
+sudo fuser -v /dev/dri/*
+```
+
+Discrete GPU commonly exposes an HDMI/DisplayPort audio function. To see information of the audio devices (lsof didn't show this):
+
+```bash
+sudo fuser -v /dev/snd/*
+```
+
+However, seeing pipewire or another audio service listed does not automatically mean it is preventing power-off. Audio services may open multiple sound devices while remaining idle.
+
+Let's stop the graphical session:
+
+```bash
+sudo systemctl isolate multi-user.target
+```
+
+Now we have powered off the DIS:
+
+```bash
+$ sudo cat /sys/kernel/debug/vgaswitcheroo/switch
+0:IGD:+:Pwr...
+1:DIS: :Off...
+```
+
+We can recover the GUI:
+
+```bash
+sudo systemctl start lightdm
+# or: sudo systemctl isolate graphical.target
+```
+
+If previous command don't work, reboot.
+
+Despite all these efforts, the XFCE power off button fails, the screen goes black but the computer didn't turn off, after debugging, the error was that NVIDIA didn't ends a process, a nouveau issue. Let's fix this by creating a service that changes to Intel.
+
+######## Attempt 2. Service to change to the Intel GPU
+
+(TODO continue here)
 
 First, let's verify if switch before LightDM solves this.
 
