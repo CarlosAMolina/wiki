@@ -254,7 +254,7 @@ sudo fuser -v /dev/snd/*
 
 However, seeing pipewire or another audio service listed does not automatically mean it is preventing power-off. Audio services may open multiple sound devices while remaining idle.
 
-Let's stop the graphical session:
+Let's stop the graphical session temporarily and switch to a text-based virtual console:
 
 ```bash
 sudo systemctl isolate multi-user.target
@@ -272,38 +272,42 @@ We can recover the GUI:
 
 ```bash
 sudo systemctl start lightdm
-# or: sudo systemctl isolate graphical.target
+# Some alternatives for the previous command:
+# $ sudo systemctl isolate graphical.target
+# $ sudo systemctl set-default graphical.target && sudo reboot
 ```
 
 If previous command don't work, reboot.
 
-Despite all these efforts, the XFCE power off button fails, the screen goes black but the computer didn't turn off, after debugging, the error was that NVIDIA didn't ends a process, a nouveau issue. Let's fix this by creating a service that changes to Intel.
+Despite all these efforts, the XFCE power off button fails, the screen goes black but the computer didn't turn off, after debugging the logs, the error was that NVIDIA didn't ends a process, a nouveau issue. Let's fix this by creating a service that changes to Intel.
 
-######## Attempt 2. Service to change to the Intel GPU
-
-(TODO continue here)
+######## Attempt 2. Create a service to change to the Intel GPU
 
 First, let's verify if switch before LightDM solves this.
 
 ```bash
-# Boot to multi-user.target
-sudo systemctl set-default multi-user.target
 sudo reboot
-# IMPORTANT revert this later:
-# sudo systemctl set-default graphical.target
-# sudo reboot
-
+# Boot to multi-user.target (the command to recover the GUI was described previously)
+sudo systemctl set-default multi-user.target
 echo IGD | sudo tee /sys/kernel/debug/vgaswitcheroo/switch
 # Verify.
 cat /sys/kernel/debug/vgaswitcheroo/switch
 # Should show:
 # IGD:+:Pwr
 # DIS: :Off
-# Then start LightDM manually.
+# Now, start LightDM manually.
 sudo systemctl start lightdm
-# If XFCE starts and glxinfo -B reports OpenGL renderer string: Mesa Intel HD Graphics 4000, the proven is ok.
+```
+
+XFCE should start and the following command should report OpenGL renderer string: Mesa Intel HD Graphics 4000:
+
+```bash
 glxinfo -B | grep "OpenGL renderer"
-# Let's automate it.
+```
+
+If we've the expected output, the proven is ok and we can automate. We will do it by creating a service.
+
+```bash
 sudo vim /etc/systemd/system/gpu-switch-intel.service
 ```
 
@@ -317,12 +321,27 @@ Before=display-manager.service
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/sh -c 'for i in $(seq 1 20); do [ -e /sys/kernel/debug/vgaswitcheroo/switch ] && break; sleep 0.2; done; echo IGD > /sys/kernel/debug/vgaswitcheroo/switch'
+ExecStart=/usr/bin/sh -c '\
+    for i in $(seq 1 20); do \
+        [ -e /sys/kernel/debug/vgaswitcheroo/switch ] && break; \
+        sleep 0.2;
+    done; \
+    echo IGD > /sys/kernel/debug/vgaswitcheroo/switch'
 RemainAfterExit=yes
 
 [Install]
 WantedBy=graphical.target
 ```
+
+Some clarifications:
+
+- `After=systemd-modules-load.service`. Tells systemd to start the new service only after systemd-modules-load.service has finished loading the modules listed in /etc/modules-load.d/ and related locations. As /sys/kernel/debug/vgaswitcheroo/switch is provided by the kernel’s GPU-switching support, we need the relevant kernel modules to be loaded to have the file available. The loop in ExecStart is an additional protection against the file appearing slightly later. `After=` controls ordering; it does not itself cause systemd-modules-load.service to be started or establish a dependency on it.
+- `Before=display-manager.service` ensures that the display manager does not start until the GPU selection has been attempted.
+- `Type=oneshot`. Used because the task is a one-time initialization action instead of a long-running daemon. The service exits after performing one operation, the operation defined in ExecStart. Tells systemd to wait for ExecStart to complete before considering the service’s startup finished, so it also means that `Before=display-manager.service` can ensure the display manager is not started until this command has finished.
+- `RemainAfterExit=yes`. Normally, a successful oneshot service becomes `inactive (dead)` after its command exits. RemainAfterExit=yes makes systemd keep the unit in the `active (exited)` state after the command has completed. It prevents systemd from treating the service as an inactive service that needs to be started again whenever the target (graphical.target) is reached during the same boot; reached means that systemd has started all the units required or wanted by that target. 
+- `WantedBy=graphical.target`. This configures the service to be enabled as part of graphical.target. WantedBy causes the service to be pulled in; it is not an ordering directive, the actual ordering is controlled by `After=` and `Before=`.
+
+(TODO continue here)
 
 ```bash
 sudo systemctl daemon-reload
