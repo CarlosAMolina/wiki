@@ -8,7 +8,7 @@ Let's configure the graphics of the system.
 
 First, we need to know that OpenGL is a software interface (API) that programs use to render 2D and 3D graphics using the GPU.
 
-Let's install some graphic utilities:
+Let's install some graphics utilities:
 
 - mesa. Provides graphics drivers. Mesa is one implementation of OpenGL, mainly used by Intel, AMD, and open-source NVIDIA drivers. It provides the OpenGL libraries and GPU drivers for those devices. If you use NVIDIA’s proprietary driver, OpenGL is provided by NVIDIA’s driver instead of mesa.
 - mesa-utils. Provides graphics-testing tools.
@@ -21,7 +21,7 @@ sudo pacman -Syu
 sudo pacman -S mesa mesa-utils intel-ucode linux-firmware
 ```
 
-Instal XFCE Desktop environment:
+Install the XFCE desktop environment:
 
 ```bash
 sudo pacman -S \
@@ -40,7 +40,7 @@ sudo systemctl enable lightdm
 reboot
 ```
 
-Despite you configure the desktop keyboard to use Spanish, the login screen of the display manager probably uses English keyboard. This is because the XFCE's keyboard configuration applies after login, is different. To configure to Spanish:
+Although you configure the desktop keyboard to use Spanish, the display manager's login screen will probably use an English keyboard layout. This is because XFCE's keyboard configuration applies only after login and is separate. To configure the login screen to use Spanish:
 
 ```bash
 $ localectl status
@@ -60,7 +60,7 @@ $ sudo systemctl restart lightdm
 
 ##### Configure the Graphics Processing Units (GPUs)
 
-###### Get information of the current situation
+###### Get information about the current situation
 
 To see available displays:
 
@@ -80,12 +80,12 @@ $ lspci -k | grep -A3 -E "VGA|3D"
 Both of the following designs can have two GPUs:
 
 - Hardware-mux system: a multiplexer switches which GPU drives the internal display. The mux can connect the display to either GPU.
-- Muxless/Optimus system: the internal display is permanently connected to one GPU, usually the integrated GPU, while the discrete GPU renders frames that are copied to the integrated GPU and it sends the frame to the screen. A traditional muxless system has no hardware display multiplexer between the GPUs. Muxless means there is no such display multiplexer and Optimus is NVIDIA's hybrid-graphics technology for using an integrated GPU together with an NVIDIA discrete GPU.
+- Muxless/Optimus system: the internal display is permanently connected to one GPU, usually the integrated GPU, while the discrete GPU renders frames that are copied to the integrated GPU, which sends them to the screen. A traditional muxless system has no hardware display multiplexer between the GPUs. Muxless means there is no such display multiplexer, and Optimus is NVIDIA's hybrid-graphics technology for using an integrated GPU together with an NVIDIA discrete GPU.
 
 Integrated vs discrete GPU:
 
 - Integrated GPU: built into the CPU or system-on-chip and usually shares system RAM.
-- Discrete means a separate, dedicated GPU, usually with its own graphics processor and memory. It does not necessarily mean the device can be plugged in or removed, it may be soldered permanently to the motherboard.
+- Discrete GPU: a separate, dedicated GPU, usually with its own graphics processor and memory. It does not necessarily mean the device can be plugged in or removed; it may be soldered permanently to the motherboard.
 
 See available backlight interfaces exposed by the kernel:
 
@@ -94,11 +94,11 @@ $ ls /sys/class/backlight
 gmux_backlight
 ```
 
-The `gmux_backlight` output tells that the GMUX graphics multiplexer is being used to control the backlight on this Mac. But a backlight interface is a software control through which Linux adjusts the brightness of a display; it controls brightness, not which GPU renders graphics or drives the display. It does not identify the active renderer or prove which GPU is driving the display.
+The `gmux_backlight` output tells us that the GMUX graphics multiplexer is being used to control the backlight on this Mac. But a backlight interface is a software control through which Linux adjusts the brightness of a display; it controls brightness, not which GPU renders graphics or drives the display. It does not identify the active renderer or prove which GPU is driving the display.
 
-GMUX is a hardware graphics multiplexer. It can switch the internal display's connection between the Intel and NVIDIA GPUs; and control the backlight as we just have seen.
+GMUX is a hardware graphics multiplexer. It can switch the internal display's connection between the Intel and NVIDIA GPUs and control the backlight, as we've just seen.
 
-To confirm that the computer uses GMUX, first we check that the apple_gmux module is being loaded in the kernel:
+To confirm that the computer uses GMUX, we first check that the apple_gmux module is loaded in the kernel:
 
 ```bash
 $ lsmod | grep -i gmux
@@ -107,7 +107,7 @@ apple_gmux             28672  0
 video                  81920  3 apple_gmux,i915,nouveau
 ```
 
-We check too that the kernel detected an Apple GMUX device hardware, version 1.9.35:
+We also check that the kernel detected an Apple GMUX hardware device, version 1.9.35:
 
 ```bash
 $ journalctl -k | grep -iE 'gmux|apple_gmux'
@@ -131,12 +131,12 @@ The meaning is:
 
 - `0:DIS:+`. Entry 0 is DIS = Discrete Graphics. The `+` is defined below.
 - `1:IGD: `: Entry 1 is the IGD = Integrated Graphics Device. It has a blank space instead of `+` (defined below).
-- `+`. Indicates the GPU selected by the Mac’s display multiplexer as the active display device to drive the display. But the renderer used by the current OpenGL session can be different (normally they match) due to GPU offloading. In GPU offloading one GPU may remain the display GPU while an individual application renders on the another GPU and passes its frames back to the first one. In that case, `vgaswitcheroo` might show the `+` in one GPU and the `glxinfo` command (explained below) shows the other one.
+- `+`. Indicates the GPU selected by the Mac’s display multiplexer as the active display device to drive the display. But the renderer used by the current OpenGL session can be different (normally they match) due to GPU offloading. In GPU offloading, one GPU may remain the display GPU while an individual application renders on another GPU and passes its frames back to the first one. In that case, `vgaswitcheroo` might show the `+` for one GPU while the `glxinfo` command (explained below) shows the other one.
 - `:Pwr`. The device is powered, so Intel is powered but is not the active display GPU.
 - `DynOff`. Runtime power management has dynamically powered that device off.
 - `0000:01:00.0`, `0000:00:02.0` and `0000:01:00.1`. The PCI addresses. They allow us to know the relation between the address and the name of the GPU given previously by the `lspci -k` command. So 01:00.0 = the NVIDIA GPU and 00:02.0 = the Intel GPU.
 
-PCIs stands for Peripheral Component Interconnect, which is a standard for connecting peripheral devices to a computer's motherboard in Linux and other operating systems. It allows for the integration of various hardware components, such as graphics cards and network cards, into the system.
+PCI stands for Peripheral Component Interconnect, which is a standard for connecting peripheral devices to a computer's motherboard in Linux and other operating systems. It allows for the integration of various hardware components, such as graphics cards and network cards, into the system.
 
 Now we'll check the GPU used by the current OpenGL session. The `glxinfo -B` command uses OpenGL information to report which GPU is performing the graphics rendering:
 
@@ -144,7 +144,7 @@ Now we'll check the GPU used by the current OpenGL session. The `glxinfo -B` com
 glxinfo -B
 ```
 
-The output `OpenGL renderer: NVE7` indicates that NVIDIA OpenGL driver is being used, not Mesa.
+The output `OpenGL renderer: NVE7` indicates that the NVIDIA OpenGL driver is being used, not Mesa.
 
 To display the PCI power-management state of each detected GPU:
 
@@ -154,7 +154,7 @@ D0
 D0
 ```
 
-Both GPUs are in D0 state, the meaning of each state is:
+Both GPUs are in the D0 state. The meaning of each state is:
 
 - D0: fully powered and operational. But 'powered on' does not necessarily mean that both GPUs are actively rendering or under heavy load. It means they have not entered a device-level low-power state.
 - D1/D2: intermediate low-power states, if supported.
@@ -162,40 +162,40 @@ Both GPUs are in D0 state, the meaning of each state is:
 
 ###### Use Intel GPU instead of NVIDIA
 
-If the MacBook uses the NVIDIA GPU, the temperature of the computer will increase a lot and the fans will make noise due to their speed. We can see the temperature and the fans RPM with the `sensors` command.
+If the MacBook uses the NVIDIA GPU, the temperature of the computer will increase a lot, and the fans will make noise due to their speed. We can see the temperature and the fan speeds in RPM with the `sensors` command.
 
 I need to use Intel instead of NVIDIA.
 
-There are multiple possibilities to configure the computer to work with Intel instead of NVIDIA. I needed to try different options until get one that works because some were not available on my computer and others raised errors. I will show the final solution now and later a section with the different attempts until get to the correct solution; is a long section but i keep it here for future reference.
+There are multiple ways to configure the computer to work with Intel instead of NVIDIA. I needed to try different options until I found one that worked because some were not available on my computer and others raised errors. I will show the final solution now and, later, a section with the different attempts made before reaching the correct solution; it is a long section, but I keep it here for future reference.
 
 ####### History of attempts to configure Intel GPU instead of NVIDIA
 
-As is said, this is a long section. It contains my failed configuration attempts until one works. As it has information about the computer, I keep it here for future reference.
+As noted, this is a long section. It contains my failed configuration attempts before one worked. As it contains information about the computer, I keep it here for future reference.
 
 ######## Attempt 1. Send command IGD to vgaswitcheroo
 
-We will work with `/sys/kernel/debug/vgaswitcheroo/switch`, it is not a common file, is a debugfs control interface implemented by the Linux kernel; like a kernel command endpoint that:
+We will work with `/sys/kernel/debug/vgaswitcheroo/switch`. It is not a normal file; it is a debugfs control interface implemented by the Linux kernel, like a kernel command endpoint that:
 
 - Read from it -> kernel generates current GPU status.
 - Write to it -> kernel parses your command and performs an action.
 
 `debugfs` is a virtual filesystem provided by the Linux kernel for exposing debugging information and kernel control interfaces to user space. It is normally mounted at `/sys/kernel/debug`. The files are created dynamically by kernel code and generally have no corresponding data on your disk.
 
-An clarification about terminology:
+A clarification about terminology:
 
 - VGA Switcheroo is a Linux kernel subsystem, implemented primarily in drivers/gpu/vga/vga_switcheroo.c, that coordinates hybrid-GPU switching and power management. It exposes a debugfs control interface at /sys/kernel/debug/vgaswitcheroo/switch. On hardware with a physical display multiplexer such as GMUX, the subsystem may also control that hardware through platform-specific code. A subsystem can consist of multiple source files, headers, platform drivers, and graphics-driver integrations. In this case, vga_switcheroo.c is the central implementation file, but the complete feature also involves related code elsewhere.
 - vga_switcheroo is a kernel source identifier/name used in functions, structures, and APIs. It is not the .c file mentioned in the previous paragraph.
 - vgaswitcheroo is the debugfs interface exposed by the VGA Switcheroo subsystem.
 
-Thank to `tee`, we send a command to the control interface, IGD, and the integrated GPU is selected and the discrete GPU is requested to be powered off:
+Thanks to `tee`, we send the IGD command to the control interface, selecting the integrated GPU and requesting that the discrete GPU be powered off:
 
 ```bash
 echo IGD | sudo tee /sys/kernel/debug/vgaswitcheroo/switch
 ```
 
-About the command we send to the vgaswitcheroo control file, `IGD` requests an inmediate swith to the integrated GPU. If we used `DIGD` instead, we delayed switch to the integrated GPU, the switch is deferred until the graphics stack or relevant device users release the GPU.
+The command we send to the vgaswitcheroo control file, `IGD`, requests an immediate switch to the integrated GPU. If we used `DIGD` instead, we would request a delayed switch to the integrated GPU; the switch would be deferred until the graphics stack or relevant device users release the GPU.
 
-If the command doesn't output error, the firmware does not lock the GPU selection, good news. Let's see if the changes were accepted:
+If the command doesn't produce an error, the firmware does not lock the GPU selection, which is good news. Let's see if the changes were accepted:
 
 ```bash
 $ sudo cat /sys/kernel/debug/vgaswitcheroo/switch
@@ -205,12 +205,12 @@ $ sudo cat /sys/kernel/debug/vgaswitcheroo/switch
 ...
 ```
 
-The IGD is selected and powered on, while the DIS is in DynOff rather than fully Off. This may indicate that a user-space process still has the discrete GPU or its audio function open. And DynOff indicates that it has been dynamically powerd off, not necessarily that shutdown failed.
+The IGD is selected and powered on, while the DIS is in DynOff rather than fully Off. This may indicate that a user-space process still has the discrete GPU or its audio function open. DynOff indicates that it has been dynamically powered off, not necessarily that shutdown failed.
 
-About what is user-space, Linux is commonly divided into two areas:
+Regarding user space, Linux is commonly divided into two areas:
 
-- User space. Applications and services with restricted access. They request operations from the kernel through system calls. Example Firefox.
-- Kernel space. The kernel and drivers, which directly control hardware and manage resources. Example i915, nouveau, and nvidia are kernel graphics drivers.
+- User space. Applications and services with restricted access. They request operations from the kernel through system calls. For example, Firefox.
+- Kernel space. The kernel and drivers, which directly control hardware and manage resources. For example, i915, nouveau, and nvidia are kernel graphics drivers.
 
 Let's investigate why DIS is in DynOff state.
 
@@ -224,7 +224,7 @@ Now, we need to know these terms:
 
 - DRM (Direct Rendering Manager). The Linux kernel subsystem and GPU drivers that manage graphics hardware. It registers devices with the kernel and creates device nodes at /dev/dri/.
 - DRI (Direct Rendering Infrastructure). The interface and related userspace components that allow applications and graphics libraries to use those DRM devices for direct rendering.
-- Devices nodes. Files in /dev/dri/, remember that on Linux, devices are represented as files under /dev/. The device nodes are provided by DRM and used by userspace programs through the DRI/DRM interfaces.
+- Device nodes. Files in /dev/dri/. Remember that on Linux, devices are represented as files under /dev/. The device nodes are provided by DRM and used by userspace programs through the DRI/DRM interfaces.
 
 As devices are files, we will use `lsof` (list open files) to list processes with open handles to the DRI:
 
@@ -246,7 +246,7 @@ To see the information in a more compact way and with other information:
 sudo fuser -v /dev/dri/*
 ```
 
-Discrete GPU commonly exposes an HDMI/DisplayPort audio function. To see information of the audio devices (lsof didn't show this):
+A discrete GPU commonly exposes an HDMI/DisplayPort audio function. To see information about the audio devices (lsof didn't show this):
 
 ```bash
 sudo fuser -v /dev/snd/*
@@ -260,7 +260,7 @@ Let's stop the graphical session temporarily and switch to a text-based virtual 
 sudo systemctl isolate multi-user.target
 ```
 
-Now we have powered off the DIS:
+Now we've powered off the DIS:
 
 ```bash
 $ sudo cat /sys/kernel/debug/vgaswitcheroo/switch
@@ -277,17 +277,17 @@ sudo systemctl start lightdm
 # $ sudo systemctl set-default graphical.target && sudo reboot
 ```
 
-If previous command don't work, reboot.
+If the previous command doesn't work, reboot.
 
-Despite all these efforts, the XFCE power off button fails, the screen goes black but the computer didn't turn off, after debugging the logs, the error was that NVIDIA didn't ends a process, a nouveau issue. Let's fix this by creating a service that changes to Intel.
+Despite all these efforts, the XFCE power-off button fails: the screen goes black, but the computer doesn't turn off. After debugging the logs, the error was that an NVIDIA process didn't end due to a Nouveau issue. Let's fix this by creating a service that switches to Intel.
 
 ######## Attempt 2. Create a service to change to the Intel GPU
 
-First, let's verify if switch before LightDM solves this.
+First, let's verify whether switching before LightDM solves this.
 
 ```bash
 sudo reboot
-# Boot to multi-user.target (the command to recover the GUI was described previously)
+# Boot to multi-user.target (the command to recover the GUI was described previously).
 sudo systemctl set-default multi-user.target
 echo IGD | sudo tee /sys/kernel/debug/vgaswitcheroo/switch
 # Verify.
@@ -299,13 +299,13 @@ cat /sys/kernel/debug/vgaswitcheroo/switch
 sudo systemctl start lightdm
 ```
 
-XFCE should start and the following command should report OpenGL renderer string: Mesa Intel HD Graphics 4000:
+XFCE should start, and the following command should report the OpenGL renderer string: Mesa Intel HD Graphics 4000:
 
 ```bash
 glxinfo -B | grep "OpenGL renderer"
 ```
 
-If we've the expected output, the proven is ok and we can automate. We will do it by creating a service.
+If we've got the expected output, the test is successful, and we can automate the process. We'll do so by creating a service.
 
 ```bash
 sudo vim /etc/systemd/system/gpu-switch-intel.service
@@ -335,11 +335,11 @@ WantedBy=graphical.target
 
 Some clarifications:
 
-- `After=systemd-modules-load.service`. Tells systemd to start the new service only after systemd-modules-load.service has finished loading the modules listed in /etc/modules-load.d/ and related locations. As /sys/kernel/debug/vgaswitcheroo/switch is provided by the kernel’s GPU-switching support, we need the relevant kernel modules to be loaded to have the file available. The loop in ExecStart is an additional protection against the file appearing slightly later. `After=` controls ordering; it does not itself cause systemd-modules-load.service to be started or establish a dependency on it.
+- `After=systemd-modules-load.service`. Tells systemd to start the new service only after systemd-modules-load.service has finished loading the modules listed in /etc/modules-load.d/ and related locations. As /sys/kernel/debug/vgaswitcheroo/switch is provided by the kernel’s GPU-switching support, we need the relevant kernel modules to be loaded for the file to be available. The loop in ExecStart is additional protection against the file appearing slightly later. `After=` controls ordering; it does not itself cause systemd-modules-load.service to be started or establish a dependency on it.
 - `Before=display-manager.service` ensures that the display manager does not start until the GPU selection has been attempted.
-- `Type=oneshot`. Used because the task is a one-time initialization action instead of a long-running daemon. The service exits after performing one operation, the operation defined in ExecStart. Tells systemd to wait for ExecStart to complete before considering the service’s startup finished, so it also means that `Before=display-manager.service` can ensure the display manager is not started until this command has finished.
-- `RemainAfterExit=yes`. Normally, a successful oneshot service becomes `inactive (dead)` after its command exits. RemainAfterExit=yes makes systemd keep the unit in the `active (exited)` state after the command has completed. It prevents systemd from treating the service as an inactive service that needs to be started again whenever the target (graphical.target) is reached during the same boot; reached means that systemd has started all the units required or wanted by that target. 
-- `WantedBy=graphical.target`. This configures the service to be enabled as part of graphical.target. WantedBy causes the service to be pulled in; it is not an ordering directive, the actual ordering is controlled by `After=` and `Before=`.
+- `Type=oneshot`. Used because the task is a one-time initialization action instead of a long-running daemon. The service exits after performing one operation, the operation defined in ExecStart. It tells systemd to wait for ExecStart to complete before considering the service’s startup finished, so it also means that `Before=display-manager.service` can ensure the display manager is not started until this command has finished.
+- `RemainAfterExit=yes`. Normally, a successful oneshot service becomes `inactive (dead)` after its command exits. RemainAfterExit=yes makes systemd keep the unit in the `active (exited)` state after the command has completed. It prevents systemd from treating the service as an inactive service that needs to be started again whenever the target (graphical.target) is reached during the same boot; reached means that systemd has started all the units required or wanted by that target.
+- `WantedBy=graphical.target`. This configures the service to be enabled as part of graphical.target. WantedBy causes the service to be pulled in; it is not an ordering directive. The actual ordering is controlled by `After=` and `Before=`.
 
 (TODO continue here)
 
@@ -354,7 +354,7 @@ sudo systemctl list-dependencies --before lightdm.service | grep gpu-switch
 sudo systemctl show lightdm.service -p Requires -p After  # We should see gpu-switch-intel.service
 ```
 
-If no output in the last command:
+If the last command produces no output:
 
 ```bash
 sudo systemctl edit lightdm.service
@@ -368,10 +368,10 @@ After=gpu-switch-intel.service
 
 ```bash
 sudo systemctl daemon-reload
-sudo systemctl show lightdm.service -p Requires -p After  # now we should see gpu-switch-intel.service
+sudo systemctl show lightdm.service -p Requires -p After  # Now we should see gpu-switch-intel.service.
 ```
 
-Let's reboot not shudown to test the new systemd works.
+Let's reboot rather than shut down to test whether the new systemd service works.
 
 ```bash
 # Boot to multi-user.target
@@ -380,11 +380,11 @@ sudo reboot
 # IMPORTANT revert this later:
 # sudo systemctl set-default graphical.target
 # sudo reboot
-# The new service won't run in multi user mode, run it manually
+# The new service won't run in multi-user mode, so run it manually.
 sudo systemctl start gpu-switch-intel.service
 sudo systemctl status gpu-switch-intel.service
 sudo cat /sys/kernel/debug/vgaswitcheroo/switch
-# should show
+# Should show:
 # IGD:+:Pwr
 # DIS: :Off
 # If ok:
@@ -394,7 +394,7 @@ glxinfo -B | grep "OpenGL renderer"  # should report Intel HD Graphics 4000
 
 Power off with the XFCE button.
 
-To avoid errors when shutting down (sometimes nouveau can freeze the shut down), we will disable it. Steps:
+To avoid errors when shutting down (sometimes Nouveau can freeze the shutdown), we'll disable it. Steps:
 
 - Ensure i915 is loaded.
 - Wait for vgaswitcheroo.
@@ -437,28 +437,28 @@ RemainAfterExit=yes
 WantedBy=graphical.target
 ```
 
-We need the `lightdm.service` that we created. Without it, Before=display-manager.service in the service only defines ordering. It does not guarantee that your service will actually be started as part of the same boot transaction.
+We need the `lightdm.service` that we created. Without it, Before=display-manager.service in the service only defines ordering. It does not guarantee that our service will actually be started as part of the same boot transaction.
 
 ```bash
 sudo systemctl daemon-reload
 sudo systemctl enable gpu-switch-intel.service
-# Deactivate XFCE to avoid black screen
+# Deactivate XFCE to avoid a black screen.
 sudo systemctl isolate multi-user.target
 sudo systemctl restart gpu-switch-intel.service
 sudo systemctl start gpu-switch-intel.service
 # Verify
-# The following file will dissapear `sudo cat /sys/kernel/debug/vgaswitcheroo/switch` so we run this other command
+# The following file will disappear, so instead of running `sudo cat /sys/kernel/debug/vgaswitcheroo/switch`, we run these other commands:
 lspci -k -s 00:02.0  # Intel. Should show: Kernel driver in use: i915
 lspci -k -s 01:00.0  # NVIDIA. Should NOT show: Kernel driver in use: i915
 lsmod | grep nouveau  # No output should be produced.
 sudo systemctl status gpu-switch-intel.service
-# If the previous checks are ok:
+# If the previous checks are okay:
 sudo systemctl start lightdm
 # After logging in, verify:
 glxinfo -B | grep "OpenGL renderer"  # Should show Intel.
 ```
 
-To verify that this works ok, let's investigate the service after a reboot:
+To verify that this works correctly, let's investigate the service after a reboot:
 
 ```bash
 $ systemctl status gpu-switch-intel.service
@@ -467,15 +467,15 @@ Aug 08 21:39:49 macbook systemd[1]: Starting Switch Apple gmux to Intel and unlo
 Aug 08 21:40:20 macbook systemd[1]: Finished Switch Apple gmux to Intel and unload nouveau.
 ```
 
-The previous last two lines show that it takes 31 seconds that is a lot, something is not working correctly.
+The last two lines show that it takes 31 seconds, which is a long time; something isn't working correctly.
 
-Reviewing the logs we can see that nouveau tries to disable the GPU but it fails lots of times until is done, so this solution should be improved:
+Reviewing the logs, we can see that Nouveau tries to disable the GPU, but it fails many times before succeeding, so this solution should be improved:
 
 ```bash
 journalctl -b -k --since "01:39:45" --until "01:40:25" | grep -Ei 'vgaswitcheroo|gmux|nouveau|i915'
 ```
 
-A solution is to prevent nouveau to be loaded at boot, but this can be dangerous if the system needs it. After an investigation about when nouveau is loaded, I determined that it can be disabled.
+A solution is to prevent Nouveau from being loaded at boot, but this can be dangerous if the system needs it. After investigating when Nouveau is loaded, I determined that it can be disabled.
 
 See the current mkinitcpio hooks to know if modconf is available to carry a blacklist into the initramfs:
 
@@ -485,8 +485,8 @@ grep '^HOOKS=' /etc/mkinitcpio.conf
 
 It shows:
 
-- kms. This pull modules as i915 and nouveau into the initramfs. We see that mkinitcpio detects them as relevant modules in this machine:
-- mdconf. Copies /etc/modprobe.d/*.conf into the initramfs. So will copy a blacklist file that we will create.
+- kms. This pulls modules such as i915 and Nouveau into the initramfs. We see that mkinitcpio detects them as relevant modules on this machine:
+- modconf. Copies /etc/modprobe.d/*.conf into the initramfs, so it will copy a blacklist file that we'll create.
 
 ```bash
 mkinitcpio -M | grep -E '^(i915|nouveau)$'
@@ -496,7 +496,7 @@ So we can:
 
 - Blacklist nouveau.
 - Rebuild initramfs.
-- Verify i915 is present and nouveau not.
+- Verify that i915 is present and Nouveau isn't.
 
 Process:
 
@@ -505,55 +505,55 @@ Process:
 echo 'blacklist nouveau' | sudo tee /etc/modprobe.d/blacklist-nouveau.conf
 # Rebuild initramfs so that modconf copies the new blacklist into it.
 sudo mkinitcpio -P
-# Check the blaklist has been embedded in the initramfs.
+# Check that the blacklist has been embedded in the initramfs.
 sudo lsinitcpio /boot/initramfs-linux.img | grep blacklist-nouveau
 ```
 
-Test first reboot to be safe, reboot in text mode and inspect the GPU state without LightDM to make it simple:
+To make the first reboot test safer and simpler, reboot in text mode and inspect the GPU state without LightDM:
 
 ```bash
 sudo systemctl set-default multi-user.target
 sudo reboot
-lsmod | grep nouveau # Should not have output, so we check that the blacklist has been applied.
-lsmod | grep i915  # Should show output, so Intel has been initialized correctly without Nouveau.
+lsmod | grep nouveau # Should produce no output, confirming that the blacklist has been applied.
+lsmod | grep i915  # Should produce output, confirming that Intel has been initialized correctly without Nouveau.
 ```
 
-Without Nouveau, the file `sudo cat /sys/kernel/debug/vgaswitcheroo/switch` may disappear, this file is created by vgaswitcheroo which coordinates GPU switching, and gmux delas with Apple's hardware multiplexer to change between the GPUs (Intel and NVIDIA).
+Without Nouveau, the file read by `sudo cat /sys/kernel/debug/vgaswitcheroo/switch` may disappear. This file is created by vgaswitcheroo, which coordinates GPU switching, while GMUX deals with Apple's hardware multiplexer to switch between the GPUs (Intel and NVIDIA).
 
 ```bash
 $ sudo cat /sys/kernel/debug/vgaswitcheroo/switch
 cat: /sys/kernel/debug/vgaswitcheroo/switch: No such file or directory
-# So vgaswitcheroo/switch is abset and our gpu-switch-intel.service cannot work.
+# Therefore, vgaswitcheroo/switch is absent, and our gpu-switch-intel.service can't work.
 ```
 
-As Nouveau is not present, let's see if the Intel GPU is driving the console and not changes are required:
+As Nouveau isn't present, let's see whether the Intel GPU is driving the console, in which case no changes are required:
 
 ```bash
 $ cat /sys/class/graphics/fb0/name
-simpledrmdrmfb  # Linux text console is currently drawing into a framebuffer that the firmware prepared during boot. Linux's simpledrm driver can use that already-created framebuffer without needing to use i915 or nouveau as the console framebuffer. We don't know if Intel is driving the physical display, despite we see that it is loaded in the kernel.
+simpledrmdrmfb  # Linux text console is currently drawing into a framebuffer that the firmware prepared during boot. Linux's simpledrm driver can use that already-created framebuffer without needing to use i915 or nouveau as the console framebuffer. We don't know if Intel is driving the physical display, although we see that it is loaded in the kernel.
 $ lspci -k -s 00:02.0
 00:02.0 VGA compatible controller: Intel Corporation Ivy Bridge mobile GT2 [HD Graphics 4000] (rev 09)
         Subsystem: Apple Inc. Device 00fb
         Kernel driver in use: i915
         Kernel modules: i915
-# That proves the Intel GPU is detected and i915 kernel driver is bound to it.
+# That proves the Intel GPU is detected and the i915 kernel driver is bound to it.
 ```
 
-But i915 controlling the Intel GPU does not necessarily mean Apple gmux has routed the physical internal display to Intel. Check what state gmux selected when we booted without Nouveau.
+However, i915 controlling the Intel GPU does not necessarily mean Apple gmux has routed the physical internal display to Intel. Check which state gmux selected when we booted without Nouveau.
 
 ```bash
 $ journalctl -b -k | grep -i gmux
 Aug 08 22:40:33 macbook kernel: apple_gmux: Found gmux version 1.9.35 [classic]
 ```
 
-The previous output only say that apple_gmux detected the hardware and initialized its driver, not what GPU is routed to the display. Let's see if X can start on Intel without our switch service, as we are in multi-user.target, run:
+The previous output only says that apple_gmux detected the hardware and initialized its driver, not which GPU is routed to the display. Let's see whether X can start on Intel without our switch service. As we're in multi-user.target, run:
 
 ```bash
 $ sudo systemctl start lightdm
 A dependency job for lightdm.service failed. See 'journalctl -xe' for details.
 ```
 
-If the graphical login appears, the firmware/gmux path already leaves the internal panel usable with Intel when Nouveau never loads. In this case i had an error, the reason is the missing file that does not allow the gpu-switch-intel.service to run and is required by LightDM:
+If the graphical login appears, the firmware/GMUX path already leaves the internal panel usable with Intel when Nouveau never loads. In this case, I had an error because the missing file prevents gpu-switch-intel.service from running, and that service is required by LightDM:
 
 ```bash
 $ systemctl status gpu-switch-intel.service
@@ -585,14 +585,14 @@ sudo systemctl daemon-reload
 sudo systemctl start lightdm
 ```
 
-Once it works, let's verify that the graphical session really is rendering through Intel rather than merely appearing successfully. Run this in the graphical session:
+Once it works, let's verify that the graphical session is actually rendering through Intel rather than merely starting successfully. Run this in the graphical session:
 
 ```bash
 $ glxinfo -B | grep "OpenGL renderer"
 OpenGL renderer string: llvmpipe (LLVM 22.1.8, 256 bits)
 ```
 
-We have graphical desktop, but without Intel hardware acceleration. Because llvmpipe means Mesa is rendering everything on the CPU in software.
+We have a graphical desktop, but without Intel hardware acceleration, because llvmpipe means Mesa is rendering everything on the CPU in software.
 
 We can see why Xorg did not use i915:
 
@@ -600,7 +600,7 @@ We can see why Xorg did not use i915:
 grep -Ei 'i915|modeset|glamor|dri|drm|\(EE\)|failed' /var/log/Xorg.0.log
 ```
 
-The logs show that simpledrm is being the primary Xorg device instead of Intel. Let's see the DRM devices:
+The logs show that simpledrm is the primary Xorg device instead of Intel. Let's see the DRM devices:
 
 ```bash
 $ ls -l /dev/dri/by-path/
@@ -636,7 +636,7 @@ Restart LightDM and re-check glxinfo before reboot:
 sudo systemctl restart lightdm
 ```
 
-Ups, black screen, let's investigate:
+Oops, a black screen. Let's investigate:
 
 ```bash
 $ sudo rm /etc/X11/xorg.conf.d/20-intel.conf
@@ -654,16 +654,16 @@ It seems the problem is outside Xorg. Let's see if we can switch gmux directly t
 ls /sys/firmware/efi/efivars/ | grep -i gpu-power-prefs
 ```
 
-The kernel documentation explains that on these dual-GPU MacBook Pros, apple_gmux can choose the initial GPU from an EFI variable named gpu-power-prefs-fa4ce28d-b62f-4c99-9cc3-6815686e30f9, its 5th byte selects the initial GPU: 1 = IGD (Intel), 0 = DIS (NVIDIA). The firmware then switches gmux and allocates the framebuffer for that GPU before Linux starts.
+The kernel documentation explains that on these dual-GPU MacBook Pros, apple_gmux can choose the initial GPU from an EFI variable named gpu-power-prefs-fa4ce28d-b62f-4c99-9cc3-6815686e30f9. Its fifth byte selects the initial GPU: 1 = IGD (Intel), 0 = DIS (NVIDIA). The firmware then switches GMUX and allocates the framebuffer for that GPU before Linux starts.
 
 ```bash
-ls /sys/firmware/efi/efivars/ | grep -i gpu-power-prefs  # Should have no output. This means the EFI variable is not currently set, so the firmware is falling back to its default GPU choice.
+ls /sys/firmware/efi/efivars/ | grep -i gpu-power-prefs  # Should produce no output. This means the EFI variable isn't currently set, so the firmware is falling back to its default GPU choice.
  mount | grep efivarfs  # Should see efivarfs and rw. So Linux has access to EFI variable storage.
-journalctl -b -k | grep -Ei 'efi.*(error|fail|warn)|efivar.*(error|fail|warn)'  # To check no EFI problems before write to NVRAM.
-sudo journalctl -b -k | grep -iE '\bEFI\b|efivar|efifb' | head -n 30  # Kernel EFI architecture/environment. Check Mac booted in native Apple EFI mode: 'efi: EFI v1.1 by Apple', 'efivars: Registered efivars operations'
-sudo ls -l /sys/firmware/efi/efivars > ~/efivars-before.txt  # back up the existing EFI variables directory metadata/list.
-command -v efivar  # If shows something like /usr/bin/efivar, we can use efivar to write the value.
-# Create a 4-byte Intel payload. Until 4º byte: EFI attributes. 5º byte is 01 -> Use Intel.
+journalctl -b -k | grep -Ei 'efi.*(error|fail|warn)|efivar.*(error|fail|warn)'  # Check for EFI problems before writing to NVRAM.
+sudo journalctl -b -k | grep -iE '\bEFI\b|efivar|efifb' | head -n 30  # Kernel EFI architecture/environment. Check that the Mac booted in native Apple EFI mode: 'efi: EFI v1.1 by Apple', 'efivars: Registered efivars operations'
+sudo ls -l /sys/firmware/efi/efivars > ~/efivars-before.txt  # Back up the existing EFI variables directory metadata/list.
+command -v efivar  # If it shows something like /usr/bin/efivar, we can use efivar to write the value.
+# Create a 4-byte Intel payload. In the resulting efivarfs file, the first 4 bytes are EFI attributes. The fifth byte is 01 -> Use Intel.
 printf '\x01\x00\x00\x00' > /tmp/gpu-power-prefs-data.bin
 # Verify
 od -An -tx1 /tmp/gpu-power-prefs-data.bin  # Must be: 01 00 00 00
@@ -673,21 +673,21 @@ sudo efivar --write \
   --name 'fa4ce28d-b62f-4c99-9cc3-6815686e30f9-gpu-power-prefs' \
   --datafile /tmp/gpu-power-prefs-data.bin \
   --attributes 7
-# The following command shows 4 bytes, should be 8, so this solution is not correct.
+# The following command shows 4 bytes but should show 8, so this solution isn't correct.
 sudo ls -l /sys/firmware/efi/efivars/gpu-power-prefs-*
 # Undo the changes
 sudo chattr -i /sys/firmware/efi/efivars/gpu-power-prefs-fa4ce28d-b62f-4c99-9cc3-6815686e30f9 2>/dev/null; sudo rm -f /sys/firmware/efi/efivars/gpu-power-prefs-fa4ce28d-b62f-4c99-9cc3-6815686e30f9
 ```
 
-So forgot about modify the EFI NVRAM and let's try with improve the vgaswitcheroo service, let's check if vgaswitcheroo can switch/power down NVIDIA without immediately unloading Nouveau.
+So, let's forget about modifying the EFI NVRAM and try to improve the vgaswitcheroo service. Let's check whether vgaswitcheroo can switch off/power down NVIDIA without immediately unloading Nouveau.
 
-The part that takes 30 seconds is `sudo modprobe nouveau`, let's see if we can omit this part. First, enable again nouveau:
+The part that takes 30 seconds is `sudo modprobe nouveau`. Let's see whether we can omit this part. First, enable Nouveau again:
 
 ```bash
 sudo modprobe nouveau
 ```
 
-But this don't create the missing file:
+However, this doesn't create the missing file:
 
 
 ```bash
@@ -695,14 +695,14 @@ $ sudo cat /sys/kernel/debug/vgaswitcheroo/switch
 cat: /sys/kernel/debug/vgaswitcheroo/switch: No such file or directory
 ```
 
-The modification should be at boot time comment the line `ExecStartPost=/usr/bin/modprobe -r nouveau` (use #):
+The modification should be applied at boot time. Comment out the line `ExecStartPost=/usr/bin/modprobe -r nouveau` (using `#`):
 
 ```bash
 sudo systemctl edit --full gpu-switch-intel.service
 reboot
 ```
 
-With that change we confirm that nouveau can be active but the NVIDIA GPU wont be used and the pc won't be hot:
+With that change, we confirm that Nouveau can be active while the NVIDIA GPU won't be used and the PC won't get hot:
 
 ```bash
 $ sudo cat /sys/kernel/debug/vgaswitcheroo/switch
@@ -712,7 +712,7 @@ $ sudo cat /sys/kernel/debug/vgaswitcheroo/switch
 2:DIS-Audio: :DynOff:0000:01:00.1
 ```
 
-If we run `sensors` command, we check that the fans are ok (near 2.000 RPM), and the temperature is not high.
+If we run the `sensors` command, we can check that the fans are operating normally (near 2,000 RPM) and the temperature isn't high.
 
 So this is our final config:
 
@@ -780,7 +780,7 @@ WantedBy=graphical.target
 sudo systemctl daemon-reload
 ```
 
-Let's improve the service
+Let's improve the service.
 
 ```bash
 sudo cp /etc/systemd/system/gpu-switch-intel.service \
@@ -819,7 +819,7 @@ done
 # to IGD (Integrated Graphics Device), which is our Intel HD 4000.
 # Again: "$SWITCH" is a kernel control interface, not an ordinary file.
 # The shell sends the characters "IGD\n" to the kernel through that
-# interface. The kernel interpret's IGD as the GPU-switching command.
+# interface. The kernel interprets IGD as the GPU-switching command.
 # Conceptually:
 #   echo IGD > "$SWITCH"
 # means:
@@ -916,13 +916,13 @@ BOOT
                        XFCE + Intel/crocus acceleration
 ```
 
-Reboot does not work :(, let's investigate, force power off by pressing the power button, after that:
+Reboot doesn't work :(. Let's investigate. Force a power-off by pressing the power button, then:
 
 ```bash
 journalctl -b -1
 ```
 
-Nouveau causes a problem when shutting the pc down, shutdown makes fbcon interact with Nouveau while DIS is already Off.
+Nouveau causes a problem when shutting the PC down because shutdown makes fbcon interact with Nouveau while DIS is already Off.
 
 Verify that we can turn on and off the GPU while using Intel:
 
@@ -933,7 +933,7 @@ $ sudo cat /sys/kernel/debug/vgaswitcheroo/switch
 DIS       : Pwr     -> NVIDIA GPU powered on
 IGD     + : Pwr     -> Intel still selected and powered
 DIS-Audio : DynPwr  -> NVIDIA audio powered dynamically
-Check nouveau can see NVIDIA after power it on, it should show realistic info instead of N/A:
+Check that Nouveau can see NVIDIA after powering it on. It should show realistic info instead of N/A:
 $ sensors | sed -n '/nouveau-pci-0100/,+8p'
 $ echo OFF > /sys/kernel/debug/vgaswitcheroo/switch
 $ sudo sh -c 'echo OFF > /sys/kernel/debug/vgaswitcheroo/switch'
@@ -972,7 +972,7 @@ sudo systemctl daemon-reload
 sudo systemd-analyze verify /etc/systemd/system/gpu-switch-intel.service
 ```
 
-Before restart, let's test the ExecStop behavior manually while we can still inspect the resulting GPU state:
+Before restarting, let's test the ExecStop behavior manually while we can still inspect the resulting GPU state:
 
 ```bash
 $ sudo systemctl stop gpu-switch-intel.service
@@ -988,7 +988,7 @@ $ sudo cat /sys/kernel/debug/vgaswitcheroo/switch
 2:DIS-Audio: :DynOff:0000:01:00.1
 ```
 
-As we see, our service does not turn off DIS, let's fix this, as we can turn it off with `sudo sh -c 'echo OFF > /sys/kernel/debug/vgaswitcheroo/switch'`, let's add it:
+As we can see, our service doesn't turn off DIS. Since we can turn it off with `sudo sh -c 'echo OFF > /sys/kernel/debug/vgaswitcheroo/switch'`, let's add that:
 
 ```bash
 sudo vim /usr/local/sbin/gpu-switch-intel
@@ -1025,7 +1025,7 @@ done
 # to IGD (Integrated Graphics Device), which is our Intel HD 4000.
 # Again: "$SWITCH" is a kernel control interface, not an ordinary file.
 # The shell sends the characters "IGD\n" to the kernel through that
-# interface. The kernel interpret's IGD as the GPU-switching command.
+# interface. The kernel interprets IGD as the GPU-switching command.
 # Conceptually:
 #   echo IGD > "$SWITCH"
 # means:
@@ -1071,7 +1071,7 @@ $ sudo cat /sys/kernel/debug/vgaswitcheroo/switch
 2:DIS-Audio: :DynOff:0000:01:00.1
 ```
 
-This solution was not correct, after reboot, it works but with kernel warnings. Our next solution should be designed around never asking Nouveau to wake the GPU again, rather than trying to repair the shutdown by turning NVIDIA back on.
+This solution isn't correct: after reboot, it works but produces kernel warnings. Our next solution should be designed around never asking Nouveau to wake the GPU again, rather than trying to repair the shutdown by turning NVIDIA back on.
 
 My boot log says Nouveau creates nouveaudrmfb and makes it the primary fbcon device. If we detach the console from that framebuffer after Intel/Xorg is established, then during reboot there should be no fbcon ->nouveaudrmfb -> dead NVIDIA path to trigger the failure we saw.
 
@@ -1114,7 +1114,7 @@ SHUTDOWN
              └─ does NOT touch dead nouveau fb0
 ```
 
-Verify no `fbcon=` config in :
+Verify that there is no `fbcon=` config in:
 
 ```bash
 cat /proc/cmdline
@@ -1146,7 +1146,7 @@ Verify:
 ```bash
 $ sudo reboot
 $ cat /proc/cmdline  # Should show ...fbcon=map:1
-$ systemctl status gpu-switch-intel.service  # Must show shor process (low CPU ms value) and correct (active (exited)).
+$ systemctl status gpu-switch-intel.service  # Must show a short process (low CPU ms value) and the correct state (active (exited)).
 $ sudo cat /sys/kernel/debug/vgaswitcheroo/switch
 0:DIS: :Off:0000:01:00.0
 1:IGD:+:Pwr:0000:00:02.0
@@ -1154,7 +1154,7 @@ $ sudo cat /sys/kernel/debug/vgaswitcheroo/switch
 
 $ sudo journalctl -b -1 -k | grep -iE 'fbcon|nouveau.*(timeout|stalled|inaccessible)|g84_bar_flush|gf119_disp|VGA switcheroo'
 # We see: 19:45:58 VGA switcheroo: switched nouveau off.
-# If we see `fbcon: nouveaudrmfb (fb0) is primary device` doesn't by itself mean fbcon=map:1 failed. That's reporting Nouveau's framebuffer as the primary framebuffer during initialization; what matters for our shutdown problem is that we no longer see the late fbcon: Taking over console followed by Nouveau failures.
+# Seeing `fbcon: nouveaudrmfb (fb0) is primary device` doesn't by itself mean fbcon=map:1 failed. It reports Nouveau's framebuffer as the primary framebuffer during initialization; what matters for our shutdown problem is that we no longer see the late fbcon: Taking over console followed by Nouveau failures.
 ```
 
 Idea: Nouveau is loaded and NVIDIA GPU is off.
