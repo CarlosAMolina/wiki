@@ -13,6 +13,7 @@
 - [pipenv: pip y entornos virtuales](#pipenv:-pip-y-entornos-virtuales)
 - [Poetry](poetry.html)
 - [Special methods](#special-methods)
+- [uv](#uv.html)
 - [Versión de python](#versión-de-python)
   - [Utilizando repositorios de nuestra distribución](#utilizando-repositorios-de-nuestra-distribución)
   - [De manera manual](#de-manera-manual)
